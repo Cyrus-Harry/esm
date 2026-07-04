@@ -386,8 +386,8 @@ window.onload = async () => {
 };
 
 async function loadGame() {
-  const data = await apiCall('games');
-  currentGame = data.games.find(g => g.id === gameId);
+  const game = await getGame(gameId);
+  currentGame = game;
 
   if (!currentGame) {
     alert('بازی پیدا نشد!');
@@ -403,19 +403,20 @@ function updateGame(game) {
   currentGame = game;
 
   // نمایش وضعیت بازیکنان
-  document.getElementById('playersStatus').innerHTML = game.players.map(p => `
-    <div class="player-status ${p.id === currentUser.id? 'me' : ''} ${p.finished? 'finished' : ''}">
+  const players = game.players || [];
+  document.getElementById('playersStatus').innerHTML = players.map(p => `
+    <div class="player-status ${p.id === currentUser.id ? 'me' : ''} ${p.finished ? 'finished' : ''}">
       <div class="player-name">${p.name}</div>
-      <div class="player-status-text">${p.finished? '✅ تمام کرده' : '⏳ در حال بازی'}</div>
+      <div class="player-status-text">${p.finished ? '✅ تمام کرده' : '⏳ در حال بازی'}</div>
     </div>
   `).join('');
 
   // آپدیت کلمات خودم
-  const me = game.players.find(p => p.id === currentUser.id);
-  if (me &&!isFinished) {
-    Object.keys(me.words).forEach(field => {
+  const me = players.find(p => p.id === currentUser.id);
+  if (me && !isFinished) {
+    Object.keys(me.words || {}).forEach(field => {
       const input = document.getElementById(field);
-      if (input && document.activeElement!== input) {
+      if (input && document.activeElement !== input) {
         input.value = me.words[field];
       }
       validateField(field, me.words[field]);
@@ -437,6 +438,7 @@ function updateGame(game) {
 }
 
 function updateTimer() {
+  if (!currentGame) return;
   const elapsed = Date.now() - currentGame.startTime;
   const remaining = Math.max(0, currentGame.duration - elapsed);
   const seconds = Math.floor(remaining / 1000);
@@ -450,7 +452,7 @@ function updateTimer() {
     timerEl.classList.add('warning');
   }
 
-  if (seconds === 0 &&!isFinished) {
+  if (seconds === 0 && !isFinished) {
     handleFinish();
   }
 }
@@ -465,7 +467,7 @@ async function saveField(field, value) {
 // اعتبارسنجی
 function validateField(field, value) {
   const statusEl = document.getElementById(`status-${field}`);
-  if (!value.trim()) {
+  if (!value || !value.trim()) {
     statusEl.textContent = '';
     return;
   }
@@ -505,10 +507,11 @@ function disableInputs() {
 // نمایش نتایج
 function showResults(game) {
   const container = document.getElementById('resultsContainer');
-  const maxScore = Math.max(...game.players.map(p => p.finalScore || 0));
+  const players = game.players || [];
+  const maxScore = Math.max(...players.map(p => p.finalScore || 0));
 
-  container.innerHTML = game.players.map(player => {
-    const isWinner = player.finalScore === maxScore;
+  container.innerHTML = players.map(player => {
+    const isWinner = player.finalScore === maxScore && maxScore > 0;
     const fields = [
       { key: 'name', label: 'اسم' },
       { key: 'family', label: 'فامیل' },
@@ -519,17 +522,17 @@ function showResults(game) {
     ];
 
     return `
-      <div class="result-player ${isWinner? 'winner' : ''}">
+      <div class="result-player ${isWinner ? 'winner' : ''}">
         <div class="result-header">
-          <div class="result-name">${isWinner? '👑 ' : ''}${player.name}</div>
-          <div class="result-score">${player.finalScore} امتیاز</div>
+          <div class="result-name">${isWinner ? '👑 ' : ''}${player.name}</div>
+          <div class="result-score">${player.finalScore || 0} امتیاز</div>
         </div>
         <div class="result-words">
           ${fields.map(f => {
-            const word = player.words[f.key] || '-';
-            const isCorrect = word && word[0] === game.letter;
+            const word = (player.words && player.words[f.key]) || '-';
+            const isCorrect = word && word.trim().length > 0 && word.trim()[0] === game.letter;
             return `
-              <div class="result-word ${isCorrect? 'correct' : 'wrong'}">
+              <div class="result-word ${isCorrect ? 'correct' : 'wrong'}">
                 <span class="word-label">${f.label}:</span>
                 <span class="word-value">${word}</span>
               </div>
