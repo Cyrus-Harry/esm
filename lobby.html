@@ -127,7 +127,7 @@ window.onload = async () => {
   pollLobby(lobbyId, updateLobby);
 };
 
-function updateLobby(lobby) {
+async function updateLobby(lobby) {
   currentLobby = lobby;
   document.getElementById('lobbyCode').textContent = lobby.code;
   
@@ -140,7 +140,9 @@ function updateLobby(lobby) {
   `).join('');
   
   // چت
-  document.getElementById('chat').innerHTML = lobby.chat.map(msg => `
+  const chatData = lobby.chat || {};
+  const chatMessages = Object.values(chatData);
+  document.getElementById('chat').innerHTML = chatMessages.map(msg => `
     <div class="chat-msg ${msg.userId === currentUser.id ? 'me' : ''}">
       <strong>${msg.userName}:</strong> ${msg.msg}
     </div>
@@ -148,7 +150,7 @@ function updateLobby(lobby) {
   document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
   
   // دکمه شروع
-  const allReady = lobby.players.length === 2 && lobby.players.every(p => p.ready);
+  const allReady = lobby.players.length >= 2 && lobby.players.every(p => p.ready);
   document.getElementById('startBtn').disabled = !allReady;
   
   // اگه بازی شروع شد
@@ -158,13 +160,15 @@ function updateLobby(lobby) {
 }
 
 async function toggleReady() {
-  const data = await apiCall('lobbies');
-  const lobby = data.lobbies.find(l => l.id === lobbyId);
-  const player = lobby.players.find(p => p.id === currentUser.id);
-  player.ready = !player.ready;
-  isReady = player.ready;
+  const lobby = await getLobby(lobbyId);
+  const playerIndex = lobby.players.findIndex(p => p.id === currentUser.id);
+  if (playerIndex === -1) return;
+  
+  lobby.players[playerIndex].ready = !lobby.players[playerIndex].ready;
+  isReady = lobby.players[playerIndex].ready;
   document.getElementById('readyBtn').textContent = isReady ? 'آماده هستم ✅' : 'آماده نیستم';
-  await apiCall('lobbies', 'PUT', data);
+  
+  await db.ref('lobbies/' + lobbyId + '/players').set(lobby.players);
 }
 
 async function sendChatMsg() {
