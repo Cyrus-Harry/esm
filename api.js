@@ -23,13 +23,14 @@
         // 🔥 اینجا کد تنظیمات رو بچسبون
         // ==========================================
         const firebaseConfig = {
-            apiKey: "AIzaSyB7v...", // ← عوض کن
-            authDomain: "my-game.firebaseapp.com",
-            databaseURL: "https://my-game-default-rtdb.firebaseio.com",
-            projectId: "my-game",
-            storageBucket: "my-game.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef..."
+            apiKey: "AIzaSyAw5aIKg_mXeoKmGOl2mFpI074eSaonHmc", // ← عوض کن
+            authDomain: "esm-famil-59c9d.firebaseapp.com",
+            databaseURL: "https://esm-famil-59c9d-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "esm-famil-59c9d",
+            storageBucket: "esm-famil-59c9d.firebasestorage.app",
+            messagingSenderId: "123286091020",
+            appId: "1:123286091020:web:3a05708c2515c4b3be8529",
+            measurementId: "G-08WCQS7GZ7"
         };
 
         // ==========================================
