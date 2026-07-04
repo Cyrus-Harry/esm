@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لابی بازی</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  h1 { color: #667eea; margin-bottom: 20px; text-align: center; }
+  .lobby-code {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+  }
+  .players {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .player {
+    flex: 1;
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  .player.ready { background: #d4edda; border: 2px solid #28a745; }
+  .chat {
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+  }
+  .chat-msg {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: #fff;
+    border-radius: 8px;
+  }
+  .chat-msg.me { background: #e3f2fd; text-align: left; }
+  .chat-input {
+    display: flex;
+    gap: 10px;
+  }
+  .chat-input input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-family: 'Vazirmatn', sans-serif;
+  }
+  button {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Vazirmatn', sans-serif;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .actions button { flex: 1; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 لابی بازی</h1>
+    <div class="lobby-code">کد لابی: <span id="lobbyCode"></span></div>
+    
+    <div class="players" id="players"></div>
+    
+    <div class="chat" id="chat"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="پیام..." onkeypress="if(event.key==='Enter')sendChatMsg()">
+      <button onclick="sendChatMsg()">ارسال</button>
+    </div>
+    
+    <div class="actions">
+      <button id="readyBtn" onclick="toggleReady()">آماده نیستم</button>
+      <button id="startBtn" onclick="handleStartGame()" disabled>شروع بازی</button>
+    </div>
+  </div>
+
+<script src="api.js"></script>
+<script>
+let lobbyId = new URLSearchParams(window.location.search).get('id');
+let currentLobby = null;
+let currentUser = null;
+let isReady = false;
+
+window.onload = async () => {
+  currentUser = await getCurrentUser();
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+  pollLobby(lobbyId, updateLobby);
+};
+
+function updateLobby(lobby) {
+  currentLobby = lobby;
+  document.getElementById('lobbyCode').textContent = lobby.code;
+  
+  // نمایش بازیکنان
+  document.getElementById('players').innerHTML = lobby.players.map(p => `
+    <div class="player ${p.ready ? 'ready' : ''}">
+      <div style="font-size: 20px; font-weight: 700;">${p.name}</div>
+      <div style="margin-top: 5px;">${p.ready ? '✅ آماده' : '⏳ منتظر'}</div>
+    </div>
+  `).join('');
+  
+  // چت
+  document.getElementById('chat').innerHTML = lobby.chat.map(msg => `
+    <div class="chat-msg ${msg.userId === currentUser.id ? 'me' : ''}">
+      <strong>${msg.userName}:</strong> ${msg.msg}
+    </div>
+  `).join('');
+  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+  
+  // دکمه شروع
+  const allReady = lobby.players.length === 2 && lobby.players.every(p => p.ready);
+  document.getElementById('startBtn').disabled = !allReady;
+  
+  // اگه بازی شروع شد
+  if (lobby.gameId) {
+    window.location.href = `game.html?id=${lobby.gameId}`;
+  }
+}
+
+async function toggleReady() {
+  const data = await apiCall('lobbies');
+  const lobby = data.lobbies.find(l => l.id === lobbyId);
+  const player = lobby.players.find(p => p.id === currentUser.id);
+  player.ready = !player.ready;
+  isReady = player.ready;
+  document.getElementById('readyBtn').textContent = isReady ? 'آماده هستم ✅' : 'آماده نیستم';
+  await apiCall('lobbies', 'PUT', data);
+}
+
+async function sendChatMsg() {
+  const msg = document.getElementById('chatInput').value.trim();
+  if (!msg) return;
+  await sendChat(lobbyId, msg);
+  document.getElementById('chatInput').value = '';
+}
+
+async function handleStartGame() {
+  const game = await startGame(lobbyId);
+  window.location.href = `game.html?id=${game.id}`;
+}
+</script>
+</body>
+</html>
