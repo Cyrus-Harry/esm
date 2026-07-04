@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اسم فامیل آنلاین</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    background: rgba(255,255,255,0.95);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 500px;
+    width: 100%;
+  }
+  h1 {
+    text-align: center;
+    color: #667eea;
+    font-size: 36px;
+    margin-bottom: 30px;
+    font-weight: 900;
+  }
+  input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Vazirmatn', sans-serif;
+    margin-bottom: 15px;
+  }
+  input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Vazirmatn', sans-serif;
+    transition: transform 0.2s;
+  }
+  button:hover { transform: translateY(-2px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .user-info {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .requests {
+    margin-top: 20px;
+  }
+  .request-item {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
+    width: auto;
+  }
+  .lobby-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px dashed #ddd;
+  }
+  .code-input {
+    display: flex;
+    gap: 10px;
+  }
+  .code-input input { margin: 0; }
+  .code-input button { width: auto; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 اسم فامیل آنلاین</h1>
+    
+    <div id="loginSection" class="section active">
+      <input type="text" id="nameInput" placeholder="اسمت رو وارد کن" maxlength="15">
+      <button onclick="handleLogin()">ورود به بازی</button>
+    </div>
+    
+    <div id="mainSection" class="section">
+      <div class="user-info">
+        <div style="font-size: 20px; font-weight: 700;" id="userName"></div>
+        <div style="color: #666;">امتیاز: <span id="userScore">0</span></div>
+      </div>
+      
+      <input type="text" id="searchInput" placeholder="نام کاربری دوستت رو بزن">
+      <button onclick="handleSendRequest()">ارسال درخواست بازی</button>
+      
+      <div class="requests">
+        <h3 style="margin-bottom: 10px;">درخواست‌ها:</h3>
+        <div id="requestsList"></div>
+      </div>
+      
+      <div class="lobby-section">
+        <button onclick="handleCreateLobby()">ساخت لابی جدید 🎯</button>
+        <div style="margin: 15px 0; text-align: center; color: #999;">یا</div>
+        <div class="code-input">
+          <input type="text" id="lobbyCode" placeholder="کد لابی" maxlength="6">
+          <button class="btn-small" onclick="handleJoinLobby()">ورود</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="api.js"></script>
+<script>
+let currentUser = null;
+
+async function handleLogin() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) return alert('اسم رو وارد کن!');
+  
+  try {
+    currentUser = await login(name);
+    showMain();
+    pollRequests();
+  } catch (e) {
+    alert('خطا: ' + e.message);
+  }
+}
+
+function showMain() {
+  document.getElementById('loginSection').classList.remove('active');
+  document.getElementById('mainSection').classList.add('active');
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('userScore').textContent = currentUser.score;
+}
+
+async function handleSendRequest() {
+  const toName = document.getElementById('searchInput').value.trim();
+  if (!toName) return alert('نام کاربری رو وارد کن');
+  
+  try {
+    await sendGameRequest(toName);
+    alert('درخواست ارسال شد!');
+    document.getElementById('searchInput').value = '';
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function pollRequests() {
+  setInterval(async () => {
+    currentUser = await getCurrentUser();
+    document.getElementById('userScore').textContent = currentUser.score;
+    
+    const list = document.getElementById('requestsList');
+    if (currentUser.requests && currentUser.requests.length > 0) {
+      list.innerHTML = currentUser.requests.map(req => `
+        <div class="request-item">
+          <span>${req.fromName} درخواست بازی داده</span>
+          <button class="btn-small" onclick="acceptRequest('${req.from}')">قبول</button>
+        </div>
+      `).join('');
+    } else {
+      list.innerHTML = '<div style="text-align:center;color:#999;">درخواستی نیست</div>';
+    }
+  }, 3000);
+}
+
+async function acceptRequest(fromId) {
+  // ساخت لابی و انتقال به صفحه لابی
+  const lobby = await createLobby();
+  // اینجا باید به کاربر مقابل هم اطلاع بدیم
+  window.location.href = `lobby.html?id=${lobby.id}`;
+}
+
+async function handleCreateLobby() {
+  const lobby = await createLobby();
+  window.location.href = `lobby.html?id=${lobby.id}`;
+}
+
+async function handleJoinLobby() {
+  const code = document.getElementById('lobbyCode').value.trim().toUpperCase();
+  if (!code) return alert('کد لابی رو وارد کن');
+  
+  try {
+    const lobby = await joinLobby(code);
+    window.location.href = `lobby.html?id=${lobby.id}`;
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+// چک کن اگه قبلا لاگین کرده
+window.onload = async () => {
+  const userId = localStorage.getItem('userId');
+  if (userId) {
+    currentUser = await getCurrentUser();
+    if (currentUser) {
+      showMain();
+      pollRequests();
+    }
+  }
+};
+</script>
+</body>
+</html>
