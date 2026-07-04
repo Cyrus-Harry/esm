@@ -1,12 +1,12 @@
 // api.js
 const API_URL = 'https://api.jsonbin.io/v3/b';
-const KEY = 'PUT_YOUR_X_MASTER_KEY';
+const KEY = '$2a$10$/5vpvMhVYT3akahPv1wWUOWQmg1ZunHHB2MAf.4QIPDRRrcpKwFRy';
 
 // 3 تا Bin باید بسازی
 const BINS = {
-  users: 'PUT_USERS_BIN_ID', // { users: [{id, name, score, online}] }
-  lobbies: 'PUT_LOBBIES_BIN_ID', // { lobbies: [{id, code, players, chat, gameId}] }
-  games: 'PUT_GAMES_BIN_ID' // { games: [{id, players, letter, words, status, startTime}] }
+  users: '6a490fd7da38895dfe2d424c', // { users: [{id, name, score, online}] }
+  lobbies: '6a491004da38895dfe2d42d4', // { lobbies: [{id, code, players, chat, gameId}] }
+  games: '6a491026f5f4af5e295ed4b8' // { games: [{id, players, letter, words, status, startTime}] }
 };
 
 async function apiCall(bin, method = 'GET', data = null) {
