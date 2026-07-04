@@ -154,7 +154,7 @@ function showMain() {
   document.getElementById('loginSection').classList.remove('active');
   document.getElementById('mainSection').classList.add('active');
   document.getElementById('userName').textContent = currentUser.name;
-  document.getElementById('userScore').textContent = currentUser.score;
+  document.getElementById('userScore').textContent = currentUser.score || 0;
 }
 
 async function handleSendRequest() {
@@ -170,14 +170,12 @@ async function handleSendRequest() {
   }
 }
 
-async function pollRequests() {
-  setInterval(async () => {
-    currentUser = await getCurrentUser();
-    document.getElementById('userScore').textContent = currentUser.score;
-    
+function pollRequests() {
+  pollRequests((requests) => {
     const list = document.getElementById('requestsList');
-    if (currentUser.requests && currentUser.requests.length > 0) {
-      list.innerHTML = currentUser.requests.map(req => `
+    const requestsArray = Object.values(requests || {});
+    if (requestsArray.length > 0) {
+      list.innerHTML = requestsArray.map(req => `
         <div class="request-item">
           <span>${req.fromName} درخواست بازی داده</span>
           <button class="btn-small" onclick="acceptRequest('${req.from}')">قبول</button>
@@ -186,13 +184,13 @@ async function pollRequests() {
     } else {
       list.innerHTML = '<div style="text-align:center;color:#999;">درخواستی نیست</div>';
     }
-  }, 3000);
+  });
 }
 
 async function acceptRequest(fromId) {
-  // ساخت لابی و انتقال به صفحه لابی
+  // ایجاد لابی
   const lobby = await createLobby();
-  // اینجا باید به کاربر مقابل هم اطلاع بدیم
+  // اینجا باید به کاربر مقابل هم اطلاع بدیم (در نسخه واقعی باید از طریق دیتابیس)
   window.location.href = `lobby.html?id=${lobby.id}`;
 }
 
