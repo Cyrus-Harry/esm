@@ -65,10 +65,12 @@
     gap: 15px;
     margin-bottom: 25px;
     justify-content: center;
+    flex-wrap: wrap;
   }
 
  .player-status {
     flex: 1;
+    min-width: 120px;
     max-width: 200px;
     padding: 12px;
     background: #f8f8f8;
@@ -79,6 +81,7 @@
 
  .player-status.me {
     border-color: #667eea;
+    background: #e8edff;
   }
 
  .player-status.finished {
@@ -116,7 +119,7 @@
 
  .field-group input {
     width: 100%;
-    padding: 14px;
+    padding: 14px 45px 14px 14px;
     border: 2px solid #e0e0e0;
     border-radius: 12px;
     font-size: 16px;
@@ -139,7 +142,8 @@
     position: absolute;
     left: 12px;
     top: 42px;
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: 700;
   }
 
  .actions {
@@ -166,7 +170,7 @@
     box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
   }
 
- .btn-finish:hover {
+ .btn-finish:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
   }
@@ -177,13 +181,18 @@
     transform: none;
   }
 
+ .btn-back-lobby {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+
  .results-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.85);
     display: none;
     align-items: center;
     justify-content: center;
@@ -254,19 +263,25 @@
  .result-word {
     display: flex;
     justify-content: space-between;
-    padding: 8px;
+    padding: 8px 12px;
     background: #fff;
     border-radius: 8px;
   }
 
  .result-word.correct {
     background: #d4edda;
+    border-right: 4px solid #28a745;
   }
 
  .result-word.wrong {
     background: #f8d7da;
-    text-decoration: line-through;
-    opacity: 0.6;
+    opacity: 0.7;
+    border-right: 4px solid #dc3545;
+  }
+
+ .result-word.empty {
+    background: #f5f5f5;
+    opacity: 0.5;
   }
 
  .word-label {
@@ -287,63 +302,88 @@
     color: #fff;
   }
 
+ .loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: #666;
+  }
+
+ .error-msg {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
   @media (max-width: 600px) {
    .letter-display { font-size: 56px; }
    .timer { font-size: 24px; }
    .result-words { grid-template-columns: 1fr; }
+   .players-status { flex-direction: column; align-items: center; }
+   .player-status { max-width: 100%; width: 100%; }
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="letter-display" id="gameLetter">?</div>
-      <div class="timer" id="timer">02:00</div>
-      <div style="color: #666; font-size: 14px;">کلمات باید با این حرف شروع بشن</div>
+  <div class="container" id="mainContainer">
+    <div id="loadingScreen" class="loading">
+      <div>⏳ در حال بارگذاری بازی...</div>
     </div>
 
-    <div class="players-status" id="playersStatus"></div>
-
-    <div class="game-form">
-      <div class="field-group">
-        <label>👤 اسم</label>
-        <input type="text" id="name" data-field="name" placeholder="مثال: امیر" maxlength="20">
-        <span class="field-status" id="status-name"></span>
+    <div id="gameContent" style="display: none;">
+      <div class="header">
+        <div class="letter-display" id="gameLetter">?</div>
+        <div class="timer" id="timer">02:00</div>
+        <div style="color: #666; font-size: 14px;">کلمات باید با این حرف شروع بشن</div>
       </div>
 
-      <div class="field-group">
-        <label>👥 فامیل</label>
-        <input type="text" id="family" data-field="family" placeholder="مثال: احمدی" maxlength="20">
-        <span class="field-status" id="status-family"></span>
+      <div class="players-status" id="playersStatus"></div>
+
+      <div class="game-form">
+        <div class="field-group">
+          <label>👤 اسم</label>
+          <input type="text" id="name" data-field="name" placeholder="مثال: امیر" maxlength="20">
+          <span class="field-status" id="status-name"></span>
+        </div>
+
+        <div class="field-group">
+          <label>👥 فامیل</label>
+          <input type="text" id="family" data-field="family" placeholder="مثال: احمدی" maxlength="20">
+          <span class="field-status" id="status-family"></span>
+        </div>
+
+        <div class="field-group">
+          <label>🏙️ شهر</label>
+          <input type="text" id="city" data-field="city" placeholder="مثال: اصفهان" maxlength="20">
+          <span class="field-status" id="status-city"></span>
+        </div>
+
+        <div class="field-group">
+          <label>🌍 کشور</label>
+          <input type="text" id="country" data-field="country" placeholder="مثال: ایران" maxlength="20">
+          <span class="field-status" id="status-country"></span>
+        </div>
+
+        <div class="field-group">
+          <label>🍔 غذا</label>
+          <input type="text" id="food" data-field="food" placeholder="مثال: آش" maxlength="20">
+          <span class="field-status" id="status-food"></span>
+        </div>
+
+        <div class="field-group">
+          <label>📦 اشیا</label>
+          <input type="text" id="object" data-field="object" placeholder="مثال: آینه" maxlength="20">
+          <span class="field-status" id="status-object"></span>
+        </div>
       </div>
 
-      <div class="field-group">
-        <label>🏙️ شهر</label>
-        <input type="text" id="city" data-field="city" placeholder="مثال: اصفهان" maxlength="20">
-        <span class="field-status" id="status-city"></span>
+      <div class="actions">
+        <button class="btn-finish" id="finishBtn" onclick="handleFinish()">🏁 تمام!</button>
+        <button class="btn-back-lobby" onclick="backToLobby()">🔙 لابی</button>
       </div>
-
-      <div class="field-group">
-        <label>🌍 کشور</label>
-        <input type="text" id="country" data-field="country" placeholder="مثال: ایران" maxlength="20">
-        <span class="field-status" id="status-country"></span>
-      </div>
-
-      <div class="field-group">
-        <label>🍔 غذا</label>
-        <input type="text" id="food" data-field="food" placeholder="مثال: آش" maxlength="20">
-        <span class="field-status" id="status-food"></span>
-      </div>
-
-      <div class="field-group">
-        <label>📦 اشیا</label>
-        <input type="text" id="object" data-field="object" placeholder="مثال: آینه" maxlength="20">
-        <span class="field-status" id="status-object"></span>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-finish" id="finishBtn" onclick="handleFinish()">🏁 تمام!</button>
     </div>
   </div>
 
@@ -355,6 +395,9 @@
     </div>
   </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="api.js"></script>
 <script>
 let gameId = new URLSearchParams(window.location.search).get('id');
@@ -362,64 +405,120 @@ let currentGame = null;
 let currentUser = null;
 let timerInterval = null;
 let isFinished = false;
+let gameRef = null;
+let isGameLoaded = false;
+let timerUpdateInterval = null;
 
-// مقداردهی اولیه
+// ==========================================
+// 🚀 مقداردهی اولیه
+// ==========================================
 window.onload = async () => {
-  currentUser = await getCurrentUser();
-  if (!currentUser) {
-    window.location.href = 'index.html';
-    return;
+  try {
+    currentUser = await getCurrentUser();
+    if (!currentUser) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    if (!gameId) {
+      alert('شناسه بازی پیدا نشد!');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    // لود بازی
+    await loadGame();
+    
+    // شروع polling
+    gameRef = pollGame(gameId, updateGame);
+    
+    // شروع تایمر
+    timerUpdateInterval = setInterval(() => {
+      if (currentGame && currentGame.status === 'playing') {
+        updateTimer();
+      }
+    }, 1000);
+
+    // ذخیره خودکار روی هر تغییر
+    document.querySelectorAll('input[data-field]').forEach(input => {
+      input.addEventListener('input', debounce(() => {
+        if (!isFinished && currentGame && currentGame.status === 'playing') {
+          saveField(input.dataset.field, input.value);
+        }
+      }, 500));
+    });
+
+  } catch (error) {
+    console.error('خطا در مقداردهی اولیه:', error);
+    showError('خطا در بارگذاری بازی: ' + error.message);
   }
-
-  // لود بازی
-  await loadGame();
-
-  // شروع polling
-  pollGame(gameId, updateGame);
-
-  // ذخیره خودکار روی هر تغییر
-  document.querySelectorAll('input[data-field]').forEach(input => {
-    input.addEventListener('input', debounce(() => {
-      saveField(input.dataset.field, input.value);
-    }, 500));
-  });
 };
 
+// ==========================================
+// 📥 بارگذاری بازی
+// ==========================================
 async function loadGame() {
-  const game = await getGame(gameId);
-  currentGame = game;
-
-  if (!currentGame) {
-    alert('بازی پیدا نشد!');
-    window.location.href = 'index.html';
-    return;
+  try {
+    const game = await getGame(gameId);
+    if (!game) {
+      showError('بازی پیدا نشد! ممکن است حذف شده باشد.');
+      return;
+    }
+    
+    currentGame = game;
+    isGameLoaded = true;
+    
+    // نمایش محتوای بازی
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('gameContent').style.display = 'block';
+    
+    // نمایش حرف
+    document.getElementById('gameLetter').textContent = game.letter;
+    
+    // بروزرسانی اولیه
+    updateGame(game);
+    
+  } catch (error) {
+    console.error('خطا در loadGame:', error);
+    showError('خطا در بارگذاری بازی: ' + error.message);
   }
-
-  document.getElementById('gameLetter').textContent = currentGame.letter;
-  updateGame(currentGame);
 }
 
+// ==========================================
+// 🔄 بروزرسانی بازی
+// ==========================================
 function updateGame(game) {
+  if (!game) {
+    showError('بازی وجود ندارد!');
+    return;
+  }
+  
   currentGame = game;
-
+  
   // نمایش وضعیت بازیکنان
   const players = game.players || [];
-  document.getElementById('playersStatus').innerHTML = players.map(p => `
-    <div class="player-status ${p.id === currentUser.id ? 'me' : ''} ${p.finished ? 'finished' : ''}">
-      <div class="player-name">${p.name}</div>
-      <div class="player-status-text">${p.finished ? '✅ تمام کرده' : '⏳ در حال بازی'}</div>
-    </div>
-  `).join('');
-
+  const playersHTML = players.map(p => {
+    const isMe = p.id === currentUser.id;
+    const isFinished = p.finished || false;
+    return `
+      <div class="player-status ${isMe ? 'me' : ''} ${isFinished ? 'finished' : ''}">
+        <div class="player-name">${isMe ? '👤 ' : ''}${p.name}</div>
+        <div class="player-status-text">${isFinished ? '✅ تمام کرده' : '⏳ در حال بازی'}</div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('playersStatus').innerHTML = playersHTML || '<div style="text-align:center;color:#999;">هیچ بازیکنی نیست</div>';
+  
   // آپدیت کلمات خودم
   const me = players.find(p => p.id === currentUser.id);
   if (me && !isFinished) {
     Object.keys(me.words || {}).forEach(field => {
       const input = document.getElementById(field);
       if (input && document.activeElement !== input) {
-        input.value = me.words[field];
+        input.value = me.words[field] || '';
       }
-      validateField(field, me.words[field]);
+      validateField(field, me.words[field] || '');
     });
 
     if (me.finished) {
@@ -427,18 +526,22 @@ function updateGame(game) {
       disableInputs();
     }
   }
-
+  
   // تایمر
   updateTimer();
-
+  
   // اگه بازی تموم شده
   if (game.status === 'finished') {
     showResults(game);
   }
 }
 
+// ==========================================
+// ⏱️ تایمر
+// ==========================================
 function updateTimer() {
   if (!currentGame) return;
+  
   const elapsed = Date.now() - currentGame.startTime;
   const remaining = Math.max(0, currentGame.duration - elapsed);
   const seconds = Math.floor(remaining / 1000);
@@ -448,93 +551,135 @@ function updateTimer() {
   const timerEl = document.getElementById('timer');
   timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-  if (seconds <= 30) {
+  if (seconds <= 10) {
     timerEl.classList.add('warning');
+  } else {
+    timerEl.classList.remove('warning');
   }
 
-  if (seconds === 0 && !isFinished) {
+  if (seconds === 0 && !isFinished && currentGame.status === 'playing') {
     handleFinish();
   }
 }
 
-// ذخیره خودکار
+// ==========================================
+// 💾 ذخیره خودکار
+// ==========================================
 async function saveField(field, value) {
   if (isFinished) return;
-  await saveWord(gameId, field, value);
-  validateField(field, value);
+  if (!currentGame || currentGame.status !== 'playing') return;
+  
+  try {
+    await saveWord(gameId, field, value);
+    validateField(field, value);
+  } catch (error) {
+    console.error('خطا در ذخیره کلمه:', error);
+  }
 }
 
-// اعتبارسنجی
+// ==========================================
+// ✅ اعتبارسنجی
+// ==========================================
 function validateField(field, value) {
   const statusEl = document.getElementById(`status-${field}`);
+  if (!statusEl) return;
+  
   if (!value || !value.trim()) {
     statusEl.textContent = '';
     return;
   }
 
   const firstChar = value.trim()[0];
-  if (firstChar === currentGame.letter) {
-    statusEl.textContent = '✓';
+  if (firstChar === currentGame?.letter) {
+    statusEl.textContent = '✅';
     statusEl.style.color = '#28a745';
   } else {
-    statusEl.textContent = '✗';
+    statusEl.textContent = '❌';
     statusEl.style.color = '#dc3545';
   }
 }
 
-// تمام کردن بازی
+// ==========================================
+// 🏁 تمام کردن بازی
+// ==========================================
 async function handleFinish() {
   if (isFinished) return;
+  if (!currentGame || currentGame.status !== 'playing') return;
 
   if (!confirm('مطمئنی میخوای تمام کنی؟')) return;
 
-  document.getElementById('finishBtn').disabled = true;
-  document.getElementById('finishBtn').textContent = 'در حال ثبت...';
+  try {
+    document.getElementById('finishBtn').disabled = true;
+    document.getElementById('finishBtn').textContent = '⏳ در حال ثبت...';
 
-  await finishGame(gameId);
-  isFinished = true;
-  disableInputs();
+    await finishGame(gameId);
+    isFinished = true;
+    disableInputs();
+    
+    document.getElementById('finishBtn').textContent = '✅ تمام شده';
+    
+  } catch (error) {
+    console.error('خطا در finishGame:', error);
+    alert('خطا در تمام کردن بازی: ' + error.message);
+    document.getElementById('finishBtn').disabled = false;
+    document.getElementById('finishBtn').textContent = '🏁 تمام!';
+  }
 }
 
 function disableInputs() {
-  document.querySelectorAll('input').forEach(input => {
+  document.querySelectorAll('input[data-field]').forEach(input => {
     input.disabled = true;
   });
   document.getElementById('finishBtn').disabled = true;
-  document.getElementById('finishBtn').textContent = 'تمام شده ✓';
 }
 
-// نمایش نتایج
+// ==========================================
+// 📊 نمایش نتایج
+// ==========================================
 function showResults(game) {
   const container = document.getElementById('resultsContainer');
   const players = game.players || [];
+  
+  if (players.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#999;">نتیجه‌ای برای نمایش وجود ندارد</div>';
+    document.getElementById('resultsModal').classList.add('show');
+    return;
+  }
+  
   const maxScore = Math.max(...players.map(p => p.finalScore || 0));
+  const fields = [
+    { key: 'name', label: 'اسم' },
+    { key: 'family', label: 'فامیل' },
+    { key: 'city', label: 'شهر' },
+    { key: 'country', label: 'کشور' },
+    { key: 'food', label: 'غذا' },
+    { key: 'object', label: 'اشیا' }
+  ];
 
   container.innerHTML = players.map(player => {
     const isWinner = player.finalScore === maxScore && maxScore > 0;
-    const fields = [
-      { key: 'name', label: 'اسم' },
-      { key: 'family', label: 'فامیل' },
-      { key: 'city', label: 'شهر' },
-      { key: 'country', label: 'کشور' },
-      { key: 'food', label: 'غذا' },
-      { key: 'object', label: 'اشیا' }
-    ];
-
+    const isSoloWinner = players.length === 1;
+    
     return `
-      <div class="result-player ${isWinner ? 'winner' : ''}">
+      <div class="result-player ${isWinner && !isSoloWinner ? 'winner' : ''}">
         <div class="result-header">
-          <div class="result-name">${isWinner ? '👑 ' : ''}${player.name}</div>
+          <div class="result-name">${isWinner && !isSoloWinner ? '👑 ' : ''}${player.name}</div>
           <div class="result-score">${player.finalScore || 0} امتیاز</div>
         </div>
         <div class="result-words">
           ${fields.map(f => {
-            const word = (player.words && player.words[f.key]) || '-';
-            const isCorrect = word && word.trim().length > 0 && word.trim()[0] === game.letter;
+            const word = (player.words && player.words[f.key]) || '';
+            const isEmpty = !word || !word.trim();
+            const isCorrect = !isEmpty && word.trim()[0] === game.letter;
+            let className = 'result-word';
+            if (isEmpty) className += ' empty';
+            else if (isCorrect) className += ' correct';
+            else className += ' wrong';
+            
             return `
-              <div class="result-word ${isCorrect ? 'correct' : 'wrong'}">
+              <div class="${className}">
                 <span class="word-label">${f.label}:</span>
-                <span class="word-value">${word}</span>
+                <span class="word-value">${word || '—'}</span>
               </div>
             `;
           }).join('')}
@@ -546,11 +691,52 @@ function showResults(game) {
   document.getElementById('resultsModal').classList.add('show');
 }
 
+// ==========================================
+// 🔙 بازگشت به لابی
+// ==========================================
 function backToLobby() {
-  window.location.href = `lobby.html?id=${currentGame.lobbyId}`;
+  if (currentGame && currentGame.lobbyId) {
+    window.location.href = `lobby.html?id=${currentGame.lobbyId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
 }
 
-// Debounce helper
+// ==========================================
+// ❌ نمایش خطا
+// ==========================================
+function showError(message) {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('gameContent').style.display = 'block';
+  document.getElementById('gameContent').innerHTML = `
+    <div class="error-msg">
+      <div style="font-size: 48px; margin-bottom: 10px;">⚠️</div>
+      <div style="font-size: 18px; font-weight: 700;">${message}</div>
+      <button onclick="window.location.href='index.html'" style="margin-top: 15px; padding: 10px 30px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-family: 'Vazirmatn', sans-serif;">
+        بازگشت به صفحه اصلی
+      </button>
+    </div>
+  `;
+}
+
+// ==========================================
+// 🧹 پاکسازی
+// ==========================================
+window.addEventListener('beforeunload', function() {
+  if (gameRef) {
+    stopPolling(gameRef);
+  }
+  if (timerUpdateInterval) {
+    clearInterval(timerUpdateInterval);
+  }
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+
+// ==========================================
+// 🔧 توابع کمکی
+// ==========================================
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -563,12 +749,20 @@ function debounce(func, wait) {
   };
 }
 
-// شروع تایمر
-setInterval(() => {
-  if (currentGame && currentGame.status === 'playing') {
-    updateTimer();
+// ==========================================
+// 🔄 چک کردن وضعیت بازی هر 5 ثانیه
+// ==========================================
+setInterval(async () => {
+  if (!currentGame || currentGame.status === 'finished') return;
+  try {
+    const game = await getGame(gameId);
+    if (game && game.status === 'finished') {
+      updateGame(game);
+    }
+  } catch (error) {
+    console.error('خطا در چک کردن وضعیت بازی:', error);
   }
-}, 1000);
+}, 5000);
 </script>
 </body>
 </html>
