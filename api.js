@@ -41,7 +41,6 @@ async function login(name) {
                 id: uid,
                 name: name,
                 score: 0,
-                requests: [],
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             };
             await db.ref('users/' + uid).set(newUser);
@@ -62,8 +61,6 @@ async function login(name) {
 async function getCurrentUser() {
     const userId = localStorage.getItem('userId');
     if (!userId) return null;
-    
-    // بررسی اینکه کاربر هنوز در Firebase احراز هویت شده
     if (!auth.currentUser) {
         try {
             await auth.signInAnonymously();
@@ -71,7 +68,6 @@ async function getCurrentUser() {
             return null;
         }
     }
-    
     try {
         const snapshot = await db.ref('users/' + userId).once('value');
         return snapshot.val();
@@ -105,7 +101,7 @@ async function sendGameRequest(toName) {
 }
 
 // ==========================================
-// 🏠 لابی
+// 🏠 لابی (بدون محدودیت تعداد)
 // ==========================================
 async function createLobby() {
     const currentUser = await getCurrentUser();
@@ -115,16 +111,16 @@ async function createLobby() {
     const lobby = {
         id: lobbyId,
         code: generateLobbyCode(),
-        players: [
-            {
-                id: currentUser.id,
+        createdBy: currentUser.id,
+        players: {
+            [currentUser.id]: {
                 name: currentUser.name,
                 ready: false,
-                finished: false,
-                words: {}
+                inGame: false
             }
-        ],
+        },
         chat: [],
+        gameType: null,
         gameId: null,
         status: 'waiting',
         createdAt: firebase.database.ServerValue.TIMESTAMP
@@ -145,30 +141,27 @@ async function joinLobby(code) {
     const lobbyId = Object.keys(lobbies)[0];
     const lobby = lobbies[lobbyId];
 
-    if (lobby.players.length >= 2) throw new Error('لابی پر است');
-
-    if (lobby.players.find(p => p.id === currentUser.id)) {
+    if (lobby.players && lobby.players[currentUser.id]) {
         return lobby;
     }
 
-    lobby.players.push({
-        id: currentUser.id,
+    lobby.players[currentUser.id] = {
         name: currentUser.name,
         ready: false,
-        finished: false,
-        words: {}
-    });
+        inGame: false
+    };
 
-    await db.ref('lobbies/' + lobbyId).update({
-        players: lobby.players
-    });
-
+    await db.ref('lobbies/' + lobbyId + '/players').set(lobby.players);
     return lobby;
 }
 
 async function getLobby(lobbyId) {
     const snapshot = await db.ref('lobbies/' + lobbyId).once('value');
     return snapshot.val();
+}
+
+async function setGameType(lobbyId, gameType) {
+    await db.ref('lobbies/' + lobbyId + '/gameType').set(gameType);
 }
 
 // ==========================================
@@ -189,58 +182,106 @@ async function sendChat(lobbyId, msg) {
 }
 
 // ==========================================
-// 🎮 بازی
+// 🎮 شروع بازی (بر اساس نوع)
 // ==========================================
 async function startGame(lobbyId) {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error('لطفا ابتدا وارد شوید');
+
     const lobby = await getLobby(lobbyId);
     if (!lobby) throw new Error('لابی پیدا نشد');
+    if (lobby.status === 'playing') throw new Error('بازی در حال اجراست');
 
-    const letters = 'ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی';
-    const letter = letters[Math.floor(Math.random() * letters.length)];
+    const gameType = lobby.gameType;
+    if (!gameType) throw new Error('نوع بازی انتخاب نشده');
+
+    const readyPlayers = Object.keys(lobby.players).filter(uid => lobby.players[uid].ready);
+    if (readyPlayers.length < 2 && gameType === 'esm-famil') {
+        throw new Error('برای اسم فامیل حداقل ۲ نفر باید آماده باشند');
+    }
+    if (readyPlayers.length < 1 && gameType === 'hokm') {
+        throw new Error('برای حکم حداقل ۱ نفر باید آماده باشد');
+    }
 
     const gameId = generateId();
-    const game = {
+    const gameData = {
         id: gameId,
         lobbyId: lobbyId,
-        letter: letter,
-        players: lobby.players.map(p => ({
-            id: p.id,
-            name: p.name,
-            words: {},
-            finished: false,
-            finalScore: 0,
-            ready: false
-        })),
+        type: gameType,
+        status: 'playing',
         startTime: Date.now(),
         duration: 120000,
-        status: 'playing'
+        round: 1,
+        players: {}
     };
 
-    await db.ref('games/' + gameId).set(game);
+    for (const uid of readyPlayers) {
+        gameData.players[uid] = {
+            name: lobby.players[uid].name,
+            finished: false,
+            words: {},
+            roundScore: 0,
+            totalScore: 0
+        };
+    }
+
+    if (gameType === 'hokm') {
+        const botNames = ['بات ۱', 'بات ۲', 'بات ۳'];
+        let botCount = 0;
+        while (Object.keys(gameData.players).length < 4) {
+            const botId = 'bot_' + generateId();
+            gameData.players[botId] = {
+                name: botNames[botCount % botNames.length] + (botCount >= botNames.length ? ' ' + Math.floor(botCount/botNames.length) : ''),
+                finished: false,
+                words: {},
+                roundScore: 0,
+                totalScore: 0,
+                isBot: true
+            };
+            botCount++;
+        }
+    }
+
+    if (gameType === 'esm-famil') {
+        const letters = 'ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی';
+        gameData.letter = letters[Math.floor(Math.random() * letters.length)];
+    }
+
+    await db.ref('games/' + gameId).set(gameData);
+
     await db.ref('lobbies/' + lobbyId + '/gameId').set(gameId);
     await db.ref('lobbies/' + lobbyId + '/status').set('playing');
+    for (const uid of readyPlayers) {
+        await db.ref('lobbies/' + lobbyId + '/players/' + uid + '/inGame').set(true);
+    }
 
-    return game;
+    return gameData;
 }
 
+// ==========================================
+// 📡 دریافت بازی
+// ==========================================
 async function getGame(gameId) {
     const snapshot = await db.ref('games/' + gameId).once('value');
     return snapshot.val();
 }
 
+// ==========================================
+// 🎯 توابع مخصوص اسم فامیل
+// ==========================================
 async function saveWord(gameId, field, value) {
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error('لطفا ابتدا وارد شوید');
 
     const game = await getGame(gameId);
     if (!game) throw new Error('بازی پیدا نشد');
+    if (game.status !== 'playing') throw new Error('بازی تمام شده');
 
-    const playerIndex = game.players.findIndex(p => p.id === currentUser.id);
-    if (playerIndex === -1) throw new Error('شما در این بازی نیستید');
+    const player = game.players[currentUser.id];
+    if (!player) throw new Error('شما در این بازی نیستید');
+    if (player.finished) throw new Error('شما بازی را تمام کرده‌اید');
 
-    game.players[playerIndex].words[field] = value;
-
-    await db.ref('games/' + gameId + '/players').set(game.players);
+    await db.ref('games/' + gameId + '/players/' + currentUser.id + '/words/' + field).set(value);
 }
 
 async function finishGame(gameId) {
@@ -249,49 +290,66 @@ async function finishGame(gameId) {
 
     const game = await getGame(gameId);
     if (!game) throw new Error('بازی پیدا نشد');
+    if (game.status !== 'playing') throw new Error('بازی تمام شده');
+    if (game.type !== 'esm-famil') throw new Error('این تابع فقط برای اسم فامیل است');
 
-    const playerIndex = game.players.findIndex(p => p.id === currentUser.id);
-    if (playerIndex === -1) throw new Error('شما در این بازی نیستید');
-
-    game.players[playerIndex].finished = true;
-
-    const score = calculateScore(game.players[playerIndex], game.letter);
-    game.players[playerIndex].finalScore = score;
-
-    await db.ref('games/' + gameId + '/players').set(game.players);
-
-    const allFinished = game.players.every(p => p.finished);
-    if (allFinished) {
-        game.status = 'finished';
-        for (const player of game.players) {
-            await db.ref('users/' + player.id + '/score').transaction((current) => {
-                return (current || 0) + player.finalScore;
-            });
-        }
-        await db.ref('games/' + gameId + '/status').set('finished');
+    await db.ref('games/' + gameId + '/status').set('finished');
+    const updates = {};
+    for (const uid of Object.keys(game.players)) {
+        updates['games/' + gameId + '/players/' + uid + '/finished'] = true;
     }
+    await db.ref().update(updates);
 
-    return game;
+    const lobbyId = game.lobbyId;
+    await db.ref('lobbies/' + lobbyId + '/status').set('finished');
 }
 
-function calculateScore(player, letter) {
-    let score = 0;
-    const fields = ['name', 'family', 'city', 'country', 'food', 'object'];
-    for (const field of fields) {
-        const word = player.words[field] || '';
-        if (word && word.trim().length > 0) {
-            if (word.trim()[0] === letter) {
-                score += 10;
-            } else {
-                score += 5;
-            }
-        }
+async function nextRound(gameId) {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error('لطفا ابتدا وارد شوید');
+
+    const game = await getGame(gameId);
+    if (!game) throw new Error('بازی پیدا نشد');
+    if (game.type !== 'esm-famil') throw new Error('این تابع فقط برای اسم فامیل است');
+
+    const letters = 'ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی';
+    const newLetter = letters[Math.floor(Math.random() * letters.length)];
+
+    const updates = {};
+    for (const uid of Object.keys(game.players)) {
+        updates['games/' + gameId + '/players/' + uid + '/finished'] = false;
+        updates['games/' + gameId + '/players/' + uid + '/words'] = {};
+        updates['games/' + gameId + '/players/' + uid + '/roundScore'] = 0;
     }
-    return score;
+    updates['games/' + gameId + '/letter'] = newLetter;
+    updates['games/' + gameId + '/status'] = 'playing';
+    updates['games/' + gameId + '/startTime'] = Date.now();
+    updates['games/' + gameId + '/round'] = (game.round || 1) + 1;
+
+    await db.ref().update(updates);
+
+    const lobbyId = game.lobbyId;
+    await db.ref('lobbies/' + lobbyId + '/status').set('playing');
+}
+
+async function setRoundScore(gameId, uid, score) {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error('لطفا ابتدا وارد شوید');
+    if (currentUser.id !== uid) throw new Error('شما فقط می‌توانید امتیاز خود را تغییر دهید');
+
+    const game = await getGame(gameId);
+    if (!game) throw new Error('بازی پیدا نشد');
+    if (game.status !== 'finished') throw new Error('بازی تمام نشده است');
+
+    const player = game.players[uid];
+    if (!player) throw new Error('بازیکن پیدا نشد');
+    const newTotal = (player.totalScore || 0) + score;
+    await db.ref('games/' + gameId + '/players/' + uid + '/roundScore').set(score);
+    await db.ref('games/' + gameId + '/players/' + uid + '/totalScore').set(newTotal);
 }
 
 // ==========================================
-// 📡 Polling (لحظه‌ای با onValue)
+// 📡 Polling
 // ==========================================
 function pollLobby(lobbyId, callback) {
     const ref = db.ref('lobbies/' + lobbyId);
@@ -300,11 +358,10 @@ function pollLobby(lobbyId, callback) {
         if (data) {
             callback(data);
         } else {
-            // اگر لابی وجود نداشت
             callback(null);
         }
     });
-    return ref; // برگرداندن ref برای unsubscribe
+    return ref;
 }
 
 function pollGame(gameId, callback) {
@@ -331,9 +388,6 @@ function pollRequests(callback) {
     return ref;
 }
 
-// ==========================================
-// 🧹 Cleanup
-// ==========================================
 function stopPolling(ref) {
     if (ref) {
         ref.off();
