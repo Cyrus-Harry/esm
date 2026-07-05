@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اسم فامیل آنلاین</title>
+<title>مجموعه بازی‌ها</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Vazirmatn', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -40,10 +40,7 @@
     font-family: 'Vazirmatn', sans-serif;
     margin-bottom: 15px;
   }
-  input:focus {
-    outline: none;
-    border-color: #667eea;
-  }
+  input:focus { outline: none; border-color: #667eea; }
   button {
     width: 100%;
     padding: 15px;
@@ -100,38 +97,38 @@
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎮 اسم فامیل آنلاین</h1>
-    
-    <div id="loginSection" class="section active">
-      <input type="text" id="nameInput" placeholder="اسمت رو وارد کن" maxlength="15">
-      <button onclick="handleLogin()">ورود به بازی</button>
+<div class="container">
+  <h1>🎮 مجموعه بازی‌ها</h1>
+
+  <div id="loginSection" class="section active">
+    <input type="text" id="nameInput" placeholder="اسمت رو وارد کن" maxlength="15">
+    <button onclick="handleLogin()">ورود به بازی</button>
+  </div>
+
+  <div id="mainSection" class="section">
+    <div class="user-info">
+      <div style="font-size: 20px; font-weight: 700;" id="userName"></div>
+      <div style="color: #666;">امتیاز کل: <span id="userScore">0</span></div>
     </div>
-    
-    <div id="mainSection" class="section">
-      <div class="user-info">
-        <div style="font-size: 20px; font-weight: 700;" id="userName"></div>
-        <div style="color: #666;">امتیاز: <span id="userScore">0</span></div>
-      </div>
-      
-      <input type="text" id="searchInput" placeholder="نام کاربری دوستت رو بزن">
-      <button onclick="handleSendRequest()">ارسال درخواست بازی</button>
-      
-      <div class="requests">
-        <h3 style="margin-bottom: 10px;">درخواست‌ها:</h3>
-        <div id="requestsList"></div>
-      </div>
-      
-      <div class="lobby-section">
-        <button onclick="handleCreateLobby()">ساخت لابی جدید 🎯</button>
-        <div style="margin: 15px 0; text-align: center; color: #999;">یا</div>
-        <div class="code-input">
-          <input type="text" id="lobbyCode" placeholder="کد لابی" maxlength="6">
-          <button class="btn-small" onclick="handleJoinLobby()">ورود</button>
-        </div>
+
+    <input type="text" id="searchInput" placeholder="نام کاربری دوستت رو بزن">
+    <button onclick="handleSendRequest()">ارسال درخواست بازی</button>
+
+    <div class="requests">
+      <h3 style="margin-bottom: 10px;">درخواست‌ها:</h3>
+      <div id="requestsList"></div>
+    </div>
+
+    <div class="lobby-section">
+      <button onclick="handleCreateLobby()">ساخت لابی جدید 🎯</button>
+      <div style="margin: 15px 0; text-align: center; color: #999;">یا</div>
+      <div class="code-input">
+        <input type="text" id="lobbyCode" placeholder="کد لابی" maxlength="6">
+        <button class="btn-small" onclick="handleJoinLobby()">ورود</button>
       </div>
     </div>
   </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -143,7 +140,6 @@ let currentUser = null;
 async function handleLogin() {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) return alert('اسم رو وارد کن!');
-  
   try {
     currentUser = await login(name);
     showMain();
@@ -163,7 +159,6 @@ function showMain() {
 async function handleSendRequest() {
   const toName = document.getElementById('searchInput').value.trim();
   if (!toName) return alert('نام کاربری رو وارد کن');
-  
   try {
     await sendGameRequest(toName);
     alert('درخواست ارسال شد!');
@@ -173,7 +168,6 @@ async function handleSendRequest() {
   }
 }
 
-// توجه: این تابع دیگه اسمش pollRequests نیست تا با تابع هم‌نام تو api.js تداخل نکنه
 function startPollingRequests() {
   pollRequests((requests) => {
     const list = document.getElementById('requestsList');
@@ -192,9 +186,7 @@ function startPollingRequests() {
 }
 
 async function acceptRequest(fromId) {
-  // ایجاد لابی
   const lobby = await createLobby();
-  // اینجا باید به کاربر مقابل هم اطلاع بدیم (در نسخه واقعی باید از طریق دیتابیس)
   window.location.href = `lobby.html?id=${lobby.id}`;
 }
 
@@ -206,7 +198,6 @@ async function handleCreateLobby() {
 async function handleJoinLobby() {
   const code = document.getElementById('lobbyCode').value.trim().toUpperCase();
   if (!code) return alert('کد لابی رو وارد کن');
-  
   try {
     const lobby = await joinLobby(code);
     window.location.href = `lobby.html?id=${lobby.id}`;
@@ -215,7 +206,6 @@ async function handleJoinLobby() {
   }
 }
 
-// چک کن اگه قبلا لاگین کرده
 window.onload = async () => {
   const userId = localStorage.getItem('userId');
   if (userId) {
