@@ -201,7 +201,7 @@ window.onload = async () => {
   }, 1000);
 };
 
-function updateLobby(lobby) {
+async function updateLobby(lobby) {
   if (!lobby) {
     alert('لابی بسته شده است!');
     window.location.href = 'index.html';
@@ -245,16 +245,23 @@ function updateLobby(lobby) {
 
   updateStartButton();
 
+  // اگر بازی شروع شده باشد
   if (lobby.gameId && lobby.status === 'playing') {
-    const meInGame = players[currentUser.id] && players[currentUser.id].inGame;
-    if (meInGame) {
-      if (lobby.gameType === 'esm-famil') {
-        window.location.href = `game-esm-famil.html?id=${lobby.gameId}`;
-      } else if (lobby.gameType === 'hokm') {
-        window.location.href = `game-hokm.html?id=${lobby.gameId}`;
+    try {
+      const game = await getGame(lobby.gameId);
+      if (game && game.players && game.players[currentUser.id]) {
+        // کاربر در بازی است → هدایت
+        if (game.type === 'esm-famil') {
+          window.location.href = `game-esm-famil.html?id=${lobby.gameId}`;
+        } else if (game.type === 'hokm') {
+          window.location.href = `game-hokm.html?id=${lobby.gameId}`;
+        }
+        return;
+      } else {
+        document.getElementById('infoMessage').textContent = 'بازی در حال اجراست، شما در بازی نیستید و می‌توانید چت کنید.';
       }
-    } else {
-      document.getElementById('infoMessage').textContent = 'بازی در حال اجراست، شما در بازی نیستید و می‌توانید چت کنید.';
+    } catch (e) {
+      console.error('خطا در دریافت بازی:', e);
     }
   } else {
     document.getElementById('infoMessage').textContent = '';
@@ -269,11 +276,9 @@ function updateStartButton() {
   const gameType = lobby.gameType || selectedGameType;
   let minPlayers = 2;
   if (gameType === 'hokm') minPlayers = 1;
-  const canStart = readyCount >= minPlayers && lobby.status === 'waiting';
+  // دکمه فقط زمانی فعال می‌شود که نوع بازی انتخاب شده باشد و تعداد آماده‌ها کافی باشد و لابی در حالت waiting باشد
+  const canStart = readyCount >= minPlayers && lobby.status === 'waiting' && lobby.gameType !== null;
   document.getElementById('startBtn').disabled = !canStart;
-  if (!lobby.gameType) {
-    document.getElementById('startBtn').disabled = true;
-  }
 }
 
 async function selectGameType(type) {
@@ -282,7 +287,9 @@ async function selectGameType(type) {
   document.getElementById('gameTypeHokm').classList.toggle('active', type === 'hokm');
   try {
     await setGameType(lobbyId, type);
-    updateStartButton();
+    // پس از تنظیم، لابی را دوباره بارگذاری می‌کنیم تا دکمه شروع به‌روز شود
+    const lobby = await getLobby(lobbyId);
+    if (lobby) updateLobby(lobby);
   } catch (e) {
     alert('خطا در انتخاب نوع بازی: ' + e.message);
   }
