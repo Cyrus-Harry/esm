@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بازی حکم</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  h1 { text-align: center; color: #667eea; margin-bottom: 20px; }
+  .game-info {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+  }
+  .players-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .player-hand {
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 15px;
+    min-width: 150px;
+    flex: 1;
+    max-width: 250px;
+    border: 2px solid transparent;
+  }
+  .player-hand.me { border-color: #667eea; background: #e8edff; }
+  .player-hand .name {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid #ddd;
+    font-size: 16px;
+  }
+  .card:hover { transform: scale(1.05); }
+  .card.selected { border-color: #28a745; background: #d4edda; }
+  .card.bot-card { cursor: default; opacity: 0.7; }
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Vazirmatn', sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: #fff;
+  }
+  button:hover { transform: translateY(-2px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-play { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+  .btn-back { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .result-area {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 18px;
+  }
+  .winner-text { color: #28a745; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🃏 بازی حکم</h1>
+  <div class="game-info" id="gameInfo">در حال بارگذاری...</div>
+
+  <div id="gameArea">
+    <div class="players-area" id="playersArea"></div>
+    <div class="actions">
+      <button class="btn-play" id="playBtn" onclick="playCard()">بازی کن</button>
+      <button class="btn-back" onclick="backToLobby()">🔙 لابی</button>
+    </div>
+    <div class="result-area" id="resultArea"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="api.js"></script>
+<script>
+let gameId = new URLSearchParams(window.location.search).get('id');
+let currentGame = null;
+let currentUser = null;
+let gameRef = null;
+let myUid = null;
+let selectedCardIndex = -1;
+
+window.onload = async () => {
+  currentUser = await getCurrentUser();
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+  myUid = currentUser.id;
+  if (!gameId) {
+    alert('شناسه بازی پیدا نشد!');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  gameRef = pollGame(gameId, updateGame);
+  const game = await getGame(gameId);
+  if (game) {
+    initGame(game);
+  } else {
+    alert('بازی پیدا نشد');
+    window.location.href = 'index.html';
+  }
+};
+
+function initGame(game) {
+  currentGame = game;
+  document.getElementById('gameInfo').textContent = `راند ${game.round || 1} - نوبت: ${game.currentTurn ? (game.players[game.currentTurn]?.name || '') : '...'}`;
+  if (!game.cards) {
+    const suits = ['♠', '♥', '♦', '♣'];
+    const ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+    let deck = [];
+    for (let s of suits) for (let r of ranks) deck.push(r+s);
+    shuffle(deck);
+    const players = Object.keys(game.players);
+    const cardsPerPlayer = 5;
+    const cards = {};
+    let idx = 0;
+    for (let uid of players) {
+      cards[uid] = deck.slice(idx, idx+cardsPerPlayer);
+      idx += cardsPerPlayer;
+    }
+    game.cards = cards;
+    game.remaining = deck.slice(idx);
+    game.currentTurn = players[0];
+    db.ref('games/' + gameId).update({ cards: game.cards, remaining: game.remaining, currentTurn: game.currentTurn });
+  }
+  renderGame(game);
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function updateGame(game) {
+  if (!game) {
+    alert('بازی حذف شد!');
+    window.location.href = 'index.html';
+    return;
+  }
+  currentGame = game;
+  renderGame(game);
+}
+
+function renderGame(game) {
+  const players = game.players || {};
+  const cards = game.cards || {};
+  const currentTurn = game.currentTurn;
+
+  let html = '';
+  for (const [uid, player] of Object.entries(players)) {
+    const isMe = uid === myUid;
+    const isBot = player.isBot;
+    const hand = cards[uid] || [];
+    const isTurn = uid === currentTurn;
+    html += `<div class="player-hand ${isMe ? 'me' : ''}">`;
+    html += `<div class="name">${player.name} ${isMe ? '👤' : ''} ${isTurn ? '⭐' : ''}</div>`;
+    html += `<div class="cards">`;
+    if (isMe) {
+      hand.forEach((card, index) => {
+        const selectedClass = index === selectedCardIndex ? 'selected' : '';
+        html += `<div class="card ${selectedClass}" onclick="selectCard(${index})">${card}</div>`;
+      });
+    } else {
+      if (isBot) {
+        html += `<span style="color:#999;">${hand.length} کارت</span>`;
+      } else {
+        html += `<span style="color:#999;">${hand.length} کارت</span>`;
+      }
+    }
+    html += `</div>`;
+    html += `<div style="margin-top:5px;font-size:14px;color:#666;">امتیاز: ${player.totalScore || 0}</div>`;
+    html += `</div>`;
+  }
+  document.getElementById('playersArea').innerHTML = html;
+
+  const isMyTurn = currentTurn === myUid;
+  document.getElementById('playBtn').disabled = !isMyTurn || selectedCardIndex === -1;
+
+  if (game.lastWinner) {
+    document.getElementById('resultArea').innerHTML = `<span class="winner-text">🏆 برنده دست: ${game.players[game.lastWinner]?.name || ''}</span>`;
+  } else {
+    document.getElementById('resultArea').innerHTML = '';
+  }
+
+  document.getElementById('gameInfo').textContent = `راند ${game.round || 1} - نوبت: ${game.players[currentTurn]?.name || ''}`;
+}
+
+function selectCard(index) {
+  selectedCardIndex = index;
+  renderGame(currentGame);
+}
+
+async function playCard() {
+  if (selectedCardIndex === -1) return;
+  const game = currentGame;
+  const myHand = game.cards[myUid];
+  if (!myHand || selectedCardIndex >= myHand.length) return;
+  const card = myHand[selectedCardIndex];
+  myHand.splice(selectedCardIndex, 1);
+  selectedCardIndex = -1;
+  const played = game.played || {};
+  played[myUid] = card;
+  await db.ref('games/' + gameId + '/cards/' + myUid).set(myHand);
+  await db.ref('games/' + gameId + '/played').set(played);
+
+  const playerIds = Object.keys(game.players);
+  const currentIdx = playerIds.indexOf(game.currentTurn);
+  let nextIdx = (currentIdx + 1) % playerIds.length;
+  let nextPlayer = playerIds[nextIdx];
+
+  const allPlayed = Object.keys(played).length === playerIds.length;
+  if (allPlayed) {
+    let winner = null;
+    let maxRank = -1;
+    const rankOrder = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14};
+    for (const [uid, cardStr] of Object.entries(played)) {
+      const rank = rankOrder[cardStr.slice(0, -1)] || 0;
+      if (rank > maxRank) {
+        maxRank = rank;
+        winner = uid;
+      }
+    }
+    const winnerScore = (game.players[winner]?.totalScore || 0) + 1;
+    await db.ref('games/' + gameId + '/players/' + winner + '/totalScore').set(winnerScore);
+    await db.ref('games/' + gameId + '/played').set({});
+    await db.ref('games/' + gameId + '/lastWinner').set(winner);
+
+    let allEmpty = true;
+    for (const uid of playerIds) {
+      const hand = (await db.ref('games/' + gameId + '/cards/' + uid).once('value')).val() || [];
+      if (hand.length > 0) allEmpty = false;
+    }
+    if (allEmpty) {
+      await db.ref('games/' + gameId + '/status').set('finished');
+      alert('بازی به پایان رسید! برنده نهایی کسی است که بیشترین امتیاز را دارد.');
+    } else {
+      const winnerIdx = playerIds.indexOf(winner);
+      nextIdx = (winnerIdx + 1) % playerIds.length;
+      nextPlayer = playerIds[nextIdx];
+      await db.ref('games/' + gameId + '/currentTurn').set(nextPlayer);
+    }
+  } else {
+    let found = false;
+    for (let i = 0; i < playerIds.length; i++) {
+      const idx = (currentIdx + 1 + i) % playerIds.length;
+      const uid = playerIds[idx];
+      const hand = (await db.ref('games/' + gameId + '/cards/' + uid).once('value')).val() || [];
+      if (hand.length > 0) {
+        await db.ref('games/' + gameId + '/currentTurn').set(uid);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      await db.ref('games/' + gameId + '/status').set('finished');
+    }
+  }
+
+  const updatedGame = await getGame(gameId);
+  if (updatedGame) renderGame(updatedGame);
+}
+
+function backToLobby() {
+  if (currentGame && currentGame.lobbyId) {
+    window.location.href = `lobby.html?id=${currentGame.lobbyId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+window.addEventListener('beforeunload', function() {
+  if (gameRef) stopPolling(gameRef);
+});
+</script>
+</body>
+</html>
