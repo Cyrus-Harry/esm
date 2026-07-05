@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بازی اسم فامیل</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 15px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.98);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .letter-display {
+    font-size: 72px;
+    font-weight: 900;
+    color: #667eea;
+    text-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    margin: 15px 0;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .timer {
+    font-size: 32px;
+    font-weight: 700;
+    color: #764ba2;
+    margin-bottom: 10px;
+  }
+
+  .timer.warning {
+    color: #ff4757;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .players-status {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .player-status {
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+    padding: 12px;
+    background: #f8f8f8;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px solid transparent;
+  }
+
+  .player-status.me {
+    border-color: #667eea;
+    background: #e8edff;
+  }
+
+  .player-status.finished {
+    background: #d4edda;
+    border-color: #28a745;
+  }
+
+  .player-name {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  .player-status-text {
+    font-size: 13px;
+    color: #666;
+  }
+
+  .game-form {
+    display: grid;
+    gap: 15px;
+  }
+
+  .field-group {
+    position: relative;
+  }
+
+  .field-group label {
+    display: block;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .field-group input {
+    width: 100%;
+    padding: 14px 45px 14px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Vazirmatn', sans-serif;
+    transition: all 0.3s;
+  }
+
+  .field-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .field-group input:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+  }
+
+  .field-status {
+    position: absolute;
+    left: 12px;
+    top: 42px;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .actions {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Vazirmatn', sans-serif;
+    transition: all 0.3s;
+  }
+
+  .btn-finish {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  }
+
+  .btn-finish:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+  }
+
+  .btn-finish:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-back-lobby {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+
+  .results-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .results-modal.show {
+    display: flex;
+  }
+
+  .results-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .results-content h2 {
+    text-align: center;
+    color: #667eea;
+    font-size: 32px;
+    margin-bottom: 25px;
+  }
+
+  .result-player {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+    flex-wrap: wrap;
+  }
+
+  .result-name {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .result-score {
+    font-size: 28px;
+    font-weight: 900;
+    color: #667eea;
+  }
+
+  .result-words {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .result-word {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #fff;
+    border-radius: 8px;
+    align-items: center;
+  }
+
+  .result-word input {
+    width: 60px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+    font-family: 'Vazirmatn', sans-serif;
+  }
+
+  .word-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+  }
+
+  .word-value {
+    font-weight: 700;
+  }
+
+  .btn-back {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: #666;
+  }
+
+  .error-msg {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .results-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .results-actions button {
+    flex: 1;
+    padding: 14px;
+  }
+  .btn-continue {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: #fff;
+  }
+  .btn-submit-score {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: #fff;
+  }
+
+  @media (max-width: 600px) {
+    .letter-display { font-size: 56px; }
+    .timer { font-size: 24px; }
+    .result-words { grid-template-columns: 1fr; }
+    .players-status { flex-direction: column; align-items: center; }
+    .player-status { max-width: 100%; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container" id="mainContainer">
+  <div id="loadingScreen" class="loading">
+    <div>⏳ در حال بارگذاری بازی...</div>
+  </div>
+
+  <div id="gameContent" style="display: none;">
+    <div class="header">
+      <div class="letter-display" id="gameLetter">?</div>
+      <div class="timer" id="timer">02:00</div>
+      <div style="color: #666; font-size: 14px;">کلمات باید با این حرف شروع بشن</div>
+    </div>
+
+    <div class="players-status" id="playersStatus"></div>
+
+    <div class="game-form">
+      <div class="field-group">
+        <label>👤 اسم</label>
+        <input type="text" id="name" data-field="name" placeholder="مثال: امیر" maxlength="20">
+        <span class="field-status" id="status-name"></span>
+      </div>
+      <div class="field-group">
+        <label>👥 فامیل</label>
+        <input type="text" id="family" data-field="family" placeholder="مثال: احمدی" maxlength="20">
+        <span class="field-status" id="status-family"></span>
+      </div>
+      <div class="field-group">
+        <label>🏙️ شهر</label>
+        <input type="text" id="city" data-field="city" placeholder="مثال: اصفهان" maxlength="20">
+        <span class="field-status" id="status-city"></span>
+      </div>
+      <div class="field-group">
+        <label>🌍 کشور</label>
+        <input type="text" id="country" data-field="country" placeholder="مثال: ایران" maxlength="20">
+        <span class="field-status" id="status-country"></span>
+      </div>
+      <div class="field-group">
+        <label>🍔 غذا</label>
+        <input type="text" id="food" data-field="food" placeholder="مثال: آش" maxlength="20">
+        <span class="field-status" id="status-food"></span>
+      </div>
+      <div class="field-group">
+        <label>📦 اشیا</label>
+        <input type="text" id="object" data-field="object" placeholder="مثال: آینه" maxlength="20">
+        <span class="field-status" id="status-object"></span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-finish" id="finishBtn" onclick="handleFinish()">🏁 تمام!</button>
+      <button class="btn-back-lobby" onclick="backToLobby()">🔙 لابی</button>
+    </div>
+  </div>
+</div>
+
+<div class="results-modal" id="resultsModal">
+  <div class="results-content">
+    <h2>🎉 نتایج راند</h2>
+    <div id="resultsContainer"></div>
+    <div class="results-actions">
+      <button class="btn-submit-score" onclick="submitScores()">⭐ ثبت امتیازات</button>
+      <button class="btn-continue" onclick="continueGame()">🔄 ادامه بازی</button>
+      <button class="btn-back-lobby" onclick="backToLobby()">🔙 لابی</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="api.js"></script>
+<script>
+let gameId = new URLSearchParams(window.location.search).get('id');
+let currentGame = null;
+let currentUser = null;
+let timerInterval = null;
+let isFinished = false;
+let gameRef = null;
+let timerUpdateInterval = null;
+let myUid = null;
+
+window.onload = async () => {
+  try {
+    currentUser = await getCurrentUser();
+    if (!currentUser) {
+      window.location.href = 'index.html';
+      return;
+    }
+    myUid = currentUser.id;
+
+    if (!gameId) {
+      alert('شناسه بازی پیدا نشد!');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    await loadGame();
+    gameRef = pollGame(gameId, updateGame);
+    timerUpdateInterval = setInterval(() => {
+      if (currentGame && currentGame.status === 'playing') {
+        updateTimer();
+      }
+    }, 1000);
+
+    document.querySelectorAll('input[data-field]').forEach(input => {
+      input.addEventListener('input', debounce(() => {
+        if (!isFinished && currentGame && currentGame.status === 'playing') {
+          saveField(input.dataset.field, input.value);
+        }
+      }, 500));
+    });
+
+  } catch (error) {
+    console.error('خطا در مقداردهی اولیه:', error);
+    showError('خطا در بارگذاری بازی: ' + error.message);
+  }
+};
+
+async function loadGame() {
+  try {
+    const game = await getGame(gameId);
+    if (!game) {
+      showError('بازی پیدا نشد! ممکن است حذف شده باشد.');
+      return;
+    }
+    currentGame = game;
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('gameContent').style.display = 'block';
+    document.getElementById('gameLetter').textContent = game.letter;
+    updateGame(game);
+  } catch (error) {
+    console.error('خطا در loadGame:', error);
+    showError('خطا در بارگذاری بازی: ' + error.message);
+  }
+}
+
+function updateGame(game) {
+  if (!game) {
+    showError('بازی وجود ندارد!');
+    return;
+  }
+  currentGame = game;
+
+  const players = game.players || {};
+  const playersHtml = Object.keys(players).map(uid => {
+    const p = players[uid];
+    const isMe = uid === myUid;
+    const isFinishedStatus = p.finished || false;
+    return `
+      <div class="player-status ${isMe ? 'me' : ''} ${isFinishedStatus ? 'finished' : ''}">
+        <div class="player-name">${isMe ? '👤 ' : ''}${p.name}</div>
+        <div class="player-status-text">${isFinishedStatus ? '✅ تمام کرده' : '⏳ در حال بازی'}</div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('playersStatus').innerHTML = playersHtml || '<div style="text-align:center;color:#999;">هیچ بازیکنی نیست</div>';
+
+  const me = players[myUid];
+  if (me && !isFinished) {
+    Object.keys(me.words || {}).forEach(field => {
+      const input = document.getElementById(field);
+      if (input && document.activeElement !== input) {
+        input.value = me.words[field] || '';
+      }
+      validateField(field, me.words[field] || '');
+    });
+    if (me.finished) {
+      isFinished = true;
+      disableInputs();
+    }
+  }
+
+  updateTimer();
+
+  if (game.status === 'finished') {
+    showResults(game);
+  }
+}
+
+function updateTimer() {
+  if (!currentGame) return;
+  const elapsed = Date.now() - currentGame.startTime;
+  const remaining = Math.max(0, currentGame.duration - elapsed);
+  const seconds = Math.floor(remaining / 1000);
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  if (seconds <= 10) timerEl.classList.add('warning');
+  else timerEl.classList.remove('warning');
+  if (seconds === 0 && !isFinished && currentGame.status === 'playing') {
+    handleFinish();
+  }
+}
+
+async function saveField(field, value) {
+  if (isFinished) return;
+  if (!currentGame || currentGame.status !== 'playing') return;
+  try {
+    await saveWord(gameId, field, value);
+    validateField(field, value);
+  } catch (error) {
+    console.error('خطا در ذخیره کلمه:', error);
+  }
+}
+
+function validateField(field, value) {
+  const statusEl = document.getElementById(`status-${field}`);
+  if (!statusEl) return;
+  if (!value || !value.trim()) {
+    statusEl.textContent = '';
+    return;
+  }
+  const firstChar = value.trim()[0];
+  if (firstChar === currentGame?.letter) {
+    statusEl.textContent = '✅';
+    statusEl.style.color = '#28a745';
+  } else {
+    statusEl.textContent = '❌';
+    statusEl.style.color = '#dc3545';
+  }
+}
+
+async function handleFinish() {
+  if (isFinished) return;
+  if (!currentGame || currentGame.status !== 'playing') return;
+  if (!confirm('مطمئنی میخوای تمام کنی؟')) return;
+  try {
+    document.getElementById('finishBtn').disabled = true;
+    document.getElementById('finishBtn').textContent = '⏳ در حال ثبت...';
+    await finishGame(gameId);
+    isFinished = true;
+    disableInputs();
+    document.getElementById('finishBtn').textContent = '✅ تمام شده';
+  } catch (error) {
+    console.error('خطا در finishGame:', error);
+    alert('خطا در تمام کردن بازی: ' + error.message);
+    document.getElementById('finishBtn').disabled = false;
+    document.getElementById('finishBtn').textContent = '🏁 تمام!';
+  }
+}
+
+function disableInputs() {
+  document.querySelectorAll('input[data-field]').forEach(input => input.disabled = true);
+  document.getElementById('finishBtn').disabled = true;
+}
+
+function showResults(game) {
+  const container = document.getElementById('resultsContainer');
+  const players = game.players || {};
+  const fields = [
+    { key: 'name', label: 'اسم' },
+    { key: 'family', label: 'فامیل' },
+    { key: 'city', label: 'شهر' },
+    { key: 'country', label: 'کشور' },
+    { key: 'food', label: 'غذا' },
+    { key: 'object', label: 'اشیا' }
+  ];
+
+  let html = '';
+  for (const [uid, player] of Object.entries(players)) {
+    const isMe = uid === myUid;
+    html += `
+      <div class="result-player">
+        <div class="result-header">
+          <div class="result-name">${player.name} ${isMe ? '👤' : ''}</div>
+          <div class="result-score">مجموع: ${player.totalScore || 0}</div>
+        </div>
+        <div class="result-words">
+          ${fields.map(f => {
+            const word = (player.words && player.words[f.key]) || '';
+            return `
+              <div class="result-word">
+                <span class="word-label">${f.label}:</span>
+                <span class="word-value">${word || '—'}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span>امتیاز این راند:</span>
+          <input type="number" id="score_${uid}" value="${player.roundScore || 0}" min="0" ${isMe ? '' : 'disabled'} style="width: 80px; padding: 6px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Vazirmatn', sans-serif;">
+          ${isMe ? '<span style="font-size:12px;color:#666;">(فقط شما می‌توانید امتیاز خود را ویرایش کنید)</span>' : ''}
+        </div>
+      </div>
+    `;
+  }
+  container.innerHTML = html;
+  document.getElementById('resultsModal').classList.add('show');
+}
+
+async function submitScores() {
+  const input = document.getElementById(`score_${myUid}`);
+  if (!input) return;
+  const score = parseInt(input.value) || 0;
+  if (score < 0) {
+    alert('امتیاز نمی‌تواند منفی باشد');
+    return;
+  }
+  try {
+    await setRoundScore(gameId, myUid, score);
+    alert('امتیاز شما ثبت شد!');
+    const game = await getGame(gameId);
+    if (game) showResults(game);
+  } catch (e) {
+    alert('خطا در ثبت امتیاز: ' + e.message);
+  }
+}
+
+async function continueGame() {
+  if (!confirm('آماده برای راند بعدی هستید؟')) return;
+  try {
+    await nextRound(gameId);
+    window.location.reload();
+  } catch (e) {
+    alert('خطا در شروع راند بعدی: ' + e.message);
+  }
+}
+
+function backToLobby() {
+  if (currentGame && currentGame.lobbyId) {
+    window.location.href = `lobby.html?id=${currentGame.lobbyId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+function showError(message) {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('gameContent').style.display = 'block';
+  document.getElementById('gameContent').innerHTML = `
+    <div class="error-msg">
+      <div style="font-size: 48px; margin-bottom: 10px;">⚠️</div>
+      <div style="font-size: 18px; font-weight: 700;">${message}</div>
+      <button onclick="window.location.href='index.html'" style="margin-top: 15px; padding: 10px 30px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-family: 'Vazirmatn', sans-serif;">
+        بازگشت به صفحه اصلی
+      </button>
+    </div>
+  `;
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+window.addEventListener('beforeunload', function() {
+  if (gameRef) stopPolling(gameRef);
+  if (timerUpdateInterval) clearInterval(timerUpdateInterval);
+});
+</script>
+</body>
+</html>
