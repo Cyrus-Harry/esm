@@ -6,7 +6,7 @@
 <title>لابی بازی</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Vazirmatn', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -32,39 +32,66 @@
     color: #667eea;
     margin-bottom: 20px;
     letter-spacing: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .copy-btn {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Vazirmatn', sans-serif;
   }
   .players {
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 20px;
   }
   .player {
-    flex: 1;
+    flex: 1 1 150px;
     background: #f8f8f8;
-    padding: 20px;
+    padding: 15px;
     border-radius: 12px;
     text-align: center;
+    border: 2px solid transparent;
   }
-  .player.ready { background: #d4edda; border: 2px solid #28a745; }
-  .player.me { border: 2px solid #667eea; }
+  .player.ready { background: #d4edda; border-color: #28a745; }
+  .player.me { border-color: #667eea; }
+  .player.in-game { opacity: 0.6; filter: grayscale(0.5); }
+  .player .status-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #ddd;
+    display: inline-block;
+    margin-top: 5px;
+  }
   .chat {
     background: #f8f8f8;
     border-radius: 12px;
     padding: 15px;
-    height: 300px;
+    height: 250px;
     overflow-y: auto;
     margin-bottom: 15px;
   }
   .chat-msg {
-    margin-bottom: 10px;
-    padding: 8px 12px;
+    margin-bottom: 8px;
+    padding: 6px 12px;
     background: #fff;
     border-radius: 8px;
+    word-wrap: break-word;
   }
   .chat-msg.me { background: #e3f2fd; text-align: left; }
   .chat-input {
     display: flex;
     gap: 10px;
+    margin-bottom: 20px;
   }
   .chat-input input {
     flex: 1;
@@ -83,46 +110,68 @@
     font-weight: 700;
     cursor: pointer;
     font-family: 'Vazirmatn', sans-serif;
+    transition: transform 0.2s;
   }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button:hover { transform: translateY(-2px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 10px;
   }
-  .actions button { flex: 1; }
-  .btn-leave {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  .actions button { flex: 1; min-width: 120px; }
+  .btn-leave { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+  .game-type-select {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    justify-content: center;
+    flex-wrap: wrap;
   }
-  .copy-btn {
-    background: #28a745;
-    padding: 8px 16px;
-    font-size: 14px;
+  .game-type-select button {
+    background: #e0e0e0;
+    color: #333;
+  }
+  .game-type-select button.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+  }
+  .info-text {
+    text-align: center;
+    color: #666;
+    margin: 10px 0;
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎯 لابی بازی</h1>
-    <div class="lobby-code">
-      کد لابی: <span id="lobbyCode"></span>
-      <button class="copy-btn" onclick="copyCode()">📋 کپی</button>
-    </div>
-    
-    <div class="players" id="players"></div>
-    
-    <div class="chat" id="chat"></div>
-    <div class="chat-input">
-      <input type="text" id="chatInput" placeholder="پیام..." onkeypress="if(event.key==='Enter')sendChatMsg()">
-      <button onclick="sendChatMsg()">ارسال</button>
-    </div>
-    
-    <div class="actions">
-      <button id="readyBtn" onclick="toggleReady()">آماده نیستم</button>
-      <button id="startBtn" onclick="handleStartGame()" disabled>شروع بازی</button>
-      <button class="btn-leave" onclick="leaveLobby()">خروج</button>
-    </div>
+<div class="container">
+  <h1>🎯 لابی بازی</h1>
+  <div class="lobby-code">
+    <span>کد لابی: <strong id="lobbyCode"></strong></span>
+    <button class="copy-btn" onclick="copyCode()">📋 کپی</button>
   </div>
+
+  <div class="game-type-select">
+    <button id="gameTypeEsm" class="active" onclick="selectGameType('esm-famil')">📝 اسم فامیل</button>
+    <button id="gameTypeHokm" onclick="selectGameType('hokm')">🃏 حکم</button>
+  </div>
+
+  <div id="playersContainer" class="players"></div>
+
+  <div class="chat" id="chat"></div>
+  <div class="chat-input">
+    <input type="text" id="chatInput" placeholder="پیام..." onkeypress="if(event.key==='Enter')sendChatMsg()">
+    <button onclick="sendChatMsg()">ارسال</button>
+  </div>
+
+  <div class="actions">
+    <button id="readyBtn" onclick="toggleReady()">آماده نیستم</button>
+    <button id="startBtn" onclick="handleStartGame()" disabled>شروع بازی</button>
+    <button class="btn-leave" onclick="leaveLobby()">خروج</button>
+  </div>
+  <div id="infoMessage" class="info-text"></div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -134,6 +183,7 @@ let currentLobby = null;
 let currentUser = null;
 let isReady = false;
 let lobbyRef = null;
+let selectedGameType = 'esm-famil';
 
 window.onload = async () => {
   currentUser = await getCurrentUser();
@@ -141,11 +191,7 @@ window.onload = async () => {
     window.location.href = 'index.html';
     return;
   }
-  
-  // شروع listening
   lobbyRef = pollLobby(lobbyId, updateLobby);
-  
-  // اگر لابی وجود نداشت
   setTimeout(async () => {
     const lobby = await getLobby(lobbyId);
     if (!lobby) {
@@ -157,75 +203,126 @@ window.onload = async () => {
 
 function updateLobby(lobby) {
   if (!lobby) {
-    // لابی حذف شده
     alert('لابی بسته شده است!');
     window.location.href = 'index.html';
     return;
   }
-  
   currentLobby = lobby;
   document.getElementById('lobbyCode').textContent = lobby.code;
-  
-  // نمایش بازیکنان
-  document.getElementById('players').innerHTML = lobby.players.map(p => `
-    <div class="player ${p.ready ? 'ready' : ''} ${p.id === currentUser.id ? 'me' : ''}">
-      <div style="font-size: 20px; font-weight: 700;">${p.name}</div>
-      <div style="margin-top: 5px;">${p.ready ? '✅ آماده' : '⏳ منتظر'}</div>
-    </div>
-  `).join('');
-  
-  // چت
+
+  const players = lobby.players || {};
+  const playersHtml = Object.keys(players).map(uid => {
+    const p = players[uid];
+    const isMe = uid === currentUser.id;
+    const readyClass = p.ready ? 'ready' : '';
+    const inGameClass = p.inGame ? 'in-game' : '';
+    let statusText = p.ready ? '✅ آماده' : '⏳ منتظر';
+    if (p.inGame) statusText += ' (در بازی)';
+    return `
+      <div class="player ${readyClass} ${inGameClass} ${isMe ? 'me' : ''}">
+        <div style="font-size: 18px; font-weight: 700;">${p.name} ${isMe ? '👤' : ''}</div>
+        <div class="status-badge">${statusText}</div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('playersContainer').innerHTML = playersHtml || '<div style="text-align:center;color:#999;">هیچ بازیکنی نیست</div>';
+
   const chatData = lobby.chat || {};
   const chatMessages = Object.values(chatData);
-  document.getElementById('chat').innerHTML = chatMessages.map(msg => `
+  const chatEl = document.getElementById('chat');
+  chatEl.innerHTML = chatMessages.map(msg => `
     <div class="chat-msg ${msg.userId === currentUser.id ? 'me' : ''}">
       <strong>${msg.userName}:</strong> ${msg.msg}
     </div>
   `).join('');
-  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
-  
-  // بررسی آمادگی خودم
-  const me = lobby.players.find(p => p.id === currentUser.id);
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  const me = players[currentUser.id];
   if (me) {
     isReady = me.ready;
     document.getElementById('readyBtn').textContent = isReady ? 'آماده هستم ✅' : 'آماده نیستم';
   }
-  
-  // دکمه شروع
-  const allReady = lobby.players.length >= 2 && lobby.players.every(p => p.ready);
-  document.getElementById('startBtn').disabled = !allReady;
-  
-  // اگه بازی شروع شد
-  if (lobby.gameId) {
-    window.location.href = `game.html?id=${lobby.gameId}`;
+
+  updateStartButton();
+
+  if (lobby.gameId && lobby.status === 'playing') {
+    const meInGame = players[currentUser.id] && players[currentUser.id].inGame;
+    if (meInGame) {
+      if (lobby.gameType === 'esm-famil') {
+        window.location.href = `game-esm-famil.html?id=${lobby.gameId}`;
+      } else if (lobby.gameType === 'hokm') {
+        window.location.href = `game-hokm.html?id=${lobby.gameId}`;
+      }
+    } else {
+      document.getElementById('infoMessage').textContent = 'بازی در حال اجراست، شما در بازی نیستید و می‌توانید چت کنید.';
+    }
+  } else {
+    document.getElementById('infoMessage').textContent = '';
+  }
+}
+
+function updateStartButton() {
+  const lobby = currentLobby;
+  if (!lobby) return;
+  const players = lobby.players || {};
+  const readyCount = Object.values(players).filter(p => p.ready).length;
+  const gameType = lobby.gameType || selectedGameType;
+  let minPlayers = 2;
+  if (gameType === 'hokm') minPlayers = 1;
+  const canStart = readyCount >= minPlayers && lobby.status === 'waiting';
+  document.getElementById('startBtn').disabled = !canStart;
+  if (!lobby.gameType) {
+    document.getElementById('startBtn').disabled = true;
+  }
+}
+
+async function selectGameType(type) {
+  selectedGameType = type;
+  document.getElementById('gameTypeEsm').classList.toggle('active', type === 'esm-famil');
+  document.getElementById('gameTypeHokm').classList.toggle('active', type === 'hokm');
+  try {
+    await setGameType(lobbyId, type);
+    updateStartButton();
+  } catch (e) {
+    alert('خطا در انتخاب نوع بازی: ' + e.message);
   }
 }
 
 async function toggleReady() {
-  const lobby = await getLobby(lobbyId);
-  if (!lobby) return;
-  
-  const playerIndex = lobby.players.findIndex(p => p.id === currentUser.id);
-  if (playerIndex === -1) return;
-  
-  lobby.players[playerIndex].ready = !lobby.players[playerIndex].ready;
-  isReady = lobby.players[playerIndex].ready;
-  
-  await db.ref('lobbies/' + lobbyId + '/players').set(lobby.players);
+  try {
+    const lobby = await getLobby(lobbyId);
+    if (!lobby) return;
+    const player = lobby.players[currentUser.id];
+    if (!player) return;
+    player.ready = !player.ready;
+    await db.ref('lobbies/' + lobbyId + '/players/' + currentUser.id + '/ready').set(player.ready);
+    isReady = player.ready;
+    document.getElementById('readyBtn').textContent = isReady ? 'آماده هستم ✅' : 'آماده نیستم';
+  } catch (e) {
+    alert('خطا: ' + e.message);
+  }
 }
 
 async function sendChatMsg() {
   const msg = document.getElementById('chatInput').value.trim();
   if (!msg) return;
-  await sendChat(lobbyId, msg);
-  document.getElementById('chatInput').value = '';
+  try {
+    await sendChat(lobbyId, msg);
+    document.getElementById('chatInput').value = '';
+  } catch (e) {
+    alert('خطا در ارسال پیام: ' + e.message);
+  }
 }
 
 async function handleStartGame() {
   if (!confirm('آماده شروع بازی هستید؟')) return;
   try {
     const game = await startGame(lobbyId);
-    window.location.href = `game.html?id=${game.id}`;
+    if (game.type === 'esm-famil') {
+      window.location.href = `game-esm-famil.html?id=${game.id}`;
+    } else if (game.type === 'hokm') {
+      window.location.href = `game-hokm.html?id=${game.id}`;
+    }
   } catch (e) {
     alert('خطا: ' + e.message);
   }
@@ -240,30 +337,25 @@ function copyCode() {
 
 async function leaveLobby() {
   if (!confirm('مطمئنی میخوای از لابی خارج بشی؟')) return;
-  
-  // حذف کاربر از لابی
-  const lobby = await getLobby(lobbyId);
-  if (lobby) {
-    lobby.players = lobby.players.filter(p => p.id !== currentUser.id);
-    if (lobby.players.length === 0) {
-      // اگر لابی خالی شد، حذفش کن
-      await db.ref('lobbies/' + lobbyId).remove();
-    } else {
-      await db.ref('lobbies/' + lobbyId + '/players').set(lobby.players);
+  try {
+    const lobby = await getLobby(lobbyId);
+    if (lobby) {
+      delete lobby.players[currentUser.id];
+      if (Object.keys(lobby.players).length === 0) {
+        await db.ref('lobbies/' + lobbyId).remove();
+      } else {
+        await db.ref('lobbies/' + lobbyId + '/players').set(lobby.players);
+      }
     }
+    if (lobbyRef) stopPolling(lobbyRef);
+    window.location.href = 'index.html';
+  } catch (e) {
+    alert('خطا: ' + e.message);
   }
-  
-  if (lobbyRef) {
-    stopPolling(lobbyRef);
-  }
-  window.location.href = 'index.html';
 }
 
-// Cleanup هنگام خروج از صفحه
 window.addEventListener('beforeunload', function() {
-  if (lobbyRef) {
-    stopPolling(lobbyRef);
-  }
+  if (lobbyRef) stopPolling(lobbyRef);
 });
 </script>
 </body>
