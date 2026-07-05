@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>اسم فامیل آنلاین</title>
-<script src="api.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -134,6 +133,9 @@
     </div>
   </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="api.js"></script>
 <script>
 let currentUser = null;
@@ -145,7 +147,7 @@ async function handleLogin() {
   try {
     currentUser = await login(name);
     showMain();
-    pollRequests();
+    startPollingRequests();
   } catch (e) {
     alert('خطا: ' + e.message);
   }
@@ -171,7 +173,8 @@ async function handleSendRequest() {
   }
 }
 
-function pollRequests() {
+// توجه: این تابع دیگه اسمش pollRequests نیست تا با تابع هم‌نام تو api.js تداخل نکنه
+function startPollingRequests() {
   pollRequests((requests) => {
     const list = document.getElementById('requestsList');
     const requestsArray = Object.values(requests || {});
@@ -219,7 +222,7 @@ window.onload = async () => {
     currentUser = await getCurrentUser();
     if (currentUser) {
       showMain();
-      pollRequests();
+      startPollingRequests();
     }
   }
 };
