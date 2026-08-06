@@ -6,132 +6,70 @@
 <title>مونوپولی جهان 🌍</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap');
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family:'Vazirmatn', sans-serif;
-  background: radial-gradient(ellipse at top, #0f0c29, #302b63, #24243e);
-  min-height:100vh;
-  color:#fff;
-  overflow-x:hidden;
-}
-.top-bar {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:12px 16px; background:rgba(0,0,0,0.4); backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(255,255,255,0.1); flex-wrap:wrap; gap:8px;
-}
-.top-bar h1 { font-size:20px; font-weight:900; color:#ffd700; }
-.top-info { display:flex; gap:12px; font-size:13px; flex-wrap:wrap; }
-.top-info span { background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:20px; }
-.main-layout {
-  display:grid; grid-template-columns: 280px 1fr 260px; gap:12px;
-  padding:12px; max-width:1600px; margin:0 auto;
-}
-@media(max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .side-panel{ order:2; } .board-wrapper{ order:1; } .log-panel{ order:3; } }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Vazirmatn',sans-serif;background:radial-gradient(ellipse at top,#0f0c29,#302b63,#24243e);min-height:100vh;color:#fff}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.5);border-bottom:1px solid rgba(255,255,255,0.1);flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+.top-bar h1{font-size:20px;color:#ffd700;font-weight:900}
+.top-info{display:flex;gap:8px;flex-wrap:wrap}
+.top-info span{background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:20px;font-size:12px}
+.main{display:grid;grid-template-columns:300px 1fr 280px;gap:12px;padding:12px;max-width:1600px;margin:0 auto}
+@media(max-width:1150px){.main{grid-template-columns:1fr;}.panel{order:2}.board-area{order:1}.log{order:3}}
+.panel,.log{background:rgba(255,255,255,0.07);backdrop-filter:blur(12px);border-radius:18px;padding:14px;border:1px solid rgba(255,255,255,0.12);max-height:88vh;overflow-y:auto}
+.panel h3,.log h3{font-size:15px;color:#ffd700;text-align:center;margin-bottom:10px}
+.player-card{background:rgba(255,255,255,0.08);border-radius:14px;padding:10px;margin-bottom:10px;border:2px solid transparent;transition:.2s}
+.player-card.active{border-color:#ffd700;background:rgba(255,215,0,0.18);box-shadow:0 0 18px rgba(255,215,0,.35);transform:scale(1.02)}
+.player-card.me{border-color:#00e5ff}
+.player-card.bankrupt{opacity:.5;filter:grayscale(1)}
+.p-head{display:flex;justify-content:space-between;align-items:center}
+.p-name{font-weight:700;font-size:13px}
+.p-money{font-weight:900;font-size:17px}
+.p-meta{font-size:11px;color:#ccc;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{padding:2px 7px;border-radius:10px;background:rgba(255,255,255,0.15);font-size:10px}
+.badge.jail{background:#444}
+.prop-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.prop-chip{font-size:10px;padding:3px 6px;border-radius:8px;background:rgba(255,255,255,0.12)}
 
-.side-panel, .log-panel {
-  background:rgba(255,255,255,0.06); backdrop-filter:blur(12px);
-  border-radius:18px; padding:14px; border:1px solid rgba(255,255,255,0.1);
-  height: fit-content; max-height:85vh; overflow-y:auto;
-}
-.side-panel h3, .log-panel h3 { font-size:16px; margin-bottom:10px; color:#ffd700; text-align:center; }
-.player-card {
-  background:rgba(255,255,255,0.08); border-radius:14px; padding:12px; margin-bottom:10px;
-  border:2px solid transparent; transition:all 0.3s; position:relative; overflow:hidden;
-}
-.player-card.active { border-color:#ffd700; background:rgba(255,215,0,0.15); box-shadow:0 0 20px rgba(255,215,0,0.3); transform:scale(1.02); }
-.player-card.bankrupt { opacity:0.5; filter:grayscale(0.8); }
-.player-card.me { border-color:#00e5ff; }
-.player-card .p-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
-.player-card .p-name { font-weight:700; font-size:14px; }
-.player-card .p-money { font-weight:900; font-size:18px; }
-.player-card .p-money.neg { color:#ff5252; }
-.player-card .p-meta { font-size:11px; color:#ccc; display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
-.badge { padding:2px 8px; border-radius:10px; font-size:10px; background:rgba(255,255,255,0.15); }
-.badge.jail { background:#616161; }
-.badge.bankrupt-badge { background:#d32f2f; }
-.properties-list { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
-.prop-chip { font-size:10px; padding:3px 6px; border-radius:8px; background:rgba(255,255,255,0.12); display:flex; align-items:center; gap:3px; }
+.board-area{display:flex;flex-direction:column;align-items:center;gap:10px}
+.board{width:min(92vw,680px);height:min(92vw,680px);display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:4px;background:rgba(0,0,0,0.35);padding:8px;border-radius:22px;border:2px solid rgba(255,215,0,.25);box-shadow:0 0 40px rgba(0,0,0,.6);position:relative}
+.tile{background:#fff;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center;color:#222;position:relative;font-size:9px;overflow:hidden;min-height:0}
+.tile.start{background:linear-gradient(135deg,#00c853,#009624);color:#fff}
+.tile.jail{background:linear-gradient(135deg,#616161,#424242);color:#fff}
+.tile.chance{background:linear-gradient(135deg,#ab47bc,#7b1fa2);color:#fff}
+.tile.trade{background:linear-gradient(135deg,#ff9800,#ef6c00);color:#fff}
+.tile.country{background:linear-gradient(135deg,#ffffff,#f1f1f1)}
+.tile.owned{box-shadow:inset 0 0 0 3px var(--owner)}
+.t-flag{font-size:15px;line-height:1}
+.t-icon{font-size:16px}
+.t-name{font-weight:800;font-size:9px;line-height:1.1;margin-top:2px}
+.t-price{font-size:8px;opacity:.8}
+.t-dot{position:absolute;top:3px;right:3px;width:10px;height:10px;border-radius:50%;border:1px solid #fff}
+.tokens{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);display:flex;gap:2px}
+.tok{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 
-.board-wrapper {
-  display:flex; flex-direction:column; align-items:center; gap:12px;
-}
-.board {
-  width: min(92vw, 680px); height: min(92vw, 680px);
-  display:grid; grid-template-columns:repeat(9, 1fr); grid-template-rows:repeat(9, 1fr);
-  gap:3px; background:rgba(0,0,0,0.3); padding:6px; border-radius:20px;
-  border:2px solid rgba(255,215,0,0.3); box-shadow:0 0 40px rgba(0,0,0,0.6);
-  position:relative;
-}
-.tile {
-  background:#fff; border-radius:8px; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; padding:3px; text-align:center;
-  position:relative; font-size:9px; color:#222; overflow:hidden;
-  transition:all 0.2s; border:2px solid transparent;
-}
-.tile.country { background:linear-gradient(135deg, #ffffff, #f5f5f5); }
-.tile.start { background:linear-gradient(135deg, #00c853, #009624); color:#fff; }
-.tile.jail { background:linear-gradient(135deg, #616161, #424242); color:#fff; }
-.tile.chance { background:linear-gradient(135deg, #ab47bc, #7b1fa2); color:#fff; animation: pulse 2s infinite; }
-.tile.trade { background:linear-gradient(135deg, #ff9800, #ef6c00); color:#fff; }
-.tile.owned { border-color: var(--owner-color); box-shadow: inset 0 0 0 3px var(--owner-color); }
-.tile .t-icon { font-size:16px; line-height:1; }
-.tile .t-name { font-weight:700; font-size:9px; line-height:1.1; margin-top:2px; }
-.tile .t-price { font-size:8px; opacity:0.8; }
-.tile .t-flag { font-size:14px; }
-.tile .t-owner-dot { position:absolute; top:2px; right:2px; width:10px; height:10px; border-radius:50%; border:1px solid #fff; }
-.tokens-on-tile { position:absolute; bottom:1px; left:50%; transform:translateX(-50%); display:flex; gap:1px; }
-.token-dot { width:10px; height:10px; border-radius:50%; border:1px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.5); }
+.center{grid-row:2/9;grid-column:2/9;background:radial-gradient(ellipse at center,rgba(48,43,99,.96),rgba(15,12,41,.98));border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;border:2px solid rgba(255,215,0,.2);gap:10px;text-align:center}
+.dice{width:64px;height:64px;background:#fff;color:#222;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;box-shadow:0 6px 16px rgba(0,0,0,.4);cursor:pointer;user-select:none;transition:.2s}
+.dice:active{transform:scale(.92)}
+.btn{padding:10px 20px;border:none;border-radius:12px;font-family:'Vazirmatn';font-weight:700;font-size:13px;cursor:pointer;transition:.2s;color:#fff}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-roll{background:linear-gradient(135deg,#ffd700,#ff9800);color:#000;font-size:16px;padding:13px 32px;box-shadow:0 4px 15px rgba(255,215,0,.4)}
+.btn-buy{background:linear-gradient(135deg,#00c853,#009624)}
+.btn-end{background:linear-gradient(135deg,#448aff,#2962ff)}
+.btn-jpay{background:linear-gradient(135deg,#ffd740,#ffab00);color:#000}
+.btn-jstay{background:linear-gradient(135deg,#78909c,#455a64)}
+.btn-trade{background:linear-gradient(135deg,#ff9800,#ef6c00)}
+.btn-back{background:rgba(255,255,255,.15)}
+.log-item{font-size:11px;padding:7px 9px;background:rgba(255,255,255,.06);border-radius:9px;margin-bottom:6px;line-height:1.4}
+.log-item .tm{opacity:.5;font-size:9px}
 
-@keyframes pulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.03);} }
-
-.center-panel {
-  grid-column:2 / 9; grid-row:2 / 9;
-  background: radial-gradient(ellipse at center, rgba(48,43,99,0.9), rgba(15,12,41,0.95));
-  border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:12px; border:2px solid rgba(255,215,0,0.2); text-align:center; gap:8px;
-}
-.dice-area { display:flex; gap:12px; align-items:center; justify-content:center; }
-.dice { width:56px; height:56px; background:#fff; color:#222; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
-.current-turn-info { font-size:14px; font-weight:700; }
-.action-buttons { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:6px; }
-.btn {
-  padding:10px 18px; border:none; border-radius:12px; font-family:'Vazirmatn'; font-weight:700; font-size:13px;
-  cursor:pointer; transition:all 0.2s; color:#fff;
-}
-.btn:hover { transform:translateY(-2px); box-shadow:0 6px 15px rgba(0,0,0,0.3); }
-.btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
-.btn-roll { background:linear-gradient(135deg, #ffd700, #ff9800); color:#000; font-size:16px; padding:12px 28px; }
-.btn-buy { background:linear-gradient(135deg, #00c853, #009624); }
-.btn-pay { background:linear-gradient(135deg, #ff5252, #c62828); }
-.btn-end { background:linear-gradient(135deg, #448aff, #2962ff); }
-.btn-jail-pay { background:linear-gradient(135deg, #ffd740, #ffab00); color:#000; }
-.btn-jail-stay { background:linear-gradient(135deg, #78909c, #455a64); }
-.btn-trade { background:linear-gradient(135deg, #ff9800, #ef6c00); }
-.btn-back { background:rgba(255,255,255,0.15); }
-
-.log-item { font-size:11px; padding:6px 8px; background:rgba(255,255,255,0.06); border-radius:8px; margin-bottom:6px; line-height:1.4; }
-.log-item .time { opacity:0.5; font-size:9px; }
-
-/* Modals */
-.modal-overlay {
-  position:fixed; inset:0; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center;
-  z-index:1000; padding:16px;
-}
-.modal-overlay.show { display:flex; }
-.modal {
-  background:linear-gradient(135deg, #1e1e2f, #2d2d44); border-radius:20px; padding:22px; max-width:420px; width:100%;
-  border:1px solid rgba(255,215,0,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.8); text-align:center;
-  animation: popIn 0.3s ease;
-}
-@keyframes popIn { from{ transform:scale(0.8); opacity:0; } to{ transform:scale(1); opacity:1; } }
-.modal h2 { font-size:20px; margin-bottom:10px; color:#ffd700; }
-.modal p { font-size:14px; line-height:1.6; margin-bottom:14px; color:#ddd; }
-.modal .modal-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-.trade-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; text-align:right; }
-.trade-grid select, .trade-grid input { width:100%; padding:8px; border-radius:8px; border:1px solid #555; background:#222; color:#fff; font-family:'Vazirmatn'; font-size:12px; }
-
-.winner-modal { background:linear-gradient(135deg, #ffd700, #ff9800); color:#000; }
-.winner-modal h2 { color:#000; font-size:28px; }
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
+.modal-bg.show{display:flex}
+.modal{background:linear-gradient(135deg,#1e1e2f,#2d2d44);border-radius:20px;padding:22px;max-width:440px;width:100%;border:1px solid rgba(255,215,0,.3);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.modal h2{font-size:20px;color:#ffd700;margin-bottom:10px}
+.modal p{font-size:14px;color:#ddd;line-height:1.7;margin-bottom:14px}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.sel{width:100%;padding:9px;border-radius:10px;border:1px solid #555;background:#222;color:#fff;font-family:'Vazirmatn';font-size:12px;margin-top:6px}
+.trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:right;margin:12px 0}
 </style>
 </head>
 <body>
@@ -139,1074 +77,466 @@ body {
 <div class="top-bar">
   <h1>🌍 مونوپولی جهان</h1>
   <div class="top-info">
-    <span id="targetInfo">هدف: 5000$</span>
-    <span id="turnInfo">دور: 0/50</span>
-    <span id="playersCount">2 بازیکن</span>
+    <span id="targetInfo">هدف: --</span>
+    <span id="turnInfo">دور: 0</span>
+    <span id="posInfo">جایگاه من: 0</span>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div style="display:flex;gap:8px">
     <button class="btn btn-back" onclick="backToLobby()">🔙 لابی</button>
-    <button class="btn btn-back" style="background:#c62828;" onclick="handleLeave()">🚪 خروج</button>
+    <button class="btn" style="background:#c62828" onclick="handleLeave()">🚪 خروج</button>
   </div>
 </div>
 
-<div class="main-layout">
-  <div class="side-panel" id="playersPanel">
+<div class="main">
+  <div class="panel" id="playersPanel">
     <h3>👥 بازیکنان</h3>
-    <div id="playersList"></div>
+    <div id="playersList">در حال بارگذاری...</div>
   </div>
 
-  <div class="board-wrapper">
-    <div class="board" id="board"></div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; font-size:11px; color:#ccc;">
-      <span>🏁 شروع: 1000$ + 300$ هر دور</span>
-      <span>⛓️ زندان: 3 دور یا 200$</span>
-      <span>🎁 شانس: رندوم</span>
-      <span>🤝 ترید: 150$ بونوس</span>
-      <span>💀 ورشکستگی: -500$</span>
+  <div class="board-area">
+    <div class="board" id="board">
+      <div class="center" style="grid-row:2/9;grid-column:2/9">
+        <div style="font-size:40px">🌍</div>
+        <div style="font-size:14px">در حال ساخت نقشه...</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:11px;color:#aaa">
+      <span>🏁 شروع: 1000$ + 300$ هر دور</span><span>⛓️ زندان: 3 دور یا 200$</span><span>🎁 شانس</span><span>🤝 ترید</span><span>💀 ورشکست -500$</span>
     </div>
   </div>
 
-  <div class="log-panel">
-    <h3>📜 اتفاقات بازی</h3>
+  <div class="log">
+    <h3>📜 اتفاقات</h3>
     <div id="logList"></div>
   </div>
 </div>
 
-<!-- Jail Entry Modal -->
-<div id="jailEntryModal" class="modal-overlay">
-  <div class="modal">
-    <h2>⛓️ افتادی تو زندان!</h2>
-    <p id="jailEntryText">به خونه زندان افتادی. باید انتخاب کنی:</p>
-    <div class="modal-actions">
-      <button class="btn btn-jail-pay" onclick="chooseJailEntry('pay')">💰 پرداخت 200$ و آزادی</button>
-      <button class="btn btn-jail-stay" onclick="chooseJailEntry('jail')">⛓️ برو زندان (3 دور)</button>
-    </div>
-  </div>
-</div>
+<!-- Modals -->
+<div id="jailEntryModal" class="modal-bg"><div class="modal">
+  <h2>⛓️ افتادی تو زندان!</h2><p id="jailEntryText">به زندان افتادی! 200$ میدی آزاد میمونی یا 3 دور میری زندان؟</p>
+  <div class="modal-actions"><button class="btn btn-jpay" onclick="chooseJailEntry('pay')">💰 پرداخت 200$</button><button class="btn btn-jstay" onclick="chooseJailEntry('jail')">⛓️ 3 دور زندان</button></div>
+</div></div>
 
-<!-- Jail Turn Modal -->
-<div id="jailTurnModal" class="modal-overlay">
-  <div class="modal">
-    <h2>🔒 تو زندانی!</h2>
-    <p id="jailTurnText">شما در زندان هستید. <span id="jailRemain">3</span> دور دیگر باقی مانده.</p>
-    <div class="modal-actions">
-      <button class="btn btn-jail-pay" onclick="chooseJailTurn('pay')">💰 پرداخت 200$ و خروج</button>
-      <button class="btn btn-jail-stay" onclick="chooseJailTurn('stay')">⏳ تحمل زندان (این دور استراحت)</button>
-    </div>
-  </div>
-</div>
+<div id="jailTurnModal" class="modal-bg"><div class="modal">
+  <h2>🔒 تو زندانی!</h2><p id="jailTurnText">شما در زندان هستید. <span id="jailRemain">3</span> دور مونده.</p>
+  <div class="modal-actions"><button class="btn btn-jpay" onclick="chooseJailTurn('pay')">💰 200$ بده آزاد شو</button><button class="btn btn-jstay" onclick="chooseJailTurn('stay')">⏳ تحمل کن</button></div>
+</div></div>
 
-<!-- Buy Modal -->
-<div id="buyModal" class="modal-overlay">
-  <div class="modal">
-    <h2 id="buyTitle">🏳️ خرید کشور</h2>
-    <p id="buyText"></p>
-    <div class="modal-actions">
-      <button class="btn btn-buy" id="buyConfirmBtn" onclick="confirmBuy()">💰 خرید</button>
-      <button class="btn btn-back" onclick="closeBuyModal()">❌ انصراف</button>
-    </div>
-  </div>
-</div>
+<div id="buyModal" class="modal-bg"><div class="modal">
+  <h2 id="buyTitle">خرید</h2><p id="buyText"></p>
+  <div class="modal-actions"><button class="btn btn-buy" id="buyConfirmBtn" onclick="confirmBuy()">💰 خرید</button><button class="btn btn-back" onclick="closeBuyModal()">❌ بیخیال</button></div>
+</div></div>
 
-<!-- Chance Modal -->
-<div id="chanceModal" class="modal-overlay">
-  <div class="modal" style="background:linear-gradient(135deg, #ab47bc, #7b1fa2);">
-    <h2>🎁 کارت شانس!</h2>
-    <p id="chanceText" style="font-size:18px; font-weight:700;"></p>
-    <div class="modal-actions">
-      <button class="btn" style="background:#fff; color:#7b1fa2;" onclick="closeChanceModal()">باشه! 🎉</button>
-    </div>
-  </div>
-</div>
+<div id="chanceModal" class="modal-bg"><div class="modal" style="background:linear-gradient(135deg,#ab47bc,#7b1fa2)">
+  <h2>🎁 کارت شانس!</h2><p id="chanceText" style="font-size:18px;font-weight:800"></p>
+  <div class="modal-actions"><button class="btn" style="background:#fff;color:#7b1fa2" onclick="closeChanceModal()">باشه 🎉</button></div>
+</div></div>
 
-<!-- Trade Modal -->
-<div id="tradeModal" class="modal-overlay">
-  <div class="modal" style="max-width:500px;">
-    <h2>🤝 معامله باحال (150$ بونوس هر دو نفر)</h2>
-    <p style="font-size:12px;">یک بازیکن و ملک برای معامله انتخاب کن. هر معامله موفق 150$ به هر دو نفر میده!</p>
-    <div class="trade-grid">
-      <div>
-        <label>بازیکن مقابل:</label>
-        <select id="tradeOpponent"></select>
-      </div>
-      <div>
-        <label>ملک من:</label>
-        <select id="tradeMyProp"><option value="">هیچی</option></select>
-      </div>
-      <div>
-        <label>ملک او:</label>
-        <select id="tradeTheirProp"><option value="">هیچی</option></select>
-      </div>
-      <div>
-        <label>پول اضافی من به او:</label>
-        <input type="number" id="tradeMyMoney" value="0" min="0" step="10">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-trade" onclick="proposeTrade()">📤 پیشنهاد معامله</button>
-      <button class="btn btn-back" onclick="closeTradeModal()">❌ بستن</button>
-    </div>
-    <div id="tradePending" style="display:none; margin-top:12px; background:rgba(255,255,255,0.1); padding:10px; border-radius:10px;">
-      <p id="tradePendingText" style="font-size:12px;"></p>
-      <div class="modal-actions" style="margin-top:8px;">
-        <button class="btn btn-buy" onclick="acceptTrade()">✅ قبول</button>
-        <button class="btn btn-pay" onclick="declineTrade()">❌ رد</button>
-      </div>
-    </div>
+<div id="tradeModal" class="modal-bg"><div class="modal" style="max-width:520px">
+  <h2>🤝 خونه ترید - معامله باحال</h2><p style="font-size:12px">اینجا می‌تونی معامله کنی! هر معامله موفق 150$ به هر دو نفر میده. می‌تونی هم بیخیال شی.</p>
+  <div class="trade-grid">
+    <div><label>طرف مقابل</label><select id="tradeOpponent" class="sel"></select></div>
+    <div><label>ملک من</label><select id="tradeMyProp" class="sel"><option value="">هیچی</option></select></div>
+    <div><label>ملک او</label><select id="tradeTheirProp" class="sel"><option value="">هیچی</option></select></div>
+    <div><label>پول من به او</label><input id="tradeMyMoney" type="number" value="0" min="0" step="10" class="sel"></div>
   </div>
-</div>
+  <div class="modal-actions">
+    <button class="btn btn-trade" onclick="proposeTrade()">📤 پیشنهاد</button>
+    <button class="btn btn-back" onclick="closeTradeModal()">⏭️ بیخیال معامله</button>
+  </div>
+  <div id="tradePending" style="display:none;margin-top:12px;background:rgba(255,255,255,.1);padding:10px;border-radius:10px">
+    <p id="tradePendingText" style="font-size:12px"></p>
+    <div class="modal-actions" style="margin-top:8px"><button class="btn btn-buy" onclick="acceptTrade()">✅ قبول</button><button class="btn" style="background:#c62828" onclick="declineTrade()">❌ رد</button></div>
+  </div>
+</div></div>
 
-<!-- Winner Modal -->
-<div id="winnerModal" class="modal-overlay">
-  <div class="modal winner-modal">
-    <h2 id="winnerTitle">🏆 برنده شدی!</h2>
-    <p id="winnerText"></p>
-    <div class="modal-actions">
-      <button class="btn" style="background:#000; color:#ffd700;" onclick="backToLobby()">🔙 بازگشت به لابی</button>
-    </div>
-  </div>
-</div>
+<div id="winnerModal" class="modal-bg"><div class="modal" style="background:linear-gradient(135deg,#ffd700,#ff9800);color:#000">
+  <h2 id="winnerTitle" style="color:#000;font-size:26px">🏆 برنده!</h2><p id="winnerText" style="color:#000"></p>
+  <div class="modal-actions"><button class="btn" style="background:#000;color:#ffd700" onclick="backToLobby()">🔙 لابی</button></div>
+</div></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="api.js"></script>
+<script src="data:application/javascript;base64,Ly8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn5SlINiq2YbYuNuM2YXYp9iqIEZpcmViYXNlDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCmNvbnN0IGZpcmViYXNlQ29uZmlnID0gew0KICAgIGFwaUtleTogIkFJemFTeUF3NWFJS2dfbVhlb0ttR09sMm1GcEkwNzRlU2FvbkhtYyIsDQogICAgYXV0aERvbWFpbjogImVzbS1mYW1pbC01OWM5ZC5maXJlYmFzZWFwcC5jb20iLA0KICAgIGRhdGFiYXNlVVJMOiAiaHR0cHM6Ly9lc20tZmFtaWwtNTljOWQtZGVmYXVsdC1ydGRiLmFzaWEtc291dGhlYXN0MS5maXJlYmFzZWRhdGFiYXNlLmFwcCIsDQogICAgcHJvamVjdElkOiAiZXNtLWZhbWlsLTU5YzlkIiwNCiAgICBzdG9yYWdlQnVja2V0OiAiZXNtLWZhbWlsLTU5YzlkLmZpcmViYXNlc3RvcmFnZS5hcHAiLA0KICAgIG1lc3NhZ2luZ1NlbmRlcklkOiAiMTIzMjg2MDkxMDIwIiwNCiAgICBhcHBJZDogIjE6MTIzMjg2MDkxMDIwOndlYjozYTA1NzA4YzI1MTVjNGIzYmU4NTI5IiwNCiAgICBtZWFzdXJlbWVudElkOiAiRy0wOFdDUVM3R1o3Ig0KfTsNCg0KZmlyZWJhc2UuaW5pdGlhbGl6ZUFwcChmaXJlYmFzZUNvbmZpZyk7DQpjb25zdCBkYiA9IGZpcmViYXNlLmRhdGFiYXNlKCk7DQpjb25zdCBhdXRoID0gZmlyZWJhc2UuYXV0aCgpOw0KDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCi8vIPCfm6Ag2KrZiNin2KjYuSDaqdmF2qnbjA0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQpmdW5jdGlvbiBnZW5lcmF0ZUlkKCkgew0KICAgIHJldHVybiBEYXRlLm5vdygpLnRvU3RyaW5nKDM2KSArIE1hdGgucmFuZG9tKCkudG9TdHJpbmcoMzYpLnN1YnN0cigyLCA2KTsNCn0NCg0KZnVuY3Rpb24gZ2VuZXJhdGVMb2JieUNvZGUoKSB7DQogICAgcmV0dXJuIE1hdGgucmFuZG9tKCkudG9TdHJpbmcoMzYpLnN1YnN0cigyLCA2KS50b1VwcGVyQ2FzZSgpOw0KfQ0KDQpmdW5jdGlvbiBzaHVmZmxlKGFycmF5KSB7DQogICAgZm9yIChsZXQgaSA9IGFycmF5Lmxlbmd0aCAtIDE7IGkgPiAwOyBpLS0pIHsNCiAgICAgICAgY29uc3QgaiA9IE1hdGguZmxvb3IoTWF0aC5yYW5kb20oKSAqIChpICsgMSkpOw0KICAgICAgICBbYXJyYXlbaV0sIGFycmF5W2pdXSA9IFthcnJheVtqXSwgYXJyYXlbaV1dOw0KICAgIH0NCiAgICByZXR1cm4gYXJyYXk7DQp9DQoNCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KLy8g8J+RpCDZhdiv24zYsduM2Kog2qnYp9ix2KjYsdin2YYNCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KYXN5bmMgZnVuY3Rpb24gbG9naW4obmFtZSkgew0KICAgIHRyeSB7DQogICAgICAgIGF3YWl0IGF1dGguc2lnbkluQW5vbnltb3VzbHkoKTsNCiAgICAgICAgY29uc3QgdWlkID0gYXV0aC5jdXJyZW50VXNlci51aWQ7DQogICAgICAgIGNvbnN0IHNuYXBzaG90ID0gYXdhaXQgZGIucmVmKCd1c2Vycy8nICsgdWlkKS5vbmNlKCd2YWx1ZScpOw0KICAgICAgICBpZiAoIXNuYXBzaG90LmV4aXN0cygpKSB7DQogICAgICAgICAgICBjb25zdCBuZXdVc2VyID0gew0KICAgICAgICAgICAgICAgIGlkOiB1aWQsDQogICAgICAgICAgICAgICAgbmFtZTogbmFtZSwNCiAgICAgICAgICAgICAgICBzY29yZTogMCwNCiAgICAgICAgICAgICAgICBjcmVhdGVkQXQ6IGZpcmViYXNlLmRhdGFiYXNlLlNlcnZlclZhbHVlLlRJTUVTVEFNUA0KICAgICAgICAgICAgfTsNCiAgICAgICAgICAgIGF3YWl0IGRiLnJlZigndXNlcnMvJyArIHVpZCkuc2V0KG5ld1VzZXIpOw0KICAgICAgICAgICAgbG9jYWxTdG9yYWdlLnNldEl0ZW0oJ3VzZXJJZCcsIHVpZCk7DQogICAgICAgICAgICByZXR1cm4gbmV3VXNlcjsNCiAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgIGNvbnN0IHVzZXJEYXRhID0gc25hcHNob3QudmFsKCk7DQogICAgICAgICAgICB1c2VyRGF0YS5uYW1lID0gbmFtZTsNCiAgICAgICAgICAgIGF3YWl0IGRiLnJlZigndXNlcnMvJyArIHVpZCArICcvbmFtZScpLnNldChuYW1lKTsNCiAgICAgICAgICAgIGxvY2FsU3RvcmFnZS5zZXRJdGVtKCd1c2VySWQnLCB1aWQpOw0KICAgICAgICAgICAgcmV0dXJuIHVzZXJEYXRhOw0KICAgICAgICB9DQogICAgfSBjYXRjaCAoZXJyb3IpIHsNCiAgICAgICAgdGhyb3cgbmV3IEVycm9yKCfYrti32Kcg2K/YsSDZiNix2YjYrzogJyArIGVycm9yLm1lc3NhZ2UpOw0KICAgIH0NCn0NCg0KYXN5bmMgZnVuY3Rpb24gZ2V0Q3VycmVudFVzZXIoKSB7DQogICAgY29uc3QgdXNlcklkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3VzZXJJZCcpOw0KICAgIGlmICghdXNlcklkKSByZXR1cm4gbnVsbDsNCiAgICBpZiAoIWF1dGguY3VycmVudFVzZXIpIHsNCiAgICAgICAgdHJ5IHsNCiAgICAgICAgICAgIGF3YWl0IGF1dGguc2lnbkluQW5vbnltb3VzbHkoKTsNCiAgICAgICAgfSBjYXRjaCAoZSkgew0KICAgICAgICAgICAgcmV0dXJuIG51bGw7DQogICAgICAgIH0NCiAgICB9DQogICAgdHJ5IHsNCiAgICAgICAgY29uc3Qgc25hcHNob3QgPSBhd2FpdCBkYi5yZWYoJ3VzZXJzLycgKyB1c2VySWQpLm9uY2UoJ3ZhbHVlJyk7DQogICAgICAgIHJldHVybiBzbmFwc2hvdC52YWwoKTsNCiAgICB9IGNhdGNoIChlKSB7DQogICAgICAgIHJldHVybiBudWxsOw0KICAgIH0NCn0NCg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn5OoINiv2LHYrtmI2KfYs9iqINio2KfYstuMDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCmFzeW5jIGZ1bmN0aW9uIHNlbmRHYW1lUmVxdWVzdCh0b05hbWUpIHsNCiAgICBjb25zdCBjdXJyZW50VXNlciA9IGF3YWl0IGdldEN1cnJlbnRVc2VyKCk7DQogICAgaWYgKCFjdXJyZW50VXNlcikgdGhyb3cgbmV3IEVycm9yKCfZhNi32YHYpyDYp9io2KrYr9inINmI2KfYsdivINi02YjbjNivJyk7DQogICAgY29uc3QgdXNlcnNTbmFwc2hvdCA9IGF3YWl0IGRiLnJlZigndXNlcnMnKS5vcmRlckJ5Q2hpbGQoJ25hbWUnKS5lcXVhbFRvKHRvTmFtZSkub25jZSgndmFsdWUnKTsNCiAgICBjb25zdCB1c2VycyA9IHVzZXJzU25hcHNob3QudmFsKCk7DQogICAgaWYgKCF1c2VycykgdGhyb3cgbmV3IEVycm9yKCfaqdin2LHYqNix24wg2KjYpyDYp9uM2YYg2YbYp9mFINm+24zYr9inINmG2LTYrycpOw0KICAgIGNvbnN0IHRhcmdldElkID0gT2JqZWN0LmtleXModXNlcnMpWzBdOw0KICAgIGlmICh0YXJnZXRJZCA9PT0gY3VycmVudFVzZXIuaWQpIHRocm93IG5ldyBFcnJvcign2YbZhduM2KrZiNin2YbbjNivINio2Ycg2K7ZiNiv2KrYp9mGINiv2LHYrtmI2KfYs9iqINiv2YfbjNivJyk7DQogICAgY29uc3QgcmVxdWVzdCA9IHsNCiAgICAgICAgZnJvbTogY3VycmVudFVzZXIuaWQsDQogICAgICAgIGZyb21OYW1lOiBjdXJyZW50VXNlci5uYW1lLA0KICAgICAgICB0aW1lc3RhbXA6IGZpcmViYXNlLmRhdGFiYXNlLlNlcnZlclZhbHVlLlRJTUVTVEFNUA0KICAgIH07DQogICAgYXdhaXQgZGIucmVmKCd1c2Vycy8nICsgdGFyZ2V0SWQgKyAnL3JlcXVlc3RzJykucHVzaChyZXF1ZXN0KTsNCiAgICByZXR1cm4gdHJ1ZTsNCn0NCg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn4+gINmE2KfYqNuMICjYqNiv2YjZhiDZhdit2K/ZiNiv24zYqiDYqti52K/Yp9ivKQ0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQphc3luYyBmdW5jdGlvbiBjcmVhdGVMb2JieSgpIHsNCiAgICBjb25zdCBjdXJyZW50VXNlciA9IGF3YWl0IGdldEN1cnJlbnRVc2VyKCk7DQogICAgaWYgKCFjdXJyZW50VXNlcikgdGhyb3cgbmV3IEVycm9yKCfZhNi32YHYpyDYp9io2KrYr9inINmI2KfYsdivINi02YjbjNivJyk7DQogICAgY29uc3QgbG9iYnlJZCA9IGdlbmVyYXRlSWQoKTsNCiAgICBjb25zdCBsb2JieSA9IHsNCiAgICAgICAgaWQ6IGxvYmJ5SWQsDQogICAgICAgIGNvZGU6IGdlbmVyYXRlTG9iYnlDb2RlKCksDQogICAgICAgIGNyZWF0ZWRCeTogY3VycmVudFVzZXIuaWQsDQogICAgICAgIHBsYXllcnM6IHsNCiAgICAgICAgICAgIFtjdXJyZW50VXNlci5pZF06IHsNCiAgICAgICAgICAgICAgICBuYW1lOiBjdXJyZW50VXNlci5uYW1lLA0KICAgICAgICAgICAgICAgIHJlYWR5OiBmYWxzZSwNCiAgICAgICAgICAgICAgICBpbkdhbWU6IGZhbHNlDQogICAgICAgICAgICB9DQogICAgICAgIH0sDQogICAgICAgIGNoYXQ6IFtdLA0KICAgICAgICBnYW1lVHlwZTogbnVsbCwNCiAgICAgICAgZ2FtZUlkOiBudWxsLA0KICAgICAgICBzdGF0dXM6ICd3YWl0aW5nJywNCiAgICAgICAgY3JlYXRlZEF0OiBmaXJlYmFzZS5kYXRhYmFzZS5TZXJ2ZXJWYWx1ZS5USU1FU1RBTVANCiAgICB9Ow0KICAgIGF3YWl0IGRiLnJlZignbG9iYmllcy8nICsgbG9iYnlJZCkuc2V0KGxvYmJ5KTsNCiAgICByZXR1cm4gbG9iYnk7DQp9DQoNCmFzeW5jIGZ1bmN0aW9uIGpvaW5Mb2JieShjb2RlKSB7DQogICAgY29uc3QgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOw0KICAgIGlmICghY3VycmVudFVzZXIpIHRocm93IG5ldyBFcnJvcign2YTYt9mB2Kcg2KfYqNiq2K/YpyDZiNin2LHYryDYtNmI24zYrycpOw0KICAgIGNvbnN0IHNuYXBzaG90ID0gYXdhaXQgZGIucmVmKCdsb2JiaWVzJykub3JkZXJCeUNoaWxkKCdjb2RlJykuZXF1YWxUbyhjb2RlLnRvVXBwZXJDYXNlKCkpLm9uY2UoJ3ZhbHVlJyk7DQogICAgY29uc3QgbG9iYmllcyA9IHNuYXBzaG90LnZhbCgpOw0KICAgIGlmICghbG9iYmllcykgdGhyb3cgbmV3IEVycm9yKCfZhNin2KjbjCDYqNinINin24zZhiDaqdivINm+24zYr9inINmG2LTYrycpOw0KICAgIGNvbnN0IGxvYmJ5SWQgPSBPYmplY3Qua2V5cyhsb2JiaWVzKVswXTsNCiAgICBjb25zdCBsb2JieSA9IGxvYmJpZXNbbG9iYnlJZF07DQogICAgaWYgKGxvYmJ5LnBsYXllcnMgJiYgbG9iYnkucGxheWVyc1tjdXJyZW50VXNlci5pZF0pIHsNCiAgICAgICAgcmV0dXJuIGxvYmJ5Ow0KICAgIH0NCiAgICBsb2JieS5wbGF5ZXJzW2N1cnJlbnRVc2VyLmlkXSA9IHsNCiAgICAgICAgbmFtZTogY3VycmVudFVzZXIubmFtZSwNCiAgICAgICAgcmVhZHk6IGZhbHNlLA0KICAgICAgICBpbkdhbWU6IGZhbHNlDQogICAgfTsNCiAgICBhd2FpdCBkYi5yZWYoJ2xvYmJpZXMvJyArIGxvYmJ5SWQgKyAnL3BsYXllcnMnKS5zZXQobG9iYnkucGxheWVycyk7DQogICAgcmV0dXJuIGxvYmJ5Ow0KfQ0KDQphc3luYyBmdW5jdGlvbiBnZXRMb2JieShsb2JieUlkKSB7DQogICAgY29uc3Qgc25hcHNob3QgPSBhd2FpdCBkYi5yZWYoJ2xvYmJpZXMvJyArIGxvYmJ5SWQpLm9uY2UoJ3ZhbHVlJyk7DQogICAgcmV0dXJuIHNuYXBzaG90LnZhbCgpOw0KfQ0KDQphc3luYyBmdW5jdGlvbiBzZXRHYW1lVHlwZShsb2JieUlkLCBnYW1lVHlwZSkgew0KICAgIGF3YWl0IGRiLnJlZignbG9iYmllcy8nICsgbG9iYnlJZCArICcvZ2FtZVR5cGUnKS5zZXQoZ2FtZVR5cGUpOw0KfQ0KDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCi8vIPCfkqwg2obYqg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQphc3luYyBmdW5jdGlvbiBzZW5kQ2hhdChsb2JieUlkLCBtc2cpIHsNCiAgICBjb25zdCBjdXJyZW50VXNlciA9IGF3YWl0IGdldEN1cnJlbnRVc2VyKCk7DQogICAgaWYgKCFjdXJyZW50VXNlcikgdGhyb3cgbmV3IEVycm9yKCfZhNi32YHYpyDYp9io2KrYr9inINmI2KfYsdivINi02YjbjNivJyk7DQogICAgY29uc3QgY2hhdE1zZyA9IHsNCiAgICAgICAgdXNlcklkOiBjdXJyZW50VXNlci5pZCwNCiAgICAgICAgdXNlck5hbWU6IGN1cnJlbnRVc2VyLm5hbWUsDQogICAgICAgIG1zZzogbXNnLA0KICAgICAgICB0aW1lc3RhbXA6IGZpcmViYXNlLmRhdGFiYXNlLlNlcnZlclZhbHVlLlRJTUVTVEFNUA0KICAgIH07DQogICAgYXdhaXQgZGIucmVmKCdsb2JiaWVzLycgKyBsb2JieUlkICsgJy9jaGF0JykucHVzaChjaGF0TXNnKTsNCn0NCg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn46uINi02LHZiNi5INio2KfYstuMICjYqNixINin2LPYp9izINmG2YjYuSkNCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KYXN5bmMgZnVuY3Rpb24gc3RhcnRHYW1lKGxvYmJ5SWQpIHsNCiAgICBjb25zdCBjdXJyZW50VXNlciA9IGF3YWl0IGdldEN1cnJlbnRVc2VyKCk7DQogICAgaWYgKCFjdXJyZW50VXNlcikgdGhyb3cgbmV3IEVycm9yKCfZhNi32YHYpyDYp9io2KrYr9inINmI2KfYsdivINi02YjbjNivJyk7DQogICAgY29uc3QgbG9iYnkgPSBhd2FpdCBnZXRMb2JieShsb2JieUlkKTsNCiAgICBpZiAoIWxvYmJ5KSB0aHJvdyBuZXcgRXJyb3IoJ9mE2KfYqNuMINm+24zYr9inINmG2LTYrycpOw0KICAgIGlmIChsb2JieS5zdGF0dXMgPT09ICdwbGF5aW5nJykgdGhyb3cgbmV3IEVycm9yKCfYqNin2LLbjCDYr9ixINit2KfZhCDYp9is2LHYp9iz2KonKTsNCiAgICBjb25zdCBnYW1lVHlwZSA9IGxvYmJ5LmdhbWVUeXBlOw0KICAgIGlmICghZ2FtZVR5cGUpIHRocm93IG5ldyBFcnJvcign2YbZiNi5INio2KfYstuMINin2YbYqtiu2KfYqCDZhti02K/ZhycpOw0KICAgIGNvbnN0IHJlYWR5UGxheWVycyA9IE9iamVjdC5rZXlzKGxvYmJ5LnBsYXllcnMpLmZpbHRlcih1aWQgPT4gbG9iYnkucGxheWVyc1t1aWRdLnJlYWR5KTsNCiAgICBpZiAocmVhZHlQbGF5ZXJzLmxlbmd0aCA8IDIgJiYgZ2FtZVR5cGUgPT09ICdlc20tZmFtaWwnKSB7DQogICAgICAgIHRocm93IG5ldyBFcnJvcign2KjYsdin24wg2KfYs9mFINmB2KfZhduM2YQg2K3Yr9in2YLZhCDbsiDZhtmB2LEg2KjYp9uM2K8g2KLZhdin2K/ZhyDYqNin2LTZhtivJyk7DQogICAgfQ0KICAgIGlmIChyZWFkeVBsYXllcnMubGVuZ3RoIDwgMSAmJiAoZ2FtZVR5cGUgPT09ICdob2ttJyB8fCBnYW1lVHlwZSA9PT0gJ21hbmNoZScpKSB7DQogICAgICAgIHRocm93IG5ldyBFcnJvcign2KjYsdin24wg2KfbjNmGINio2KfYstuMINit2K/Yp9mC2YQg27Eg2YbZgdixINio2KfbjNivINii2YXYp9iv2Ycg2KjYp9i02K8nKTsNCiAgICB9DQogICAgY29uc3QgZ2FtZUlkID0gZ2VuZXJhdGVJZCgpOw0KICAgIGNvbnN0IGdhbWVEYXRhID0gew0KICAgICAgICBpZDogZ2FtZUlkLA0KICAgICAgICBsb2JieUlkOiBsb2JieUlkLA0KICAgICAgICB0eXBlOiBnYW1lVHlwZSwNCiAgICAgICAgc3RhdHVzOiAoZ2FtZVR5cGUgPT09ICdtYW5jaGUnKSA/ICdjb2xvcl9zZWxlY3QnIDogJ3BsYXlpbmcnLA0KICAgICAgICBzdGFydFRpbWU6IERhdGUubm93KCksDQogICAgICAgIGR1cmF0aW9uOiBnYW1lVHlwZSA9PT0gJ2VzbS1mYW1pbCcgPyAxMjAwMDAgOiAwLA0KICAgICAgICByb3VuZDogMSwNCiAgICAgICAgcGxheWVyczoge30NCiAgICB9Ow0KICAgIGZvciAoY29uc3QgdWlkIG9mIHJlYWR5UGxheWVycykgew0KICAgICAgICBnYW1lRGF0YS5wbGF5ZXJzW3VpZF0gPSB7DQogICAgICAgICAgICBuYW1lOiBsb2JieS5wbGF5ZXJzW3VpZF0ubmFtZSwNCiAgICAgICAgICAgIGZpbmlzaGVkOiBmYWxzZSwNCiAgICAgICAgICAgIHdvcmRzOiB7fSwNCiAgICAgICAgICAgIHJvdW5kU2NvcmU6IDAsDQogICAgICAgICAgICB0b3RhbFNjb3JlOiAwLA0KICAgICAgICAgICAgaXNCb3Q6IGZhbHNlDQogICAgICAgIH07DQogICAgfQ0KICAgIGlmIChnYW1lVHlwZSA9PT0gJ2VzbS1mYW1pbCcpIHsNCiAgICAgICAgY29uc3QgbGV0dGVycyA9ICfYp9io2b7Yqtir2Kzahtit2K7Yr9iw2LHYstqY2LPYtNi12LbYt9i42LnYutmB2YLaqdqv2YTZhdmG2YjZh9uMJzsNCiAgICAgICAgZ2FtZURhdGEubGV0dGVyID0gbGV0dGVyc1tNYXRoLmZsb29yKE1hdGgucmFuZG9tKCkgKiBsZXR0ZXJzLmxlbmd0aCldOw0KICAgIH0gZWxzZSBpZiAoZ2FtZVR5cGUgPT09ICdob2ttJykgew0KICAgICAgICBjb25zdCBib3ROYW1lcyA9IFsn2KjYp9iqINuxJywgJ9io2KfYqiDbsicsICfYqNin2Kog27MnXTsNCiAgICAgICAgbGV0IGJvdENvdW50ID0gMDsNCiAgICAgICAgd2hpbGUgKE9iamVjdC5rZXlzKGdhbWVEYXRhLnBsYXllcnMpLmxlbmd0aCA8IDQpIHsNCiAgICAgICAgICAgIGNvbnN0IGJvdElkID0gJ2JvdF8nICsgZ2VuZXJhdGVJZCgpOw0KICAgICAgICAgICAgZ2FtZURhdGEucGxheWVyc1tib3RJZF0gPSB7DQogICAgICAgICAgICAgICAgbmFtZTogYm90TmFtZXNbYm90Q291bnQgJSBib3ROYW1lcy5sZW5ndGhdICsgKGJvdENvdW50ID49IGJvdE5hbWVzLmxlbmd0aCA/ICcgJyArIE1hdGguZmxvb3IoYm90Q291bnQvYm90TmFtZXMubGVuZ3RoKSA6ICcnKSwNCiAgICAgICAgICAgICAgICBpc0JvdDogdHJ1ZSwNCiAgICAgICAgICAgICAgICB0b3RhbFNjb3JlOiAwDQogICAgICAgICAgICB9Ow0KICAgICAgICAgICAgYm90Q291bnQrKzsNCiAgICAgICAgfQ0KICAgICAgICBnYW1lRGF0YS5jYXJkcyA9IHt9Ow0KICAgICAgICBnYW1lRGF0YS5wbGF5ZWQgPSB7fTsNCiAgICAgICAgZ2FtZURhdGEuY3VycmVudFR1cm4gPSBudWxsOw0KICAgICAgICBnYW1lRGF0YS5sYXN0V2lubmVyID0gbnVsbDsNCiAgICB9IGVsc2UgaWYgKGdhbWVUeXBlID09PSAnbWFuY2hlJykgew0KICAgICAgICAvLyDYp9i22KfZgdmHINqp2LHYr9mGINio2KfYquKAjNmH2Kcg2KrYpyDbtCDZhtmB2LENCiAgICAgICAgY29uc3QgYm90TmFtZXMgPSBbJ9io2KfYqiDZgtix2YXYsicsICfYqNin2Kog2KLYqNuMJywgJ9io2KfYqiDYs9io2LInLCAn2KjYp9iqINiy2LHYryddOw0KICAgICAgICBsZXQgYm90Q291bnQgPSAwOw0KICAgICAgICB3aGlsZSAoT2JqZWN0LmtleXMoZ2FtZURhdGEucGxheWVycykubGVuZ3RoIDwgNCkgew0KICAgICAgICAgICAgY29uc3QgYm90SWQgPSAnYm90XycgKyBnZW5lcmF0ZUlkKCk7DQogICAgICAgICAgICBnYW1lRGF0YS5wbGF5ZXJzW2JvdElkXSA9IHsNCiAgICAgICAgICAgICAgICBuYW1lOiBib3ROYW1lc1tib3RDb3VudCAlIGJvdE5hbWVzLmxlbmd0aF0sDQogICAgICAgICAgICAgICAgaXNCb3Q6IHRydWUsDQogICAgICAgICAgICAgICAgZmluaXNoZWQ6IGZhbHNlLA0KICAgICAgICAgICAgICAgIHRvdGFsU2NvcmU6IDAsDQogICAgICAgICAgICAgICAgdG9rZW5zOiBbMCwgMCwgMCwgMF0sDQogICAgICAgICAgICAgICAgaG9tZUNvdW50OiAwDQogICAgICAgICAgICB9Ow0KICAgICAgICAgICAgYm90Q291bnQrKzsNCiAgICAgICAgfQ0KICAgICAgICAvLyDYsdmG2q/igIzZh9inINmIINin2YbYqtiu2KfYqCDYsdmG2q8NCiAgICAgICAgY29uc3QgY29sb3JNYXAgPSB7fTsNCiAgICAgICAgY29uc3QgcGxheWVySWRzID0gT2JqZWN0LmtleXMoZ2FtZURhdGEucGxheWVycyk7DQogICAgICAgIHBsYXllcklkcy5mb3JFYWNoKHVpZCA9PiB7DQogICAgICAgICAgICBjb2xvck1hcFt1aWRdID0geyBzZWxlY3RlZDogZmFsc2UsIGNvbG9ySW5kZXg6IC0xIH07DQogICAgICAgIH0pOw0KICAgICAgICBnYW1lRGF0YS5jb2xvck1hcCA9IGNvbG9yTWFwOw0KICAgICAgICBnYW1lRGF0YS5jb2xvclNlbGVjdGlvbkVuZCA9IERhdGUubm93KCkgKyA3MDAwOw0KICAgICAgICBnYW1lRGF0YS5jdXJyZW50VHVybiA9IG51bGw7DQogICAgICAgIGdhbWVEYXRhLmRpY2UgPSAwOw0KICAgICAgICBnYW1lRGF0YS5waGFzZSA9ICdyb2xsJzsNCiAgICAgICAgZ2FtZURhdGEud2lubmVyID0gbnVsbDsNCiAgICAgICAgZ2FtZURhdGEuYm9hcmRQYXRoID0gZ2VuZXJhdGVNYW5jaGVQYXRoKCk7DQogICAgICAgIGdhbWVEYXRhLnR1cm5PcmRlciA9IFtdOw0KICAgICAgICBmb3IgKGNvbnN0IHVpZCBvZiBPYmplY3Qua2V5cyhnYW1lRGF0YS5wbGF5ZXJzKSkgew0KICAgICAgICAgICAgZ2FtZURhdGEucGxheWVyc1t1aWRdLnRva2VucyA9IFswLCAwLCAwLCAwXTsNCiAgICAgICAgICAgIGdhbWVEYXRhLnBsYXllcnNbdWlkXS5ob21lQ291bnQgPSAwOw0KICAgICAgICB9DQogICAgfQ0KICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCkuc2V0KGdhbWVEYXRhKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2xvYmJpZXMvJyArIGxvYmJ5SWQgKyAnL2dhbWVJZCcpLnNldChnYW1lSWQpOw0KICAgIGF3YWl0IGRiLnJlZignbG9iYmllcy8nICsgbG9iYnlJZCArICcvc3RhdHVzJykuc2V0KCdwbGF5aW5nJyk7DQogICAgZm9yIChjb25zdCB1aWQgb2YgcmVhZHlQbGF5ZXJzKSB7DQogICAgICAgIGF3YWl0IGRiLnJlZignbG9iYmllcy8nICsgbG9iYnlJZCArICcvcGxheWVycy8nICsgdWlkICsgJy9pbkdhbWUnKS5zZXQodHJ1ZSk7DQogICAgfQ0KICAgIHJldHVybiBnYW1lRGF0YTsNCn0NCg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn46yINiq2KfYqNi5INiq2YjZhNuM2K8g2YXYs9uM2LEg2KfYs9iq2KfZhtiv2KfYsdivINmF2Ybahg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQpmdW5jdGlvbiBnZW5lcmF0ZU1hbmNoZVBhdGgoKSB7DQogICAgY29uc3QgcGF0aCA9IFtdOw0KICAgIC8vINi22YTYuSDYqNin2YTYp9uM24wgKNin2LIg2obZviDYqNmHINix2KfYs9iqKQ0KICAgIGZvciAobGV0IGMgPSAxOyBjIDw9IDY7IGMrKykgcGF0aC5wdXNoKHsgcjogNiwgYzogYyB9KTsNCiAgICAvLyDYs9mF2Kog2LHYp9iz2KogKNin2LIg2KjYp9mE2Kcg2KjZhyDZvtin24zbjNmGKQ0KICAgIGZvciAobGV0IHIgPSA1OyByID49IDE7IHItLSkgcGF0aC5wdXNoKHsgcjogciwgYzogNiB9KTsNCiAgICBmb3IgKGxldCByID0gNzsgciA8PSAxMzsgcisrKSBwYXRoLnB1c2goeyByOiByLCBjOiA2IH0pOw0KICAgIC8vINi22YTYuSDZvtin24zbjNmG24wgKNin2LIg2LHYp9iz2Kog2KjZhyDahtm+KQ0KICAgIGZvciAobGV0IGMgPSA3OyBjIDw9IDEzOyBjKyspIHBhdGgucHVzaCh7IHI6IDEzLCBjOiBjIH0pOw0KICAgIC8vINiz2YXYqiDahtm+ICjYp9iyINm+2KfbjNuM2YYg2KjZhyDYqNin2YTYpykNCiAgICBmb3IgKGxldCByID0gMTI7IHIgPj0gODsgci0tKSBwYXRoLnB1c2goeyByOiByLCBjOiAxMyB9KTsNCiAgICBmb3IgKGxldCByID0gNjsgciA+PSAwOyByLS0pIHBhdGgucHVzaCh7IHI6IHIsIGM6IDEzIH0pOw0KICAgIC8vINi22YTYuSDYqNin2YTYp9uM24wgKNin2K/Yp9mF2YcpDQogICAgZm9yIChsZXQgYyA9IDEyOyBjID49IDg7IGMtLSkgcGF0aC5wdXNoKHsgcjogMCwgYzogYyB9KTsNCiAgICAvLyDYs9mF2Kog2obZviAo2KfYr9in2YXZhykNCiAgICBmb3IgKGxldCByID0gMTsgciA8PSA1OyByKyspIHBhdGgucHVzaCh7IHI6IHIsIGM6IDcgfSk7DQogICAgZm9yIChsZXQgciA9IDc7IHIgPD0gMTI7IHIrKykgcGF0aC5wdXNoKHsgcjogciwgYzogNyB9KTsNCiAgICAvLyDYttmE2Lkg2b7Yp9uM24zZhtuMICjYp9iv2KfZhdmHIC0g2KjYp9iy2q/YtNiqINio2Ycg2K7Yp9mG2Ycg2LTYsdmI2LkpDQogICAgZm9yIChsZXQgYyA9IDY7IGMgPj0gMTsgYy0tKSBwYXRoLnB1c2goeyByOiA2LCBjOiBjIH0pOw0KICAgIHJldHVybiBwYXRoOw0KfQ0KDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCi8vIPCfk6Eg2K/YsduM2KfZgdiqINio2KfYstuMDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCmFzeW5jIGZ1bmN0aW9uIGdldEdhbWUoZ2FtZUlkKSB7DQogICAgY29uc3Qgc25hcHNob3QgPSBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQpLm9uY2UoJ3ZhbHVlJyk7DQogICAgcmV0dXJuIHNuYXBzaG90LnZhbCgpOw0KfQ0KDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCi8vIPCfjq8g2KrZiNin2KjYuSDZhdiu2LXZiNi1INin2LPZhSDZgdin2YXbjNmEDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCmFzeW5jIGZ1bmN0aW9uIHNhdmVXb3JkKGdhbWVJZCwgZmllbGQsIHZhbHVlKSB7DQogICAgY29uc3QgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOw0KICAgIGlmICghY3VycmVudFVzZXIpIHRocm93IG5ldyBFcnJvcign2YTYt9mB2Kcg2KfYqNiq2K/YpyDZiNin2LHYryDYtNmI24zYrycpOw0KICAgIGNvbnN0IGdhbWUgPSBhd2FpdCBnZXRHYW1lKGdhbWVJZCk7DQogICAgaWYgKCFnYW1lKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINm+24zYr9inINmG2LTYrycpOw0KICAgIGlmIChnYW1lLnN0YXR1cyAhPT0gJ3BsYXlpbmcnKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINiq2YXYp9mFINi02K/ZhycpOw0KICAgIGNvbnN0IHBsYXllciA9IGdhbWUucGxheWVyc1tjdXJyZW50VXNlci5pZF07DQogICAgaWYgKCFwbGF5ZXIpIHRocm93IG5ldyBFcnJvcign2LTZhdinINiv2LEg2KfbjNmGINio2KfYstuMINmG24zYs9iq24zYrycpOw0KICAgIGlmIChwbGF5ZXIuZmluaXNoZWQpIHRocm93IG5ldyBFcnJvcign2LTZhdinINio2KfYstuMINix2Kcg2KrZhdin2YUg2qnYsdiv2YfigIzYp9uM2K8nKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIGN1cnJlbnRVc2VyLmlkICsgJy93b3Jkcy8nICsgZmllbGQpLnNldCh2YWx1ZSk7DQp9DQoNCmFzeW5jIGZ1bmN0aW9uIGZpbmlzaEdhbWUoZ2FtZUlkKSB7DQogICAgY29uc3QgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOw0KICAgIGlmICghY3VycmVudFVzZXIpIHRocm93IG5ldyBFcnJvcign2YTYt9mB2Kcg2KfYqNiq2K/YpyDZiNin2LHYryDYtNmI24zYrycpOw0KICAgIGNvbnN0IGdhbWUgPSBhd2FpdCBnZXRHYW1lKGdhbWVJZCk7DQogICAgaWYgKCFnYW1lKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINm+24zYr9inINmG2LTYrycpOw0KICAgIGlmIChnYW1lLnN0YXR1cyAhPT0gJ3BsYXlpbmcnKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINiq2YXYp9mFINi02K/ZhycpOw0KICAgIGlmIChnYW1lLnR5cGUgIT09ICdlc20tZmFtaWwnKSB0aHJvdyBuZXcgRXJyb3IoJ9in24zZhiDYqtin2KjYuSDZgdmC2Lcg2KjYsdin24wg2KfYs9mFINmB2KfZhduM2YQg2KfYs9iqJyk7DQogICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9zdGF0dXMnKS5zZXQoJ2ZpbmlzaGVkJyk7DQogICAgY29uc3QgdXBkYXRlcyA9IHt9Ow0KICAgIGZvciAoY29uc3QgdWlkIG9mIE9iamVjdC5rZXlzKGdhbWUucGxheWVycykpIHsNCiAgICAgICAgdXBkYXRlc1snZ2FtZXMvJyArIGdhbWVJZCArICcvcGxheWVycy8nICsgdWlkICsgJy9maW5pc2hlZCddID0gdHJ1ZTsNCiAgICB9DQogICAgYXdhaXQgZGIucmVmKCkudXBkYXRlKHVwZGF0ZXMpOw0KICAgIGNvbnN0IGxvYmJ5SWQgPSBnYW1lLmxvYmJ5SWQ7DQogICAgYXdhaXQgZGIucmVmKCdsb2JiaWVzLycgKyBsb2JieUlkICsgJy9zdGF0dXMnKS5zZXQoJ2ZpbmlzaGVkJyk7DQp9DQoNCmFzeW5jIGZ1bmN0aW9uIG5leHRSb3VuZChnYW1lSWQpIHsNCiAgICBjb25zdCBjdXJyZW50VXNlciA9IGF3YWl0IGdldEN1cnJlbnRVc2VyKCk7DQogICAgaWYgKCFjdXJyZW50VXNlcikgdGhyb3cgbmV3IEVycm9yKCfZhNi32YHYpyDYp9io2KrYr9inINmI2KfYsdivINi02YjbjNivJyk7DQogICAgY29uc3QgZ2FtZSA9IGF3YWl0IGdldEdhbWUoZ2FtZUlkKTsNCiAgICBpZiAoIWdhbWUpIHRocm93IG5ldyBFcnJvcign2KjYp9iy24wg2b7bjNiv2Kcg2YbYtNivJyk7DQogICAgaWYgKGdhbWUudHlwZSAhPT0gJ2VzbS1mYW1pbCcpIHRocm93IG5ldyBFcnJvcign2KfbjNmGINiq2KfYqNi5INmB2YLYtyDYqNix2KfbjCDYp9iz2YUg2YHYp9mF24zZhCDYp9iz2KonKTsNCiAgICBjb25zdCBsZXR0ZXJzID0gJ9in2KjZvtiq2KvYrNqG2K3Yrtiv2LDYsdiy2pjYs9i02LXYtti32LjYudi62YHZgtqp2q/ZhNmF2YbZiNmH24wnOw0KICAgIGNvbnN0IG5ld0xldHRlciA9IGxldHRlcnNbTWF0aC5mbG9vcihNYXRoLnJhbmRvbSgpICogbGV0dGVycy5sZW5ndGgpXTsNCiAgICBjb25zdCB1cGRhdGVzID0ge307DQogICAgZm9yIChjb25zdCB1aWQgb2YgT2JqZWN0LmtleXMoZ2FtZS5wbGF5ZXJzKSkgew0KICAgICAgICB1cGRhdGVzWydnYW1lcy8nICsgZ2FtZUlkICsgJy9wbGF5ZXJzLycgKyB1aWQgKyAnL2ZpbmlzaGVkJ10gPSBmYWxzZTsNCiAgICAgICAgdXBkYXRlc1snZ2FtZXMvJyArIGdhbWVJZCArICcvcGxheWVycy8nICsgdWlkICsgJy93b3JkcyddID0ge307DQogICAgICAgIHVwZGF0ZXNbJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIHVpZCArICcvcm91bmRTY29yZSddID0gMDsNCiAgICB9DQogICAgdXBkYXRlc1snZ2FtZXMvJyArIGdhbWVJZCArICcvbGV0dGVyJ10gPSBuZXdMZXR0ZXI7DQogICAgdXBkYXRlc1snZ2FtZXMvJyArIGdhbWVJZCArICcvc3RhdHVzJ10gPSAncGxheWluZyc7DQogICAgdXBkYXRlc1snZ2FtZXMvJyArIGdhbWVJZCArICcvc3RhcnRUaW1lJ10gPSBEYXRlLm5vdygpOw0KICAgIHVwZGF0ZXNbJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3JvdW5kJ10gPSAoZ2FtZS5yb3VuZCB8fCAxKSArIDE7DQogICAgYXdhaXQgZGIucmVmKCkudXBkYXRlKHVwZGF0ZXMpOw0KICAgIGNvbnN0IGxvYmJ5SWQgPSBnYW1lLmxvYmJ5SWQ7DQogICAgYXdhaXQgZGIucmVmKCdsb2JiaWVzLycgKyBsb2JieUlkICsgJy9zdGF0dXMnKS5zZXQoJ3BsYXlpbmcnKTsNCn0NCg0KYXN5bmMgZnVuY3Rpb24gc2V0Um91bmRTY29yZShnYW1lSWQsIHVpZCwgc2NvcmUpIHsNCiAgICBjb25zdCBjdXJyZW50VXNlciA9IGF3YWl0IGdldEN1cnJlbnRVc2VyKCk7DQogICAgaWYgKCFjdXJyZW50VXNlcikgdGhyb3cgbmV3IEVycm9yKCfZhNi32YHYpyDYp9io2KrYr9inINmI2KfYsdivINi02YjbjNivJyk7DQogICAgaWYgKGN1cnJlbnRVc2VyLmlkICE9PSB1aWQpIHRocm93IG5ldyBFcnJvcign2LTZhdinINmB2YLYtyDZhduM4oCM2KrZiNin2YbbjNivINin2YXYqtuM2KfYsiDYrtmI2K8g2LHYpyDYqti624zbjNixINiv2YfbjNivJyk7DQogICAgY29uc3QgZ2FtZSA9IGF3YWl0IGdldEdhbWUoZ2FtZUlkKTsNCiAgICBpZiAoIWdhbWUpIHRocm93IG5ldyBFcnJvcign2KjYp9iy24wg2b7bjNiv2Kcg2YbYtNivJyk7DQogICAgaWYgKGdhbWUuc3RhdHVzICE9PSAnZmluaXNoZWQnKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINiq2YXYp9mFINmG2LTYr9mHINin2LPYqicpOw0KICAgIGNvbnN0IHBsYXllciA9IGdhbWUucGxheWVyc1t1aWRdOw0KICAgIGlmICghcGxheWVyKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuM2qnZhiDZvtuM2K/YpyDZhti02K8nKTsNCiAgICBjb25zdCBuZXdUb3RhbCA9IChwbGF5ZXIudG90YWxTY29yZSB8fCAwKSArIHNjb3JlOw0KICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvcGxheWVycy8nICsgdWlkICsgJy9yb3VuZFNjb3JlJykuc2V0KHNjb3JlKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIHVpZCArICcvdG90YWxTY29yZScpLnNldChuZXdUb3RhbCk7DQp9DQoNCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KLy8g8J+DjyDYqtmI2KfYqNi5INmF2K7YtdmI2LUg2KjYp9iy24wg2K3aqdmFIChIb2ttKQ0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQphc3luYyBmdW5jdGlvbiBpbml0SG9rbUdhbWUoZ2FtZUlkKSB7DQogICAgY29uc3QgZ2FtZSA9IGF3YWl0IGdldEdhbWUoZ2FtZUlkKTsNCiAgICBpZiAoIWdhbWUgfHwgZ2FtZS50eXBlICE9PSAnaG9rbScpIHJldHVybjsNCiAgICBpZiAoZ2FtZS5jYXJkcyAmJiBPYmplY3Qua2V5cyhnYW1lLmNhcmRzKS5sZW5ndGggPiAwKSByZXR1cm47DQogICAgY29uc3Qgc3VpdHMgPSBbJ+KZoCcsICfimaUnLCAn4pmmJywgJ+KZoyddOw0KICAgIGNvbnN0IHJhbmtzID0gWycyJywnMycsJzQnLCc1JywnNicsJzcnLCc4JywnOScsJzEwJywnSicsJ1EnLCdLJywnQSddOw0KICAgIGxldCBkZWNrID0gW107DQogICAgZm9yIChsZXQgcyBvZiBzdWl0cykgZm9yIChsZXQgciBvZiByYW5rcykgZGVjay5wdXNoKHIrcyk7DQogICAgc2h1ZmZsZShkZWNrKTsNCiAgICBjb25zdCBwbGF5ZXJJZHMgPSBPYmplY3Qua2V5cyhnYW1lLnBsYXllcnMpOw0KICAgIGNvbnN0IGNhcmRzUGVyUGxheWVyID0gNTsNCiAgICBjb25zdCBjYXJkcyA9IHt9Ow0KICAgIGxldCBpZHggPSAwOw0KICAgIGZvciAobGV0IHVpZCBvZiBwbGF5ZXJJZHMpIHsNCiAgICAgICAgY2FyZHNbdWlkXSA9IGRlY2suc2xpY2UoaWR4LCBpZHgrY2FyZHNQZXJQbGF5ZXIpOw0KICAgICAgICBpZHggKz0gY2FyZHNQZXJQbGF5ZXI7DQogICAgfQ0KICAgIGNvbnN0IHVwZGF0ZXMgPSB7DQogICAgICAgICdjYXJkcyc6IGNhcmRzLA0KICAgICAgICAncmVtYWluaW5nJzogZGVjay5zbGljZShpZHgpLA0KICAgICAgICAnY3VycmVudFR1cm4nOiBwbGF5ZXJJZHNbMF0sDQogICAgICAgICdwbGF5ZWQnOiB7fSwNCiAgICAgICAgJ2xhc3RXaW5uZXInOiBudWxsDQogICAgfTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQpLnVwZGF0ZSh1cGRhdGVzKTsNCn0NCg0KYXN5bmMgZnVuY3Rpb24gcGxheUhva21DYXJkKGdhbWVJZCwgdWlkLCBjYXJkKSB7DQogICAgY29uc3QgZ2FtZSA9IGF3YWl0IGdldEdhbWUoZ2FtZUlkKTsNCiAgICBpZiAoIWdhbWUpIHRocm93IG5ldyBFcnJvcign2KjYp9iy24wg2b7bjNiv2Kcg2YbYtNivJyk7DQogICAgaWYgKGdhbWUuc3RhdHVzICE9PSAncGxheWluZycpIHRocm93IG5ldyBFcnJvcign2KjYp9iy24wg2KrZhdin2YUg2LTYr9mHJyk7DQogICAgaWYgKGdhbWUuY3VycmVudFR1cm4gIT09IHVpZCkgdGhyb3cgbmV3IEVycm9yKCfZhtmI2KjYqiDYtNmF2Kcg2YbbjNiz2KonKTsNCiAgICBjb25zdCBoYW5kID0gZ2FtZS5jYXJkc1t1aWRdOw0KICAgIGlmICghaGFuZCkgdGhyb3cgbmV3IEVycm9yKCfYr9iz2Kog2LTZhdinINm+24zYr9inINmG2LTYrycpOw0KICAgIGNvbnN0IGluZGV4ID0gaGFuZC5pbmRleE9mKGNhcmQpOw0KICAgIGlmIChpbmRleCA9PT0gLTEpIHRocm93IG5ldyBFcnJvcign2qnYp9ix2Kog2K/YsSDYr9iz2Kog2LTZhdinINmG24zYs9iqJyk7DQogICAgaGFuZC5zcGxpY2UoaW5kZXgsIDEpOw0KICAgIGNvbnN0IHBsYXllZCA9IGdhbWUucGxheWVkIHx8IHt9Ow0KICAgIHBsYXllZFt1aWRdID0gY2FyZDsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL2NhcmRzLycgKyB1aWQpLnNldChoYW5kKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllZCcpLnNldChwbGF5ZWQpOw0KICAgIGNvbnN0IHBsYXllcklkcyA9IE9iamVjdC5rZXlzKGdhbWUucGxheWVycyk7DQogICAgY29uc3QgY3VycmVudElkeCA9IHBsYXllcklkcy5pbmRleE9mKHVpZCk7DQogICAgbGV0IG5leHRJZHggPSAoY3VycmVudElkeCArIDEpICUgcGxheWVySWRzLmxlbmd0aDsNCiAgICBsZXQgbmV4dFBsYXllciA9IHBsYXllcklkc1tuZXh0SWR4XTsNCiAgICBpZiAoT2JqZWN0LmtleXMocGxheWVkKS5sZW5ndGggPT09IHBsYXllcklkcy5sZW5ndGgpIHsNCiAgICAgICAgbGV0IHdpbm5lciA9IG51bGw7DQogICAgICAgIGxldCBtYXhSYW5rID0gLTE7DQogICAgICAgIGNvbnN0IHJhbmtPcmRlciA9IHsnMic6MiwnMyc6MywnNCc6NCwnNSc6NSwnNic6NiwnNyc6NywnOCc6OCwnOSc6OSwnMTAnOjEwLCdKJzoxMSwnUSc6MTIsJ0snOjEzLCdBJzoxNH07DQogICAgICAgIGZvciAoY29uc3QgW3BpZCwgY2FyZFN0cl0gb2YgT2JqZWN0LmVudHJpZXMocGxheWVkKSkgew0KICAgICAgICAgICAgY29uc3QgcmFuayA9IHJhbmtPcmRlcltjYXJkU3RyLnNsaWNlKDAsIC0xKV0gfHwgMDsNCiAgICAgICAgICAgIGlmIChyYW5rID4gbWF4UmFuaykgew0KICAgICAgICAgICAgICAgIG1heFJhbmsgPSByYW5rOw0KICAgICAgICAgICAgICAgIHdpbm5lciA9IHBpZDsNCiAgICAgICAgICAgIH0NCiAgICAgICAgfQ0KICAgICAgICBjb25zdCB3aW5uZXJTY29yZSA9IChnYW1lLnBsYXllcnNbd2lubmVyXT8udG90YWxTY29yZSB8fCAwKSArIDE7DQogICAgICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvcGxheWVycy8nICsgd2lubmVyICsgJy90b3RhbFNjb3JlJykuc2V0KHdpbm5lclNjb3JlKTsNCiAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9wbGF5ZWQnKS5zZXQoe30pOw0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL2xhc3RXaW5uZXInKS5zZXQod2lubmVyKTsNCiAgICAgICAgbGV0IGFsbEVtcHR5ID0gdHJ1ZTsNCiAgICAgICAgZm9yIChjb25zdCBwaWQgb2YgcGxheWVySWRzKSB7DQogICAgICAgICAgICBjb25zdCBoID0gKGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvY2FyZHMvJyArIHBpZCkub25jZSgndmFsdWUnKSkudmFsKCkgfHwgW107DQogICAgICAgICAgICBpZiAoaC5sZW5ndGggPiAwKSBhbGxFbXB0eSA9IGZhbHNlOw0KICAgICAgICB9DQogICAgICAgIGlmIChhbGxFbXB0eSkgew0KICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9zdGF0dXMnKS5zZXQoJ2ZpbmlzaGVkJyk7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICBjb25zdCB3aW5uZXJJZHggPSBwbGF5ZXJJZHMuaW5kZXhPZih3aW5uZXIpOw0KICAgICAgICAgICAgbmV4dElkeCA9ICh3aW5uZXJJZHggKyAxKSAlIHBsYXllcklkcy5sZW5ndGg7DQogICAgICAgICAgICBuZXh0UGxheWVyID0gcGxheWVySWRzW25leHRJZHhdOw0KICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9jdXJyZW50VHVybicpLnNldChuZXh0UGxheWVyKTsNCiAgICAgICAgfQ0KICAgIH0gZWxzZSB7DQogICAgICAgIGxldCBmb3VuZCA9IGZhbHNlOw0KICAgICAgICBmb3IgKGxldCBpID0gMDsgaSA8IHBsYXllcklkcy5sZW5ndGg7IGkrKykgew0KICAgICAgICAgICAgY29uc3QgaWR4ID0gKGN1cnJlbnRJZHggKyAxICsgaSkgJSBwbGF5ZXJJZHMubGVuZ3RoOw0KICAgICAgICAgICAgY29uc3QgcGlkID0gcGxheWVySWRzW2lkeF07DQogICAgICAgICAgICBjb25zdCBoID0gKGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvY2FyZHMvJyArIHBpZCkub25jZSgndmFsdWUnKSkudmFsKCkgfHwgW107DQogICAgICAgICAgICBpZiAoaC5sZW5ndGggPiAwKSB7DQogICAgICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9jdXJyZW50VHVybicpLnNldChwaWQpOw0KICAgICAgICAgICAgICAgIGZvdW5kID0gdHJ1ZTsNCiAgICAgICAgICAgICAgICBicmVhazsNCiAgICAgICAgICAgIH0NCiAgICAgICAgfQ0KICAgICAgICBpZiAoIWZvdW5kKSB7DQogICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3N0YXR1cycpLnNldCgnZmluaXNoZWQnKTsNCiAgICAgICAgfQ0KICAgIH0NCn0NCg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn46yINiq2YjYp9io2Lkg2YXYrti12YjYtSDYqNin2LLbjCDZhdmG2oYgKE1hbmNoZSkgLSDZhtiz2K7ZhyDYp9iz2KrYp9mG2K/Yp9ix2K8g2qnYp9mF2YQNCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KDQovLyDYp9mG2KrYrtin2Kgg2LHZhtqvINiq2YjYs9i3INio2KfYstuM2qnZhg0KYXN5bmMgZnVuY3Rpb24gc2VsZWN0TWFuY2hlQ29sb3IoZ2FtZUlkLCB1aWQsIGNvbG9ySW5kZXgpIHsNCiAgICBjb25zdCBnYW1lID0gYXdhaXQgZ2V0R2FtZShnYW1lSWQpOw0KICAgIGlmICghZ2FtZSB8fCBnYW1lLnN0YXR1cyAhPT0gJ2NvbG9yX3NlbGVjdCcpIHRocm93IG5ldyBFcnJvcign2LLZhdin2YYg2KfZhtiq2K7Yp9ioINix2YbaryDYqtmF2KfZhSDYtNiv2YcnKTsNCiAgICBjb25zdCBjb2xvck1hcCA9IGdhbWUuY29sb3JNYXA7DQogICAgZm9yIChjb25zdCBba2V5LCB2YWxdIG9mIE9iamVjdC5lbnRyaWVzKGNvbG9yTWFwKSkgew0KICAgICAgICBpZiAodmFsLmNvbG9ySW5kZXggPT09IGNvbG9ySW5kZXggJiYga2V5ICE9PSB1aWQpIHsNCiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcign2KfbjNmGINix2YbaryDZgtio2YTYp9mLINin2YbYqtiu2KfYqCDYtNiv2Ycg2KfYs9iqJyk7DQogICAgICAgIH0NCiAgICB9DQogICAgY29sb3JNYXBbdWlkXSA9IHsgc2VsZWN0ZWQ6IHRydWUsIGNvbG9ySW5kZXg6IGNvbG9ySW5kZXggfTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL2NvbG9yTWFwLycgKyB1aWQpLnNldChjb2xvck1hcFt1aWRdKTsNCiAgICBjb25zdCBhbGxTZWxlY3RlZCA9IE9iamVjdC52YWx1ZXMoY29sb3JNYXApLmV2ZXJ5KHYgPT4gdi5zZWxlY3RlZCA9PT0gdHJ1ZSk7DQogICAgaWYgKGFsbFNlbGVjdGVkKSB7DQogICAgICAgIGF3YWl0IGZpbmFsaXplTWFuY2hlQ29sb3JzKGdhbWVJZCk7DQogICAgfQ0KfQ0KDQovLyDZhtmH2KfbjNuM4oCM2LPYp9iy24wg2KfZhtiq2K7Yp9ioINix2Ybar+KAjNmH2KcNCmFzeW5jIGZ1bmN0aW9uIGZpbmFsaXplTWFuY2hlQ29sb3JzKGdhbWVJZCkgew0KICAgIGNvbnN0IGdhbWUgPSBhd2FpdCBnZXRHYW1lKGdhbWVJZCk7DQogICAgaWYgKCFnYW1lIHx8IGdhbWUuc3RhdHVzICE9PSAnY29sb3Jfc2VsZWN0JykgcmV0dXJuOw0KICAgIGNvbnN0IGNvbG9yTWFwID0gZ2FtZS5jb2xvck1hcDsNCiAgICBjb25zdCBwbGF5ZXJJZHMgPSBPYmplY3Qua2V5cyhnYW1lLnBsYXllcnMpOw0KICAgIGNvbnN0IGF2YWlsYWJsZUNvbG9ycyA9IFswLCAxLCAyLCAzXTsNCiAgICBjb25zdCB0YWtlbiA9IFtdOw0KICAgIGZvciAoY29uc3QgW3VpZCwgdmFsXSBvZiBPYmplY3QuZW50cmllcyhjb2xvck1hcCkpIHsNCiAgICAgICAgaWYgKHZhbC5zZWxlY3RlZCkgdGFrZW4ucHVzaCh2YWwuY29sb3JJbmRleCk7DQogICAgfQ0KICAgIGNvbnN0IGF2YWlsYWJsZSA9IGF2YWlsYWJsZUNvbG9ycy5maWx0ZXIoYyA9PiAhdGFrZW4uaW5jbHVkZXMoYykpOw0KICAgIGZvciAoY29uc3QgdWlkIG9mIHBsYXllcklkcykgew0KICAgICAgICBpZiAoIWNvbG9yTWFwW3VpZF0gfHwgIWNvbG9yTWFwW3VpZF0uc2VsZWN0ZWQpIHsNCiAgICAgICAgICAgIGNvbnN0IHJhbmRJZHggPSBNYXRoLmZsb29yKE1hdGgucmFuZG9tKCkgKiBhdmFpbGFibGUubGVuZ3RoKTsNCiAgICAgICAgICAgIGNvbnN0IGNvbG9ySWR4ID0gYXZhaWxhYmxlLnNwbGljZShyYW5kSWR4LCAxKVswXTsNCiAgICAgICAgICAgIGNvbG9yTWFwW3VpZF0gPSB7IHNlbGVjdGVkOiB0cnVlLCBjb2xvckluZGV4OiBjb2xvcklkeCB9Ow0KICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9jb2xvck1hcC8nICsgdWlkKS5zZXQoY29sb3JNYXBbdWlkXSk7DQogICAgICAgIH0NCiAgICB9DQogICAgY29uc3Qgb3JkZXIgPSBwbGF5ZXJJZHMuc29ydCgoYSwgYikgPT4gY29sb3JNYXBbYV0uY29sb3JJbmRleCAtIGNvbG9yTWFwW2JdLmNvbG9ySW5kZXgpOw0KICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvdHVybk9yZGVyJykuc2V0KG9yZGVyKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL2N1cnJlbnRUdXJuJykuc2V0KG9yZGVyWzBdKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3N0YXR1cycpLnNldCgncGxheWluZycpOw0KICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvcGhhc2UnKS5zZXQoJ3JvbGwnKTsNCn0NCg0KLy8g2KrYp9izINin2YbYr9in2K7YqtmGDQphc3luYyBmdW5jdGlvbiByb2xsRGljZShnYW1lSWQsIHVpZCkgew0KICAgIGNvbnN0IGdhbWUgPSBhd2FpdCBnZXRHYW1lKGdhbWVJZCk7DQogICAgaWYgKCFnYW1lKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINm+24zYr9inINmG2LTYrycpOw0KICAgIGlmIChnYW1lLnN0YXR1cyAhPT0gJ3BsYXlpbmcnKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINiq2YXYp9mFINi02K/ZhycpOw0KICAgIGlmIChnYW1lLmN1cnJlbnRUdXJuICE9PSB1aWQpIHRocm93IG5ldyBFcnJvcign2YbZiNio2Kog2LTZhdinINmG24zYs9iqJyk7DQogICAgaWYgKGdhbWUucGhhc2UgIT09ICdyb2xsJykgdGhyb3cgbmV3IEVycm9yKCfYp9qp2YbZiNmGINiy2YXYp9mGINiq2KfYsyDYp9mG2K/Yp9iu2KrZhiDZhtuM2LPYqicpOw0KICAgIGNvbnN0IGRpY2UgPSBNYXRoLmZsb29yKE1hdGgucmFuZG9tKCkgKiA2KSArIDE7DQogICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9kaWNlJykuc2V0KGRpY2UpOw0KICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvcGhhc2UnKS5zZXQoJ21vdmUnKTsNCiAgICByZXR1cm4gZGljZTsNCn0NCg0KLy8g2K3Ysdqp2Kog2YXZh9ix2YcgKNmG2LPYrtmHINin2LPYqtin2YbYr9in2LHYryDaqdin2YXZhCkNCmFzeW5jIGZ1bmN0aW9uIG1vdmVNYW5jaGVUb2tlbihnYW1lSWQsIHVpZCwgdG9rZW5JbmRleCkgew0KICAgIGNvbnN0IGdhbWUgPSBhd2FpdCBnZXRHYW1lKGdhbWVJZCk7DQogICAgaWYgKCFnYW1lKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINm+24zYr9inINmG2LTYrycpOw0KICAgIGlmIChnYW1lLnN0YXR1cyAhPT0gJ3BsYXlpbmcnKSB0aHJvdyBuZXcgRXJyb3IoJ9io2KfYstuMINiq2YXYp9mFINi02K/ZhycpOw0KICAgIGlmIChnYW1lLmN1cnJlbnRUdXJuICE9PSB1aWQpIHRocm93IG5ldyBFcnJvcign2YbZiNio2Kog2LTZhdinINmG24zYs9iqJyk7DQogICAgaWYgKGdhbWUucGhhc2UgIT09ICdtb3ZlJykgdGhyb3cgbmV3IEVycm9yKCfYp9qp2YbZiNmGINiy2YXYp9mGINit2LHaqdiqINmG24zYs9iqJyk7DQoNCiAgICBjb25zdCBwbGF5ZXIgPSBnYW1lLnBsYXllcnNbdWlkXTsNCiAgICBjb25zdCBkaWNlID0gZ2FtZS5kaWNlOw0KICAgIGNvbnN0IGNvbG9ySWR4ID0gZ2FtZS5jb2xvck1hcFt1aWRdLmNvbG9ySW5kZXg7DQogICAgY29uc3QgY29sb3JOYW1lcyA9IFsncmVkJywgJ2dyZWVuJywgJ3llbGxvdycsICdibHVlJ107DQogICAgY29uc3QgY29sb3JOYW1lID0gY29sb3JOYW1lc1tjb2xvcklkeF07DQogICAgY29uc3QgYm9hcmRQYXRoID0gZ2FtZS5ib2FyZFBhdGg7DQogICAgY29uc3QgcGF0aExlbmd0aCA9IGJvYXJkUGF0aC5sZW5ndGg7IC8vIDUyDQoNCiAgICBsZXQgdG9rZW5Qb3MgPSBwbGF5ZXIudG9rZW5zW3Rva2VuSW5kZXhdOw0KICAgIGNvbnN0IGlzU2l4ID0gKGRpY2UgPT09IDYpOw0KDQogICAgLy8gLS0tINit2KfZhNiqIDE6INmF2YfYsdmHINiv2LEg2K7Yp9mG2Ycg2KfYs9iqICgwKSDZiCDYudiv2K8gNiDYotmF2K8gLS0tDQogICAgaWYgKHRva2VuUG9zID09PSAwICYmIGlzU2l4KSB7DQogICAgICAgIGNvbnN0IHN0YXJ0UG9zID0gY29sb3JJZHggKiAxMyArIDE7IC8vIDEsIDE0LCAyNywgNDANCiAgICAgICAgcGxheWVyLnRva2Vuc1t0b2tlbkluZGV4XSA9IHN0YXJ0UG9zOw0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIHVpZCArICcvdG9rZW5zJykuc2V0KHBsYXllci50b2tlbnMpOw0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BoYXNlJykuc2V0KCdyb2xsJyk7DQogICAgICAgIGF3YWl0IG5leHRUdXJuKGdhbWVJZCwgdWlkLCB0cnVlKTsNCiAgICAgICAgcmV0dXJuOw0KICAgIH0NCg0KICAgIC8vIC0tLSDYrdin2YTYqiAyOiDZhdmH2LHZhyDYr9ixINmF2LPbjNixINin2LXZhNuMINuM2Kcg2LPYqtmI2YYg2LHZhtqv24wg2KfYs9iqIC0tLQ0KICAgIGlmICh0b2tlblBvcyA+IDAgJiYgdG9rZW5Qb3MgPD0gNTcpIHsNCiAgICAgICAgbGV0IG5ld1BvcyA9IHRva2VuUG9zICsgZGljZTsNCg0KICAgICAgICAvLyAtLS0g2KjYrti0IDItMTog2K3Ysdqp2Kog2K/YsSDZhdiz24zYsSDYp9i12YTbjCAoMSDYqtinIDUyKSAtLS0NCiAgICAgICAgaWYgKHRva2VuUG9zIDw9IHBhdGhMZW5ndGgpIHsNCiAgICAgICAgICAgIC8vINin2q/YsSDYp9iyINmF2LPbjNixINin2LXZhNuMINiu2KfYsdisINi02K/YjCDZiNin2LHYryDYs9iq2YjZhiDYsdmG2q/bjCDZhduM4oCM2LTZiNivDQogICAgICAgICAgICBpZiAobmV3UG9zID4gcGF0aExlbmd0aCkgew0KICAgICAgICAgICAgICAgIGxldCBjb2xQb3MgPSBuZXdQb3MgLSBwYXRoTGVuZ3RoOyAvLyAxINiq2KcgNg0KICAgICAgICAgICAgICAgIGlmIChjb2xQb3MgPiA2KSB7DQogICAgICAgICAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcign2LnYr9ivINiq2KfYsyDYqNix2KfbjCDZiNix2YjYryDYqNmHINiu2KfZhtmHINiv2YLbjNmCINmG24zYs9iqJyk7DQogICAgICAgICAgICAgICAgfQ0KICAgICAgICAgICAgICAgIHBsYXllci50b2tlbnNbdG9rZW5JbmRleF0gPSA1MiArIGNvbFBvczsNCiAgICAgICAgICAgICAgICBpZiAoY29sUG9zID09PSA2KSB7DQogICAgICAgICAgICAgICAgICAgIHBsYXllci5ob21lQ291bnQgPSAocGxheWVyLmhvbWVDb3VudCB8fCAwKSArIDE7DQogICAgICAgICAgICAgICAgICAgIHBsYXllci50b2tlbnNbdG9rZW5JbmRleF0gPSAwOw0KICAgICAgICAgICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIHVpZCArICcvaG9tZUNvdW50Jykuc2V0KHBsYXllci5ob21lQ291bnQpOw0KICAgICAgICAgICAgICAgICAgICBpZiAocGxheWVyLmhvbWVDb3VudCA+PSA0KSB7DQogICAgICAgICAgICAgICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3dpbm5lcicpLnNldCh1aWQpOw0KICAgICAgICAgICAgICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9zdGF0dXMnKS5zZXQoJ2ZpbmlzaGVkJyk7DQogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm47DQogICAgICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgICAgICB9DQogICAgICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9wbGF5ZXJzLycgKyB1aWQgKyAnL3Rva2VucycpLnNldChwbGF5ZXIudG9rZW5zKTsNCiAgICAgICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BoYXNlJykuc2V0KCdyb2xsJyk7DQogICAgICAgICAgICAgICAgYXdhaXQgbmV4dFR1cm4oZ2FtZUlkLCB1aWQsIGlzU2l4KTsNCiAgICAgICAgICAgICAgICByZXR1cm47DQogICAgICAgICAgICB9DQoNCiAgICAgICAgICAgIC8vIC0tLSDYrdix2qnYqiDYudin2K/bjCDYr9ixINmF2LPbjNixINin2LXZhNuMIC0tLQ0KICAgICAgICAgICAgLy8g2KjYsdix2LPbjCDYrtin2YbZhyDYp9mF2YYgKNmF2LbYsdioIDcpDQogICAgICAgICAgICBjb25zdCBpc1NhZmUgPSAobmV3UG9zICUgNyA9PT0gMCk7DQogICAgICAgICAgICBpZiAoIWlzU2FmZSkgew0KICAgICAgICAgICAgICAgIC8vINi22LHYqNmHINiy2K/ZhiDYqNmHINit2LHbjNmBDQogICAgICAgICAgICAgICAgZm9yIChjb25zdCBbb3RoZXJVaWQsIG90aGVyUGxheWVyXSBvZiBPYmplY3QuZW50cmllcyhnYW1lLnBsYXllcnMpKSB7DQogICAgICAgICAgICAgICAgICAgIGlmIChvdGhlclVpZCA9PT0gdWlkKSBjb250aW51ZTsNCiAgICAgICAgICAgICAgICAgICAgY29uc3Qgb3RoZXJUb2tlbnMgPSBvdGhlclBsYXllci50b2tlbnM7DQogICAgICAgICAgICAgICAgICAgIGZvciAobGV0IGkgPSAwOyBpIDwgb3RoZXJUb2tlbnMubGVuZ3RoOyBpKyspIHsNCiAgICAgICAgICAgICAgICAgICAgICAgIGlmIChvdGhlclRva2Vuc1tpXSA9PT0gbmV3UG9zICYmIG90aGVyVG9rZW5zW2ldID4gMCAmJiBvdGhlclRva2Vuc1tpXSA8PSBwYXRoTGVuZ3RoKSB7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgb3RoZXJQbGF5ZXIudG9rZW5zW2ldID0gMDsNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIG90aGVyVWlkICsgJy90b2tlbnMnKS5zZXQob3RoZXJQbGF5ZXIudG9rZW5zKTsNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBicmVhazsNCiAgICAgICAgICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgICAgICAgICAgfQ0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgIH0NCiAgICAgICAgICAgIHBsYXllci50b2tlbnNbdG9rZW5JbmRleF0gPSBuZXdQb3M7DQogICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIHVpZCArICcvdG9rZW5zJykuc2V0KHBsYXllci50b2tlbnMpOw0KICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9waGFzZScpLnNldCgncm9sbCcpOw0KICAgICAgICAgICAgYXdhaXQgbmV4dFR1cm4oZ2FtZUlkLCB1aWQsIGlzU2l4KTsNCiAgICAgICAgICAgIHJldHVybjsNCiAgICAgICAgfQ0KDQogICAgICAgIC8vIC0tLSDYqNiu2LQgMi0yOiDYrdix2qnYqiDYr9ixINiz2KrZiNmGINix2Ybar9uMICg1MyDYqtinIDU3KSAtLS0NCiAgICAgICAgZWxzZSBpZiAodG9rZW5Qb3MgPiBwYXRoTGVuZ3RoICYmIHRva2VuUG9zIDwgNTgpIHsNCiAgICAgICAgICAgIGxldCBjb2xQb3MgPSB0b2tlblBvcyAtIHBhdGhMZW5ndGg7IC8vIDEg2KrYpyA1DQogICAgICAgICAgICBsZXQgbmV3Q29sUG9zID0gY29sUG9zICsgZGljZTsNCiAgICAgICAgICAgIGlmIChuZXdDb2xQb3MgPiA2KSB7DQogICAgICAgICAgICAgICAgdGhyb3cgbmV3IEVycm9yKCfYudiv2K8g2KrYp9izINio2LHYp9uMINmI2LHZiNivINio2Ycg2K7Yp9mG2Ycg2K/ZgtuM2YIg2YbbjNiz2KonKTsNCiAgICAgICAgICAgIH0NCiAgICAgICAgICAgIHBsYXllci50b2tlbnNbdG9rZW5JbmRleF0gPSA1MiArIG5ld0NvbFBvczsNCiAgICAgICAgICAgIGlmIChuZXdDb2xQb3MgPT09IDYpIHsNCiAgICAgICAgICAgICAgICBwbGF5ZXIuaG9tZUNvdW50ID0gKHBsYXllci5ob21lQ291bnQgfHwgMCkgKyAxOw0KICAgICAgICAgICAgICAgIHBsYXllci50b2tlbnNbdG9rZW5JbmRleF0gPSAwOw0KICAgICAgICAgICAgICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvcGxheWVycy8nICsgdWlkICsgJy9ob21lQ291bnQnKS5zZXQocGxheWVyLmhvbWVDb3VudCk7DQogICAgICAgICAgICAgICAgaWYgKHBsYXllci5ob21lQ291bnQgPj0gNCkgew0KICAgICAgICAgICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3dpbm5lcicpLnNldCh1aWQpOw0KICAgICAgICAgICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3N0YXR1cycpLnNldCgnZmluaXNoZWQnKTsNCiAgICAgICAgICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgIH0NCiAgICAgICAgICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvcGxheWVycy8nICsgdWlkICsgJy90b2tlbnMnKS5zZXQocGxheWVyLnRva2Vucyk7DQogICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BoYXNlJykuc2V0KCdyb2xsJyk7DQogICAgICAgICAgICBhd2FpdCBuZXh0VHVybihnYW1lSWQsIHVpZCwgaXNTaXgpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQogICAgfQ0KICAgIHRocm93IG5ldyBFcnJvcign2YXZh9ix2Ycg2YLYp9io2YQg2K3Ysdqp2Kog2YbbjNiz2KonKTsNCn0NCg0KLy8g2obYsdiu2LQg2YbZiNio2KoNCmFzeW5jIGZ1bmN0aW9uIG5leHRUdXJuKGdhbWVJZCwgY3VycmVudFVpZCwgaXNTaXgpIHsNCiAgICBjb25zdCBnYW1lID0gYXdhaXQgZ2V0R2FtZShnYW1lSWQpOw0KICAgIGlmICghZ2FtZSkgcmV0dXJuOw0KICAgIGlmIChnYW1lLnN0YXR1cyAhPT0gJ3BsYXlpbmcnKSByZXR1cm47DQoNCiAgICBjb25zdCB0dXJuT3JkZXIgPSBnYW1lLnR1cm5PcmRlcjsNCiAgICBpZiAoIXR1cm5PcmRlciB8fCB0dXJuT3JkZXIubGVuZ3RoID09PSAwKSByZXR1cm47DQoNCiAgICBjb25zdCBjdXJyZW50SWR4ID0gdHVybk9yZGVyLmluZGV4T2YoY3VycmVudFVpZCk7DQogICAgbGV0IG5leHRJZHggPSAoY3VycmVudElkeCArIDEpICUgdHVybk9yZGVyLmxlbmd0aDsNCg0KICAgIGlmIChpc1NpeCkgew0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL2N1cnJlbnRUdXJuJykuc2V0KGN1cnJlbnRVaWQpOw0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BoYXNlJykuc2V0KCdyb2xsJyk7DQogICAgICAgIHJldHVybjsNCiAgICB9DQoNCiAgICBsZXQgYXR0ZW1wdHMgPSAwOw0KICAgIHdoaWxlIChhdHRlbXB0cyA8IHR1cm5PcmRlci5sZW5ndGgpIHsNCiAgICAgICAgY29uc3QgbmV4dFBsYXllciA9IHR1cm5PcmRlcltuZXh0SWR4XTsNCiAgICAgICAgaWYgKCFnYW1lLnBsYXllcnNbbmV4dFBsYXllcl0/LmZpbmlzaGVkKSB7DQogICAgICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL2N1cnJlbnRUdXJuJykuc2V0KG5leHRQbGF5ZXIpOw0KICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9waGFzZScpLnNldCgncm9sbCcpOw0KICAgICAgICAgICAgcmV0dXJuOw0KICAgICAgICB9DQogICAgICAgIG5leHRJZHggPSAobmV4dElkeCArIDEpICUgdHVybk9yZGVyLmxlbmd0aDsNCiAgICAgICAgYXR0ZW1wdHMrKzsNCiAgICB9DQogICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9zdGF0dXMnKS5zZXQoJ2ZpbmlzaGVkJyk7DQp9DQoNCi8vINin2KzYsdin24wg2YbZiNio2Kog2KjYp9iqDQphc3luYyBmdW5jdGlvbiBydW5Cb3RUdXJuKGdhbWVJZCwgYm90VWlkKSB7DQogICAgY29uc3QgZ2FtZSA9IGF3YWl0IGdldEdhbWUoZ2FtZUlkKTsNCiAgICBpZiAoIWdhbWUgfHwgZ2FtZS5zdGF0dXMgIT09ICdwbGF5aW5nJykgcmV0dXJuOw0KICAgIGlmIChnYW1lLmN1cnJlbnRUdXJuICE9PSBib3RVaWQpIHJldHVybjsNCiAgICBpZiAoZ2FtZS5waGFzZSAhPT0gJ3JvbGwnKSByZXR1cm47DQoNCiAgICBjb25zdCBkaWNlID0gTWF0aC5mbG9vcihNYXRoLnJhbmRvbSgpICogNikgKyAxOw0KICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvZGljZScpLnNldChkaWNlKTsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BoYXNlJykuc2V0KCdtb3ZlJyk7DQoNCiAgICBjb25zdCBwbGF5ZXIgPSBnYW1lLnBsYXllcnNbYm90VWlkXTsNCiAgICBsZXQgbW92ZWQgPSBmYWxzZTsNCiAgICBmb3IgKGxldCBpID0gMDsgaSA8IHBsYXllci50b2tlbnMubGVuZ3RoOyBpKyspIHsNCiAgICAgICAgdHJ5IHsNCiAgICAgICAgICAgIGNvbnN0IHRva2VuUG9zID0gcGxheWVyLnRva2Vuc1tpXTsNCiAgICAgICAgICAgIGlmICh0b2tlblBvcyA9PT0gMCAmJiBkaWNlICE9PSA2KSBjb250aW51ZTsNCiAgICAgICAgICAgIGlmICh0b2tlblBvcyA+IDAgJiYgdG9rZW5Qb3MgPCA1Nykgew0KICAgICAgICAgICAgICAgIGF3YWl0IG1vdmVNYW5jaGVUb2tlbihnYW1lSWQsIGJvdFVpZCwgaSk7DQogICAgICAgICAgICAgICAgbW92ZWQgPSB0cnVlOw0KICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9IGNhdGNoIChlKSB7DQogICAgICAgICAgICBjb250aW51ZTsNCiAgICAgICAgfQ0KICAgIH0NCiAgICBpZiAoIW1vdmVkKSB7DQogICAgICAgIGF3YWl0IG5leHRUdXJuKGdhbWVJZCwgYm90VWlkLCBmYWxzZSk7DQogICAgfQ0KfQ0KDQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCi8vIPCfk6Eg2K7YsdmI2Kwg2KfYsiDYqNin2LLbjA0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQphc3luYyBmdW5jdGlvbiBsZWF2ZUdhbWUoZ2FtZUlkLCB1aWQpIHsNCiAgICBjb25zdCBnYW1lID0gYXdhaXQgZ2V0R2FtZShnYW1lSWQpOw0KICAgIGlmICghZ2FtZSkgdGhyb3cgbmV3IEVycm9yKCfYqNin2LLbjCDZvtuM2K/YpyDZhti02K8nKTsNCiAgICBpZiAoIWdhbWUucGxheWVyc1t1aWRdKSByZXR1cm47DQogICAgY29uc3QgbG9iYnlJZCA9IGdhbWUubG9iYnlJZDsNCiAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQgKyAnL3BsYXllcnMvJyArIHVpZCkucmVtb3ZlKCk7DQogICAgYXdhaXQgZGIucmVmKCdsb2JiaWVzLycgKyBsb2JieUlkICsgJy9wbGF5ZXJzLycgKyB1aWQgKyAnL2luR2FtZScpLnNldChmYWxzZSk7DQogICAgY29uc3QgdXBkYXRlZEdhbWUgPSBhd2FpdCBnZXRHYW1lKGdhbWVJZCk7DQogICAgaWYgKHVwZGF0ZWRHYW1lICYmIE9iamVjdC5rZXlzKHVwZGF0ZWRHYW1lLnBsYXllcnMpLmxlbmd0aCA9PT0gMCkgew0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQpLnJlbW92ZSgpOw0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2xvYmJpZXMvJyArIGxvYmJ5SWQgKyAnL2dhbWVJZCcpLnJlbW92ZSgpOw0KICAgICAgICBhd2FpdCBkYi5yZWYoJ2xvYmJpZXMvJyArIGxvYmJ5SWQgKyAnL3N0YXR1cycpLnNldCgnd2FpdGluZycpOw0KICAgIH0gZWxzZSBpZiAodXBkYXRlZEdhbWUpIHsNCiAgICAgICAgaWYgKHVwZGF0ZWRHYW1lLnR5cGUgPT09ICdob2ttJyAmJiB1cGRhdGVkR2FtZS5jdXJyZW50VHVybiA9PT0gdWlkKSB7DQogICAgICAgICAgICBjb25zdCBwbGF5ZXJJZHMgPSBPYmplY3Qua2V5cyh1cGRhdGVkR2FtZS5wbGF5ZXJzKTsNCiAgICAgICAgICAgIGlmIChwbGF5ZXJJZHMubGVuZ3RoID4gMCkgew0KICAgICAgICAgICAgICAgIGF3YWl0IGRiLnJlZignZ2FtZXMvJyArIGdhbWVJZCArICcvY3VycmVudFR1cm4nKS5zZXQocGxheWVySWRzWzBdKTsNCiAgICAgICAgICAgIH0NCiAgICAgICAgfSBlbHNlIGlmICh1cGRhdGVkR2FtZS50eXBlID09PSAnbWFuY2hlJyAmJiB1cGRhdGVkR2FtZS5jdXJyZW50VHVybiA9PT0gdWlkKSB7DQogICAgICAgICAgICBjb25zdCB0dXJuT3JkZXIgPSB1cGRhdGVkR2FtZS50dXJuT3JkZXIgfHwgT2JqZWN0LmtleXModXBkYXRlZEdhbWUucGxheWVycyk7DQogICAgICAgICAgICBjb25zdCBjdXJyZW50SWR4ID0gdHVybk9yZGVyLmluZGV4T2YodWlkKTsNCiAgICAgICAgICAgIGxldCBuZXh0SWR4ID0gKGN1cnJlbnRJZHggKyAxKSAlIHR1cm5PcmRlci5sZW5ndGg7DQogICAgICAgICAgICBsZXQgbmV4dFBsYXllciA9IHR1cm5PcmRlcltuZXh0SWR4XTsNCiAgICAgICAgICAgIGxldCBhdHRlbXB0cyA9IDA7DQogICAgICAgICAgICB3aGlsZSAoKHVwZGF0ZWRHYW1lLnBsYXllcnNbbmV4dFBsYXllcl0/LmZpbmlzaGVkIHx8IGZhbHNlKSAmJiBhdHRlbXB0cyA8IHR1cm5PcmRlci5sZW5ndGgpIHsNCiAgICAgICAgICAgICAgICBuZXh0SWR4ID0gKG5leHRJZHggKyAxKSAlIHR1cm5PcmRlci5sZW5ndGg7DQogICAgICAgICAgICAgICAgbmV4dFBsYXllciA9IHR1cm5PcmRlcltuZXh0SWR4XTsNCiAgICAgICAgICAgICAgICBhdHRlbXB0cysrOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgYXdhaXQgZGIucmVmKCdnYW1lcy8nICsgZ2FtZUlkICsgJy9jdXJyZW50VHVybicpLnNldChuZXh0UGxheWVyKTsNCiAgICAgICAgfQ0KICAgIH0NCn0NCg0KLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQovLyDwn5OhIFBvbGxpbmcNCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KZnVuY3Rpb24gcG9sbExvYmJ5KGxvYmJ5SWQsIGNhbGxiYWNrKSB7DQogICAgY29uc3QgcmVmID0gZGIucmVmKCdsb2JiaWVzLycgKyBsb2JieUlkKTsNCiAgICByZWYub24oJ3ZhbHVlJywgKHNuYXBzaG90KSA9PiB7DQogICAgICAgIGNvbnN0IGRhdGEgPSBzbmFwc2hvdC52YWwoKTsNCiAgICAgICAgaWYgKGRhdGEpIGNhbGxiYWNrKGRhdGEpOw0KICAgICAgICBlbHNlIGNhbGxiYWNrKG51bGwpOw0KICAgIH0pOw0KICAgIHJldHVybiByZWY7DQp9DQoNCmZ1bmN0aW9uIHBvbGxHYW1lKGdhbWVJZCwgY2FsbGJhY2spIHsNCiAgICBjb25zdCByZWYgPSBkYi5yZWYoJ2dhbWVzLycgKyBnYW1lSWQpOw0KICAgIHJlZi5vbigndmFsdWUnLCAoc25hcHNob3QpID0+IHsNCiAgICAgICAgY29uc3QgZGF0YSA9IHNuYXBzaG90LnZhbCgpOw0KICAgICAgICBpZiAoZGF0YSkgY2FsbGJhY2soZGF0YSk7DQogICAgICAgIGVsc2UgY2FsbGJhY2sobnVsbCk7DQogICAgfSk7DQogICAgcmV0dXJuIHJlZjsNCn0NCg0KZnVuY3Rpb24gcG9sbFJlcXVlc3RzKGNhbGxiYWNrKSB7DQogICAgY29uc3QgdXNlcklkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3VzZXJJZCcpOw0KICAgIGlmICghdXNlcklkKSByZXR1cm4gbnVsbDsNCiAgICBjb25zdCByZWYgPSBkYi5yZWYoJ3VzZXJzLycgKyB1c2VySWQgKyAnL3JlcXVlc3RzJyk7DQogICAgcmVmLm9uKCd2YWx1ZScsIChzbmFwc2hvdCkgPT4gew0KICAgICAgICBjb25zdCByZXF1ZXN0cyA9IHNuYXBzaG90LnZhbCgpOw0KICAgICAgICBjYWxsYmFjayhyZXF1ZXN0cyB8fCB7fSk7DQogICAgfSk7DQogICAgcmV0dXJuIHJlZjsNCn0NCg0KZnVuY3Rpb24gc3RvcFBvbGxpbmcocmVmKSB7DQogICAgaWYgKHJlZikgew0KICAgICAgICByZWYub2ZmKCk7DQogICAgfSBlbHNlIHsNCiAgICAgICAgZGIucmVmKCkub2ZmKCk7DQogICAgfQ0KfQ=="></script>
 <script>
 let gameId = new URLSearchParams(window.location.search).get('id');
-let currentUser = null;
-let myUid = null;
-let gameRef = null;
-let currentGame = null;
-let pendingBuyTile = null;
-let isRolling = false;
+let currentUser=null, myUid=null, gameRef=null, currentGame=null, pendingBuy=null, isRolling=false;
+const playerColors=['#ff5252','#448aff','#66bb6a','#ffca28'];
 
-// Colors for players
-const playerColors = ['#ff5252', '#448aff', '#66bb6a', '#ffca28'];
-const playerColorNames = { 0: '#ff5252', 1: '#448aff', 2: '#66bb6a', 3: '#ffca28' };
+function localBoard(){
+ return [
+  {id:0,type:'start',name:'شروع',icon:'🏁',desc:'1000$+300$',price:0,rent:0,continent:'start',owner:null},
+  {id:1,type:'country',name:'ژاپن',flag:'🇯🇵',price:300,rent:60,continent:'asia',owner:null},
+  {id:2,type:'chance',name:'شانس',icon:'🎁',desc:'رندوم',price:0,rent:0,continent:'chance',owner:null},
+  {id:3,type:'country',name:'آلمان',flag:'🇩🇪',price:280,rent:55,continent:'europe',owner:null},
+  {id:4,type:'country',name:'انگلیس',flag:'🇬🇧',price:320,rent:65,continent:'europe',owner:null},
+  {id:5,type:'jail',name:'زندان',icon:'⛓️',desc:'3دور/200$',price:0,rent:0,continent:'jail',owner:null},
+  {id:6,type:'country',name:'فرانسه',flag:'🇫🇷',price:300,rent:60,continent:'europe',owner:null},
+  {id:7,type:'country',name:'ایتالیا',flag:'🇮🇹',price:260,rent:50,continent:'europe',owner:null},
+  {id:8,type:'trade',name:'ترید',icon:'🤝',desc:'150$ بونوس',price:0,rent:0,continent:'trade',owner:null},
+  {id:9,type:'country',name:'آمریکا',flag:'🇺🇸',price:400,rent:80,continent:'america',owner:null},
+  {id:10,type:'country',name:'اسپانیا',flag:'🇪🇸',price:220,rent:45,continent:'europe',owner:null},
+  {id:11,type:'chance',name:'شانس',icon:'🎁',price:0,rent:0,continent:'chance',owner:null},
+  {id:12,type:'country',name:'کانادا',flag:'🇨🇦',price:350,rent:70,continent:'america',owner:null},
+  {id:13,type:'country',name:'برزیل',flag:'🇧🇷',price:200,rent:40,continent:'america',owner:null},
+  {id:14,type:'country',name:'استرالیا',flag:'🇦🇺',price:340,rent:68,continent:'oceania',owner:null},
+  {id:15,type:'country',name:'روسیه',flag:'🇷🇺',price:330,rent:66,continent:'europe',owner:null},
+  {id:16,type:'country',name:'مصر',flag:'🇪🇬',price:180,rent:35,continent:'africa',owner:null},
+  {id:17,type:'country',name:'ترکیه',flag:'🇹🇷',price:200,rent:40,continent:'asia',owner:null},
+  {id:18,type:'country',name:'کره جنوبی',flag:'🇰🇷',price:290,rent:58,continent:'asia',owner:null},
+  {id:19,type:'chance',name:'شانس',icon:'🎁',price:0,rent:0,continent:'chance',owner:null},
+  {id:20,type:'country',name:'هند',flag:'🇮🇳',price:240,rent:48,continent:'asia',owner:null},
+  {id:21,type:'country',name:'مکزیک',flag:'🇲🇽',price:210,rent:42,continent:'america',owner:null},
+  {id:22,type:'country',name:'سوئد',flag:'🇸🇪',price:270,rent:54,continent:'europe',owner:null},
+  {id:23,type:'country',name:'هلند',flag:'🇳🇱',price:250,rent:50,continent:'europe',owner:null},
+  {id:24,type:'country',name:'آرژانتین',flag:'🇦🇷',price:190,rent:38,continent:'america',owner:null},
+  {id:25,type:'country',name:'امارات',flag:'🇦🇪',price:310,rent:62,continent:'asia',owner:null},
+  {id:26,type:'chance',name:'شانس',icon:'🎲',price:0,rent:0,continent:'chance',owner:null},
+  {id:27,type:'country',name:'چین',flag:'🇨🇳',price:380,rent:76,continent:'asia',owner:null},
+  {id:28,type:'country',name:'آفریقای جنوبی',flag:'🇿🇦',price:170,rent:34,continent:'africa',owner:null},
+  {id:29,type:'country',name:'سوئیس',flag:'🇨🇭',price:360,rent:72,continent:'europe',owner:null},
+  {id:30,type:'country',name:'نروژ',flag:'🇳🇴',price:300,rent:60,continent:'europe',owner:null},
+  {id:31,type:'country',name:'نیوزلند',flag:'🇳🇿',price:230,rent:46,continent:'oceania',owner:null},
+ ];
+}
+function normalizeBoard(b){
+ if(!b) return localBoard();
+ if(Array.isArray(b)) return b;
+ const arr = Object.values(b);
+ arr.sort((a,c)=> (a.id||0)-(c.id||0));
+ return arr.length===32?arr:localBoard();
+}
 
-window.onload = async () => {
-  currentUser = await getCurrentUser();
-  if (!currentUser) { window.location.href='index.html'; return; }
-  myUid = currentUser.id;
-  if (!gameId) { alert('شناسه بازی نیست'); window.location.href='index.html'; return; }
-  gameRef = pollGame(gameId, onGameUpdate);
-  const g = await getGame(gameId);
-  if (g) onGameUpdate(g);
+window.onload=async()=>{
+ currentUser=await getCurrentUser();
+ if(!currentUser){location.href='data:text/html;base64,PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImZhIiBkaXI9InJ0bCI+CjxoZWFkPgogICAgPG1ldGEgY2hhcnNldD0iVVRGLTgiPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiPgogICAgPHRpdGxlPtmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L3RpdGxlPgogICAgPHN0eWxlPgogICAgICAgIEBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVZhemlybWF0bjp3Z2h0QDQwMDs3MDA7OTAwJmRpc3BsYXk9c3dhcCcpOwogICAgICAgICogeyBtYXJnaW46IDA7IHBhZGRpbmc6IDA7IGJveC1zaXppbmc6IGJvcmRlci1ib3g7IH0KICAgICAgICBib2R5IHsKICAgICAgICAgICAgZm9udC1mYW1pbHk6ICdWYXppcm1hdG4nLCBzYW5zLXNlcmlmOwogICAgICAgICAgICBiYWNrZ3JvdW5kOiBsaW5lYXItZ3JhZGllbnQoMTM1ZGVnLCAjNjY3ZWVhIDAlLCAjNzY0YmEyIDEwMCUpOwogICAgICAgICAgICBtaW4taGVpZ2h0OiAxMDB2aDsKICAgICAgICAgICAgZGlzcGxheTogZmxleDsKICAgICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgICAgICAgICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICAgICAgICAgIHBhZGRpbmc6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5jb250YWluZXIgewogICAgICAgICAgICBiYWNrZ3JvdW5kOiByZ2JhKDI1NSwyNTUsMjU1LDAuOTUpOwogICAgICAgICAgICBwYWRkaW5nOiA0MHB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAyMHB4OwogICAgICAgICAgICBib3gtc2hhZG93OiAwIDIwcHggNjBweCByZ2JhKDAsMCwwLDAuMyk7CiAgICAgICAgICAgIG1heC13aWR0aDogNTAwcHg7CiAgICAgICAgICAgIHdpZHRoOiAxMDAlOwogICAgICAgIH0KICAgICAgICBoMSB7CiAgICAgICAgICAgIHRleHQtYWxpZ246IGNlbnRlcjsKICAgICAgICAgICAgY29sb3I6ICM2NjdlZWE7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMzZweDsKICAgICAgICAgICAgbWFyZ2luLWJvdHRvbTogMzBweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDkwMDsKICAgICAgICB9CiAgICAgICAgaW5wdXQgewogICAgICAgICAgICB3aWR0aDogMTAwJTsKICAgICAgICAgICAgcGFkZGluZzogMTVweDsKICAgICAgICAgICAgYm9yZGVyOiAycHggc29saWQgI2RkZDsKICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogMTJweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNnB4OwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIG1hcmdpbi1ib3R0b206IDE1cHg7CiAgICAgICAgfQogICAgICAgIGlucHV0OmZvY3VzIHsgb3V0bGluZTogbm9uZTsgYm9yZGVyLWNvbG9yOiAjNjY3ZWVhOyB9CiAgICAgICAgYnV0dG9uIHsKICAgICAgICAgICAgd2lkdGg6IDEwMCU7CiAgICAgICAgICAgIHBhZGRpbmc6IDE1cHg7CiAgICAgICAgICAgIGJhY2tncm91bmQ6IGxpbmVhci1ncmFkaWVudCgxMzVkZWcsICM2NjdlZWEgMCUsICM3NjRiYTIgMTAwJSk7CiAgICAgICAgICAgIGNvbG9yOiAjZmZmOwogICAgICAgICAgICBib3JkZXI6IG5vbmU7CiAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDEycHg7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMThweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgICAgICAgICAgY3Vyc29yOiBwb2ludGVyOwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzOwogICAgICAgIH0KICAgICAgICBidXR0b246aG92ZXIgeyB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTJweCk7IH0KICAgICAgICBidXR0b246ZGlzYWJsZWQgeyBvcGFjaXR5OiAwLjU7IGN1cnNvcjogbm90LWFsbG93ZWQ7IH0KICAgICAgICAuc2VjdGlvbiB7IGRpc3BsYXk6IG5vbmU7IH0KICAgICAgICAuc2VjdGlvbi5hY3RpdmUgeyBkaXNwbGF5OiBibG9jazsgfQogICAgICAgIC51c2VyLWluZm8gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjBmMGYwOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAyMHB4OwogICAgICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0cyB7CiAgICAgICAgICAgIG1hcmdpbi10b3A6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0LWl0ZW0gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZmZmOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAxMHB4OwogICAgICAgICAgICBkaXNwbGF5OiBmbGV4OwogICAgICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICAgICAgICAgIGJveC1zaGFkb3c6IDAgMnB4IDhweCByZ2JhKDAsMCwwLDAuMSk7CiAgICAgICAgfQogICAgICAgIC5idG4tc21hbGwgewogICAgICAgICAgICBwYWRkaW5nOiA4cHggMTZweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNHB4OwogICAgICAgICAgICB3aWR0aDogYXV0bzsKICAgICAgICB9CiAgICAgICAgLmxvYmJ5LXNlY3Rpb24gewogICAgICAgICAgICBtYXJnaW4tdG9wOiAyMHB4OwogICAgICAgICAgICBwYWRkaW5nLXRvcDogMjBweDsKICAgICAgICAgICAgYm9yZGVyLXRvcDogMnB4IGRhc2hlZCAjZGRkOwogICAgICAgIH0KICAgICAgICAuY29kZS1pbnB1dCB7CiAgICAgICAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgICAgICAgIGdhcDogMTBweDsKICAgICAgICB9CiAgICAgICAgLmNvZGUtaW5wdXQgaW5wdXQgeyBtYXJnaW46IDA7IH0KICAgICAgICAuY29kZS1pbnB1dCBidXR0b24geyB3aWR0aDogYXV0bzsgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KPGRpdiBjbGFzcz0iY29udGFpbmVyIj4KICAgIDxoMT7wn46uINmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L2gxPgoKICAgIDxkaXYgaWQ9ImxvZ2luU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24gYWN0aXZlIj4KICAgICAgICA8aW5wdXQgdHlwZT0idGV4dCIgaWQ9Im5hbWVJbnB1dCIgcGxhY2Vob2xkZXI9Itin2LPZhdiqINix2Ygg2YjYp9ix2K8g2qnZhiIgbWF4bGVuZ3RoPSIxNSI+CiAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVMb2dpbigpIj7ZiNix2YjYryDYqNmHINio2KfYstuMPC9idXR0b24+CiAgICA8L2Rpdj4KCiAgICA8ZGl2IGlkPSJtYWluU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24iPgogICAgICAgIDxkaXYgY2xhc3M9InVzZXItaW5mbyI+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZm9udC13ZWlnaHQ6IDcwMDsiIGlkPSJ1c2VyTmFtZSI+PC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImNvbG9yOiAjNjY2OyI+2KfZhdiq24zYp9iyINqp2YQ6IDxzcGFuIGlkPSJ1c2VyU2NvcmUiPjA8L3NwYW4+PC9kaXY+CiAgICAgICAgPC9kaXY+CgogICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ic2VhcmNoSW5wdXQiIHBsYWNlaG9sZGVyPSLZhtin2YUg2qnYp9ix2KjYsduMINiv2YjYs9iq2Kog2LHZiCDYqNiy2YYiPgogICAgICAgIDxidXR0b24gb25jbGljaz0iaGFuZGxlU2VuZFJlcXVlc3QoKSI+2KfYsdiz2KfZhCDYr9ix2K7ZiNin2LPYqiDYqNin2LLbjDwvYnV0dG9uPgoKICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0cyI+CiAgICAgICAgICAgIDxoMyBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsiPtiv2LHYrtmI2KfYs9iq4oCM2YfYpzo8L2gzPgogICAgICAgICAgICA8ZGl2IGlkPSJyZXF1ZXN0c0xpc3QiPjwvZGl2PgogICAgICAgIDwvZGl2PgoKICAgICAgICA8ZGl2IGNsYXNzPSJsb2JieS1zZWN0aW9uIj4KICAgICAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVDcmVhdGVMb2JieSgpIj7Ys9in2K7YqiDZhNin2KjbjCDYrNiv24zYryDwn46vPC9idXR0b24+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbjogMTVweCAwOyB0ZXh0LWFsaWduOiBjZW50ZXI7IGNvbG9yOiAjOTk5OyI+24zYpzwvZGl2PgogICAgICAgICAgICA8ZGl2IGNsYXNzPSJjb2RlLWlucHV0Ij4KICAgICAgICAgICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ibG9iYnlDb2RlIiBwbGFjZWhvbGRlcj0i2qnYryDZhNin2KjbjCIgbWF4bGVuZ3RoPSI2Ij4KICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iaGFuZGxlSm9pbkxvYmJ5KCkiPtmI2LHZiNivPC9idXR0b24+CiAgICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvZGl2PgogICAgPC9kaXY+CjwvZGl2PgoKPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWFwcC1jb21wYXQuanMiPjwvc2NyaXB0Pgo8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy85LjIzLjAvZmlyZWJhc2UtZGF0YWJhc2UtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWF1dGgtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9ImFwaS5qcyI+PC9zY3JpcHQ+CjxzY3JpcHQ+CiAgICBsZXQgY3VycmVudFVzZXIgPSBudWxsOwoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUxvZ2luKCkgewogICAgICAgIGNvbnN0IG5hbWUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbmFtZUlucHV0JykudmFsdWUudHJpbSgpOwogICAgICAgIGlmICghbmFtZSkgcmV0dXJuIGFsZXJ0KCfYp9iz2YUg2LHZiCDZiNin2LHYryDaqdmGIScpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGN1cnJlbnRVc2VyID0gYXdhaXQgbG9naW4obmFtZSk7CiAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgIHN0YXJ0UG9sbGluZ1JlcXVlc3RzKCk7CiAgICAgICAgfSBjYXRjaCAoZSkgewogICAgICAgICAgICBhbGVydCgn2K7Yt9inOiAnICsgZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc2hvd01haW4oKSB7CiAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvZ2luU2VjdGlvbicpLmNsYXNzTGlzdC5yZW1vdmUoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYWluU2VjdGlvbicpLmNsYXNzTGlzdC5hZGQoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCd1c2VyTmFtZScpLnRleHRDb250ZW50ID0gY3VycmVudFVzZXIubmFtZTsKICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgndXNlclNjb3JlJykudGV4dENvbnRlbnQgPSBjdXJyZW50VXNlci5zY29yZSB8fCAwOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZVNlbmRSZXF1ZXN0KCkgewogICAgICAgIGNvbnN0IHRvTmFtZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzZWFyY2hJbnB1dCcpLnZhbHVlLnRyaW0oKTsKICAgICAgICBpZiAoIXRvTmFtZSkgcmV0dXJuIGFsZXJ0KCfZhtin2YUg2qnYp9ix2KjYsduMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGF3YWl0IHNlbmRHYW1lUmVxdWVzdCh0b05hbWUpOwogICAgICAgICAgICBhbGVydCgn2K/Ysdiu2YjYp9iz2Kog2KfYsdiz2KfZhCDYtNivIScpOwogICAgICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc2VhcmNoSW5wdXQnKS52YWx1ZSA9ICcnOwogICAgICAgIH0gY2F0Y2ggKGUpIHsKICAgICAgICAgICAgYWxlcnQoZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc3RhcnRQb2xsaW5nUmVxdWVzdHMoKSB7CiAgICAgICAgcG9sbFJlcXVlc3RzKChyZXF1ZXN0cykgPT4gewogICAgICAgICAgICBjb25zdCBsaXN0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlcXVlc3RzTGlzdCcpOwogICAgICAgICAgICBjb25zdCByZXF1ZXN0c0FycmF5ID0gT2JqZWN0LnZhbHVlcyhyZXF1ZXN0cyB8fCB7fSk7CiAgICAgICAgICAgIGlmIChyZXF1ZXN0c0FycmF5Lmxlbmd0aCA+IDApIHsKICAgICAgICAgICAgICAgIGxpc3QuaW5uZXJIVE1MID0gcmVxdWVzdHNBcnJheS5tYXAocmVxID0+IGAKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0LWl0ZW0iPgogICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj4ke3JlcS5mcm9tTmFtZX0g2K/Ysdiu2YjYp9iz2Kog2KjYp9iy24wg2K/Yp9iv2Yc8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iYWNjZXB0UmVxdWVzdCgnJHtyZXEuZnJvbX0nKSI+2YLYqNmI2YQ8L2J1dHRvbj4KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgIGApLmpvaW4oJycpOwogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgbGlzdC5pbm5lckhUTUwgPSAnPGRpdiBzdHlsZT0idGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6Izk5OTsiPtiv2LHYrtmI2KfYs9iq24wg2YbbjNiz2Ko8L2Rpdj4nOwogICAgICAgICAgICB9CiAgICAgICAgfSk7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gYWNjZXB0UmVxdWVzdChmcm9tSWQpIHsKICAgICAgICBjb25zdCBsb2JieSA9IGF3YWl0IGNyZWF0ZUxvYmJ5KCk7CiAgICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSBgbG9iYnkuaHRtbD9pZD0ke2xvYmJ5LmlkfWA7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gaGFuZGxlQ3JlYXRlTG9iYnkoKSB7CiAgICAgICAgY29uc3QgbG9iYnkgPSBhd2FpdCBjcmVhdGVMb2JieSgpOwogICAgICAgIHdpbmRvdy5sb2NhdGlvbi5ocmVmID0gYGxvYmJ5Lmh0bWw/aWQ9JHtsb2JieS5pZH1gOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUpvaW5Mb2JieSgpIHsKICAgICAgICBjb25zdCBjb2RlID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvYmJ5Q29kZScpLnZhbHVlLnRyaW0oKS50b1VwcGVyQ2FzZSgpOwogICAgICAgIGlmICghY29kZSkgcmV0dXJuIGFsZXJ0KCfaqdivINmE2KfYqNuMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IGxvYmJ5ID0gYXdhaXQgam9pbkxvYmJ5KGNvZGUpOwogICAgICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9IGBsb2JieS5odG1sP2lkPSR7bG9iYnkuaWR9YDsKICAgICAgICB9IGNhdGNoIChlKSB7CiAgICAgICAgICAgIGFsZXJ0KGUubWVzc2FnZSk7CiAgICAgICAgfQogICAgfQoKICAgIHdpbmRvdy5vbmxvYWQgPSBhc3luYyAoKSA9PiB7CiAgICAgICAgY29uc3QgdXNlcklkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3VzZXJJZCcpOwogICAgICAgIGlmICh1c2VySWQpIHsKICAgICAgICAgICAgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOwogICAgICAgICAgICBpZiAoY3VycmVudFVzZXIpIHsKICAgICAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgICAgICBzdGFydFBvbGxpbmdSZXF1ZXN0cygpOwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfTsKPC9zY3JpcHQ+CjwvYm9keT4KPC9odG1sPg==';return}
+ myUid=currentUser.id;
+ if(!gameId){alert('شناسه بازی نیست');location.href='data:text/html;base64,PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImZhIiBkaXI9InJ0bCI+CjxoZWFkPgogICAgPG1ldGEgY2hhcnNldD0iVVRGLTgiPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiPgogICAgPHRpdGxlPtmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L3RpdGxlPgogICAgPHN0eWxlPgogICAgICAgIEBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVZhemlybWF0bjp3Z2h0QDQwMDs3MDA7OTAwJmRpc3BsYXk9c3dhcCcpOwogICAgICAgICogeyBtYXJnaW46IDA7IHBhZGRpbmc6IDA7IGJveC1zaXppbmc6IGJvcmRlci1ib3g7IH0KICAgICAgICBib2R5IHsKICAgICAgICAgICAgZm9udC1mYW1pbHk6ICdWYXppcm1hdG4nLCBzYW5zLXNlcmlmOwogICAgICAgICAgICBiYWNrZ3JvdW5kOiBsaW5lYXItZ3JhZGllbnQoMTM1ZGVnLCAjNjY3ZWVhIDAlLCAjNzY0YmEyIDEwMCUpOwogICAgICAgICAgICBtaW4taGVpZ2h0OiAxMDB2aDsKICAgICAgICAgICAgZGlzcGxheTogZmxleDsKICAgICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgICAgICAgICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICAgICAgICAgIHBhZGRpbmc6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5jb250YWluZXIgewogICAgICAgICAgICBiYWNrZ3JvdW5kOiByZ2JhKDI1NSwyNTUsMjU1LDAuOTUpOwogICAgICAgICAgICBwYWRkaW5nOiA0MHB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAyMHB4OwogICAgICAgICAgICBib3gtc2hhZG93OiAwIDIwcHggNjBweCByZ2JhKDAsMCwwLDAuMyk7CiAgICAgICAgICAgIG1heC13aWR0aDogNTAwcHg7CiAgICAgICAgICAgIHdpZHRoOiAxMDAlOwogICAgICAgIH0KICAgICAgICBoMSB7CiAgICAgICAgICAgIHRleHQtYWxpZ246IGNlbnRlcjsKICAgICAgICAgICAgY29sb3I6ICM2NjdlZWE7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMzZweDsKICAgICAgICAgICAgbWFyZ2luLWJvdHRvbTogMzBweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDkwMDsKICAgICAgICB9CiAgICAgICAgaW5wdXQgewogICAgICAgICAgICB3aWR0aDogMTAwJTsKICAgICAgICAgICAgcGFkZGluZzogMTVweDsKICAgICAgICAgICAgYm9yZGVyOiAycHggc29saWQgI2RkZDsKICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogMTJweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNnB4OwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIG1hcmdpbi1ib3R0b206IDE1cHg7CiAgICAgICAgfQogICAgICAgIGlucHV0OmZvY3VzIHsgb3V0bGluZTogbm9uZTsgYm9yZGVyLWNvbG9yOiAjNjY3ZWVhOyB9CiAgICAgICAgYnV0dG9uIHsKICAgICAgICAgICAgd2lkdGg6IDEwMCU7CiAgICAgICAgICAgIHBhZGRpbmc6IDE1cHg7CiAgICAgICAgICAgIGJhY2tncm91bmQ6IGxpbmVhci1ncmFkaWVudCgxMzVkZWcsICM2NjdlZWEgMCUsICM3NjRiYTIgMTAwJSk7CiAgICAgICAgICAgIGNvbG9yOiAjZmZmOwogICAgICAgICAgICBib3JkZXI6IG5vbmU7CiAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDEycHg7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMThweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgICAgICAgICAgY3Vyc29yOiBwb2ludGVyOwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzOwogICAgICAgIH0KICAgICAgICBidXR0b246aG92ZXIgeyB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTJweCk7IH0KICAgICAgICBidXR0b246ZGlzYWJsZWQgeyBvcGFjaXR5OiAwLjU7IGN1cnNvcjogbm90LWFsbG93ZWQ7IH0KICAgICAgICAuc2VjdGlvbiB7IGRpc3BsYXk6IG5vbmU7IH0KICAgICAgICAuc2VjdGlvbi5hY3RpdmUgeyBkaXNwbGF5OiBibG9jazsgfQogICAgICAgIC51c2VyLWluZm8gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjBmMGYwOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAyMHB4OwogICAgICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0cyB7CiAgICAgICAgICAgIG1hcmdpbi10b3A6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0LWl0ZW0gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZmZmOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAxMHB4OwogICAgICAgICAgICBkaXNwbGF5OiBmbGV4OwogICAgICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICAgICAgICAgIGJveC1zaGFkb3c6IDAgMnB4IDhweCByZ2JhKDAsMCwwLDAuMSk7CiAgICAgICAgfQogICAgICAgIC5idG4tc21hbGwgewogICAgICAgICAgICBwYWRkaW5nOiA4cHggMTZweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNHB4OwogICAgICAgICAgICB3aWR0aDogYXV0bzsKICAgICAgICB9CiAgICAgICAgLmxvYmJ5LXNlY3Rpb24gewogICAgICAgICAgICBtYXJnaW4tdG9wOiAyMHB4OwogICAgICAgICAgICBwYWRkaW5nLXRvcDogMjBweDsKICAgICAgICAgICAgYm9yZGVyLXRvcDogMnB4IGRhc2hlZCAjZGRkOwogICAgICAgIH0KICAgICAgICAuY29kZS1pbnB1dCB7CiAgICAgICAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgICAgICAgIGdhcDogMTBweDsKICAgICAgICB9CiAgICAgICAgLmNvZGUtaW5wdXQgaW5wdXQgeyBtYXJnaW46IDA7IH0KICAgICAgICAuY29kZS1pbnB1dCBidXR0b24geyB3aWR0aDogYXV0bzsgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KPGRpdiBjbGFzcz0iY29udGFpbmVyIj4KICAgIDxoMT7wn46uINmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L2gxPgoKICAgIDxkaXYgaWQ9ImxvZ2luU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24gYWN0aXZlIj4KICAgICAgICA8aW5wdXQgdHlwZT0idGV4dCIgaWQ9Im5hbWVJbnB1dCIgcGxhY2Vob2xkZXI9Itin2LPZhdiqINix2Ygg2YjYp9ix2K8g2qnZhiIgbWF4bGVuZ3RoPSIxNSI+CiAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVMb2dpbigpIj7ZiNix2YjYryDYqNmHINio2KfYstuMPC9idXR0b24+CiAgICA8L2Rpdj4KCiAgICA8ZGl2IGlkPSJtYWluU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24iPgogICAgICAgIDxkaXYgY2xhc3M9InVzZXItaW5mbyI+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZm9udC13ZWlnaHQ6IDcwMDsiIGlkPSJ1c2VyTmFtZSI+PC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImNvbG9yOiAjNjY2OyI+2KfZhdiq24zYp9iyINqp2YQ6IDxzcGFuIGlkPSJ1c2VyU2NvcmUiPjA8L3NwYW4+PC9kaXY+CiAgICAgICAgPC9kaXY+CgogICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ic2VhcmNoSW5wdXQiIHBsYWNlaG9sZGVyPSLZhtin2YUg2qnYp9ix2KjYsduMINiv2YjYs9iq2Kog2LHZiCDYqNiy2YYiPgogICAgICAgIDxidXR0b24gb25jbGljaz0iaGFuZGxlU2VuZFJlcXVlc3QoKSI+2KfYsdiz2KfZhCDYr9ix2K7ZiNin2LPYqiDYqNin2LLbjDwvYnV0dG9uPgoKICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0cyI+CiAgICAgICAgICAgIDxoMyBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsiPtiv2LHYrtmI2KfYs9iq4oCM2YfYpzo8L2gzPgogICAgICAgICAgICA8ZGl2IGlkPSJyZXF1ZXN0c0xpc3QiPjwvZGl2PgogICAgICAgIDwvZGl2PgoKICAgICAgICA8ZGl2IGNsYXNzPSJsb2JieS1zZWN0aW9uIj4KICAgICAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVDcmVhdGVMb2JieSgpIj7Ys9in2K7YqiDZhNin2KjbjCDYrNiv24zYryDwn46vPC9idXR0b24+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbjogMTVweCAwOyB0ZXh0LWFsaWduOiBjZW50ZXI7IGNvbG9yOiAjOTk5OyI+24zYpzwvZGl2PgogICAgICAgICAgICA8ZGl2IGNsYXNzPSJjb2RlLWlucHV0Ij4KICAgICAgICAgICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ibG9iYnlDb2RlIiBwbGFjZWhvbGRlcj0i2qnYryDZhNin2KjbjCIgbWF4bGVuZ3RoPSI2Ij4KICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iaGFuZGxlSm9pbkxvYmJ5KCkiPtmI2LHZiNivPC9idXR0b24+CiAgICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvZGl2PgogICAgPC9kaXY+CjwvZGl2PgoKPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWFwcC1jb21wYXQuanMiPjwvc2NyaXB0Pgo8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy85LjIzLjAvZmlyZWJhc2UtZGF0YWJhc2UtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWF1dGgtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9ImFwaS5qcyI+PC9zY3JpcHQ+CjxzY3JpcHQ+CiAgICBsZXQgY3VycmVudFVzZXIgPSBudWxsOwoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUxvZ2luKCkgewogICAgICAgIGNvbnN0IG5hbWUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbmFtZUlucHV0JykudmFsdWUudHJpbSgpOwogICAgICAgIGlmICghbmFtZSkgcmV0dXJuIGFsZXJ0KCfYp9iz2YUg2LHZiCDZiNin2LHYryDaqdmGIScpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGN1cnJlbnRVc2VyID0gYXdhaXQgbG9naW4obmFtZSk7CiAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgIHN0YXJ0UG9sbGluZ1JlcXVlc3RzKCk7CiAgICAgICAgfSBjYXRjaCAoZSkgewogICAgICAgICAgICBhbGVydCgn2K7Yt9inOiAnICsgZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc2hvd01haW4oKSB7CiAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvZ2luU2VjdGlvbicpLmNsYXNzTGlzdC5yZW1vdmUoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYWluU2VjdGlvbicpLmNsYXNzTGlzdC5hZGQoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCd1c2VyTmFtZScpLnRleHRDb250ZW50ID0gY3VycmVudFVzZXIubmFtZTsKICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgndXNlclNjb3JlJykudGV4dENvbnRlbnQgPSBjdXJyZW50VXNlci5zY29yZSB8fCAwOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZVNlbmRSZXF1ZXN0KCkgewogICAgICAgIGNvbnN0IHRvTmFtZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzZWFyY2hJbnB1dCcpLnZhbHVlLnRyaW0oKTsKICAgICAgICBpZiAoIXRvTmFtZSkgcmV0dXJuIGFsZXJ0KCfZhtin2YUg2qnYp9ix2KjYsduMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGF3YWl0IHNlbmRHYW1lUmVxdWVzdCh0b05hbWUpOwogICAgICAgICAgICBhbGVydCgn2K/Ysdiu2YjYp9iz2Kog2KfYsdiz2KfZhCDYtNivIScpOwogICAgICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc2VhcmNoSW5wdXQnKS52YWx1ZSA9ICcnOwogICAgICAgIH0gY2F0Y2ggKGUpIHsKICAgICAgICAgICAgYWxlcnQoZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc3RhcnRQb2xsaW5nUmVxdWVzdHMoKSB7CiAgICAgICAgcG9sbFJlcXVlc3RzKChyZXF1ZXN0cykgPT4gewogICAgICAgICAgICBjb25zdCBsaXN0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlcXVlc3RzTGlzdCcpOwogICAgICAgICAgICBjb25zdCByZXF1ZXN0c0FycmF5ID0gT2JqZWN0LnZhbHVlcyhyZXF1ZXN0cyB8fCB7fSk7CiAgICAgICAgICAgIGlmIChyZXF1ZXN0c0FycmF5Lmxlbmd0aCA+IDApIHsKICAgICAgICAgICAgICAgIGxpc3QuaW5uZXJIVE1MID0gcmVxdWVzdHNBcnJheS5tYXAocmVxID0+IGAKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0LWl0ZW0iPgogICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj4ke3JlcS5mcm9tTmFtZX0g2K/Ysdiu2YjYp9iz2Kog2KjYp9iy24wg2K/Yp9iv2Yc8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iYWNjZXB0UmVxdWVzdCgnJHtyZXEuZnJvbX0nKSI+2YLYqNmI2YQ8L2J1dHRvbj4KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgIGApLmpvaW4oJycpOwogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgbGlzdC5pbm5lckhUTUwgPSAnPGRpdiBzdHlsZT0idGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6Izk5OTsiPtiv2LHYrtmI2KfYs9iq24wg2YbbjNiz2Ko8L2Rpdj4nOwogICAgICAgICAgICB9CiAgICAgICAgfSk7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gYWNjZXB0UmVxdWVzdChmcm9tSWQpIHsKICAgICAgICBjb25zdCBsb2JieSA9IGF3YWl0IGNyZWF0ZUxvYmJ5KCk7CiAgICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSBgbG9iYnkuaHRtbD9pZD0ke2xvYmJ5LmlkfWA7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gaGFuZGxlQ3JlYXRlTG9iYnkoKSB7CiAgICAgICAgY29uc3QgbG9iYnkgPSBhd2FpdCBjcmVhdGVMb2JieSgpOwogICAgICAgIHdpbmRvdy5sb2NhdGlvbi5ocmVmID0gYGxvYmJ5Lmh0bWw/aWQ9JHtsb2JieS5pZH1gOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUpvaW5Mb2JieSgpIHsKICAgICAgICBjb25zdCBjb2RlID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvYmJ5Q29kZScpLnZhbHVlLnRyaW0oKS50b1VwcGVyQ2FzZSgpOwogICAgICAgIGlmICghY29kZSkgcmV0dXJuIGFsZXJ0KCfaqdivINmE2KfYqNuMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IGxvYmJ5ID0gYXdhaXQgam9pbkxvYmJ5KGNvZGUpOwogICAgICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9IGBsb2JieS5odG1sP2lkPSR7bG9iYnkuaWR9YDsKICAgICAgICB9IGNhdGNoIChlKSB7CiAgICAgICAgICAgIGFsZXJ0KGUubWVzc2FnZSk7CiAgICAgICAgfQogICAgfQoKICAgIHdpbmRvdy5vbmxvYWQgPSBhc3luYyAoKSA9PiB7CiAgICAgICAgY29uc3QgdXNlcklkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3VzZXJJZCcpOwogICAgICAgIGlmICh1c2VySWQpIHsKICAgICAgICAgICAgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOwogICAgICAgICAgICBpZiAoY3VycmVudFVzZXIpIHsKICAgICAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgICAgICBzdGFydFBvbGxpbmdSZXF1ZXN0cygpOwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfTsKPC9zY3JpcHQ+CjwvYm9keT4KPC9odG1sPg==';return}
+ gameRef=pollGame(gameId,onUpdate);
+ const g=await getGame(gameId);
+ if(g) onUpdate(g);
 };
 
-function onGameUpdate(game) {
-  if (!game) { alert('بازی حذف شد'); window.location.href='index.html'; return; }
-  if (game.type !== 'monopoly') { alert('نوع بازی اشتباهه'); return; }
-  currentGame = game;
-  
-  if (game.status === 'finished' && game.winner) {
-    showWinner(game);
+function onUpdate(game){
+ if(!game){alert('بازی حذف شد');location.href='data:text/html;base64,PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImZhIiBkaXI9InJ0bCI+CjxoZWFkPgogICAgPG1ldGEgY2hhcnNldD0iVVRGLTgiPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiPgogICAgPHRpdGxlPtmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L3RpdGxlPgogICAgPHN0eWxlPgogICAgICAgIEBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVZhemlybWF0bjp3Z2h0QDQwMDs3MDA7OTAwJmRpc3BsYXk9c3dhcCcpOwogICAgICAgICogeyBtYXJnaW46IDA7IHBhZGRpbmc6IDA7IGJveC1zaXppbmc6IGJvcmRlci1ib3g7IH0KICAgICAgICBib2R5IHsKICAgICAgICAgICAgZm9udC1mYW1pbHk6ICdWYXppcm1hdG4nLCBzYW5zLXNlcmlmOwogICAgICAgICAgICBiYWNrZ3JvdW5kOiBsaW5lYXItZ3JhZGllbnQoMTM1ZGVnLCAjNjY3ZWVhIDAlLCAjNzY0YmEyIDEwMCUpOwogICAgICAgICAgICBtaW4taGVpZ2h0OiAxMDB2aDsKICAgICAgICAgICAgZGlzcGxheTogZmxleDsKICAgICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgICAgICAgICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICAgICAgICAgIHBhZGRpbmc6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5jb250YWluZXIgewogICAgICAgICAgICBiYWNrZ3JvdW5kOiByZ2JhKDI1NSwyNTUsMjU1LDAuOTUpOwogICAgICAgICAgICBwYWRkaW5nOiA0MHB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAyMHB4OwogICAgICAgICAgICBib3gtc2hhZG93OiAwIDIwcHggNjBweCByZ2JhKDAsMCwwLDAuMyk7CiAgICAgICAgICAgIG1heC13aWR0aDogNTAwcHg7CiAgICAgICAgICAgIHdpZHRoOiAxMDAlOwogICAgICAgIH0KICAgICAgICBoMSB7CiAgICAgICAgICAgIHRleHQtYWxpZ246IGNlbnRlcjsKICAgICAgICAgICAgY29sb3I6ICM2NjdlZWE7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMzZweDsKICAgICAgICAgICAgbWFyZ2luLWJvdHRvbTogMzBweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDkwMDsKICAgICAgICB9CiAgICAgICAgaW5wdXQgewogICAgICAgICAgICB3aWR0aDogMTAwJTsKICAgICAgICAgICAgcGFkZGluZzogMTVweDsKICAgICAgICAgICAgYm9yZGVyOiAycHggc29saWQgI2RkZDsKICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogMTJweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNnB4OwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIG1hcmdpbi1ib3R0b206IDE1cHg7CiAgICAgICAgfQogICAgICAgIGlucHV0OmZvY3VzIHsgb3V0bGluZTogbm9uZTsgYm9yZGVyLWNvbG9yOiAjNjY3ZWVhOyB9CiAgICAgICAgYnV0dG9uIHsKICAgICAgICAgICAgd2lkdGg6IDEwMCU7CiAgICAgICAgICAgIHBhZGRpbmc6IDE1cHg7CiAgICAgICAgICAgIGJhY2tncm91bmQ6IGxpbmVhci1ncmFkaWVudCgxMzVkZWcsICM2NjdlZWEgMCUsICM3NjRiYTIgMTAwJSk7CiAgICAgICAgICAgIGNvbG9yOiAjZmZmOwogICAgICAgICAgICBib3JkZXI6IG5vbmU7CiAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDEycHg7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMThweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgICAgICAgICAgY3Vyc29yOiBwb2ludGVyOwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzOwogICAgICAgIH0KICAgICAgICBidXR0b246aG92ZXIgeyB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTJweCk7IH0KICAgICAgICBidXR0b246ZGlzYWJsZWQgeyBvcGFjaXR5OiAwLjU7IGN1cnNvcjogbm90LWFsbG93ZWQ7IH0KICAgICAgICAuc2VjdGlvbiB7IGRpc3BsYXk6IG5vbmU7IH0KICAgICAgICAuc2VjdGlvbi5hY3RpdmUgeyBkaXNwbGF5OiBibG9jazsgfQogICAgICAgIC51c2VyLWluZm8gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjBmMGYwOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAyMHB4OwogICAgICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0cyB7CiAgICAgICAgICAgIG1hcmdpbi10b3A6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0LWl0ZW0gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZmZmOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAxMHB4OwogICAgICAgICAgICBkaXNwbGF5OiBmbGV4OwogICAgICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICAgICAgICAgIGJveC1zaGFkb3c6IDAgMnB4IDhweCByZ2JhKDAsMCwwLDAuMSk7CiAgICAgICAgfQogICAgICAgIC5idG4tc21hbGwgewogICAgICAgICAgICBwYWRkaW5nOiA4cHggMTZweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNHB4OwogICAgICAgICAgICB3aWR0aDogYXV0bzsKICAgICAgICB9CiAgICAgICAgLmxvYmJ5LXNlY3Rpb24gewogICAgICAgICAgICBtYXJnaW4tdG9wOiAyMHB4OwogICAgICAgICAgICBwYWRkaW5nLXRvcDogMjBweDsKICAgICAgICAgICAgYm9yZGVyLXRvcDogMnB4IGRhc2hlZCAjZGRkOwogICAgICAgIH0KICAgICAgICAuY29kZS1pbnB1dCB7CiAgICAgICAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgICAgICAgIGdhcDogMTBweDsKICAgICAgICB9CiAgICAgICAgLmNvZGUtaW5wdXQgaW5wdXQgeyBtYXJnaW46IDA7IH0KICAgICAgICAuY29kZS1pbnB1dCBidXR0b24geyB3aWR0aDogYXV0bzsgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KPGRpdiBjbGFzcz0iY29udGFpbmVyIj4KICAgIDxoMT7wn46uINmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L2gxPgoKICAgIDxkaXYgaWQ9ImxvZ2luU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24gYWN0aXZlIj4KICAgICAgICA8aW5wdXQgdHlwZT0idGV4dCIgaWQ9Im5hbWVJbnB1dCIgcGxhY2Vob2xkZXI9Itin2LPZhdiqINix2Ygg2YjYp9ix2K8g2qnZhiIgbWF4bGVuZ3RoPSIxNSI+CiAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVMb2dpbigpIj7ZiNix2YjYryDYqNmHINio2KfYstuMPC9idXR0b24+CiAgICA8L2Rpdj4KCiAgICA8ZGl2IGlkPSJtYWluU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24iPgogICAgICAgIDxkaXYgY2xhc3M9InVzZXItaW5mbyI+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZm9udC13ZWlnaHQ6IDcwMDsiIGlkPSJ1c2VyTmFtZSI+PC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImNvbG9yOiAjNjY2OyI+2KfZhdiq24zYp9iyINqp2YQ6IDxzcGFuIGlkPSJ1c2VyU2NvcmUiPjA8L3NwYW4+PC9kaXY+CiAgICAgICAgPC9kaXY+CgogICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ic2VhcmNoSW5wdXQiIHBsYWNlaG9sZGVyPSLZhtin2YUg2qnYp9ix2KjYsduMINiv2YjYs9iq2Kog2LHZiCDYqNiy2YYiPgogICAgICAgIDxidXR0b24gb25jbGljaz0iaGFuZGxlU2VuZFJlcXVlc3QoKSI+2KfYsdiz2KfZhCDYr9ix2K7ZiNin2LPYqiDYqNin2LLbjDwvYnV0dG9uPgoKICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0cyI+CiAgICAgICAgICAgIDxoMyBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsiPtiv2LHYrtmI2KfYs9iq4oCM2YfYpzo8L2gzPgogICAgICAgICAgICA8ZGl2IGlkPSJyZXF1ZXN0c0xpc3QiPjwvZGl2PgogICAgICAgIDwvZGl2PgoKICAgICAgICA8ZGl2IGNsYXNzPSJsb2JieS1zZWN0aW9uIj4KICAgICAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVDcmVhdGVMb2JieSgpIj7Ys9in2K7YqiDZhNin2KjbjCDYrNiv24zYryDwn46vPC9idXR0b24+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbjogMTVweCAwOyB0ZXh0LWFsaWduOiBjZW50ZXI7IGNvbG9yOiAjOTk5OyI+24zYpzwvZGl2PgogICAgICAgICAgICA8ZGl2IGNsYXNzPSJjb2RlLWlucHV0Ij4KICAgICAgICAgICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ibG9iYnlDb2RlIiBwbGFjZWhvbGRlcj0i2qnYryDZhNin2KjbjCIgbWF4bGVuZ3RoPSI2Ij4KICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iaGFuZGxlSm9pbkxvYmJ5KCkiPtmI2LHZiNivPC9idXR0b24+CiAgICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvZGl2PgogICAgPC9kaXY+CjwvZGl2PgoKPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWFwcC1jb21wYXQuanMiPjwvc2NyaXB0Pgo8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy85LjIzLjAvZmlyZWJhc2UtZGF0YWJhc2UtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWF1dGgtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9ImFwaS5qcyI+PC9zY3JpcHQ+CjxzY3JpcHQ+CiAgICBsZXQgY3VycmVudFVzZXIgPSBudWxsOwoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUxvZ2luKCkgewogICAgICAgIGNvbnN0IG5hbWUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbmFtZUlucHV0JykudmFsdWUudHJpbSgpOwogICAgICAgIGlmICghbmFtZSkgcmV0dXJuIGFsZXJ0KCfYp9iz2YUg2LHZiCDZiNin2LHYryDaqdmGIScpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGN1cnJlbnRVc2VyID0gYXdhaXQgbG9naW4obmFtZSk7CiAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgIHN0YXJ0UG9sbGluZ1JlcXVlc3RzKCk7CiAgICAgICAgfSBjYXRjaCAoZSkgewogICAgICAgICAgICBhbGVydCgn2K7Yt9inOiAnICsgZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc2hvd01haW4oKSB7CiAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvZ2luU2VjdGlvbicpLmNsYXNzTGlzdC5yZW1vdmUoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYWluU2VjdGlvbicpLmNsYXNzTGlzdC5hZGQoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCd1c2VyTmFtZScpLnRleHRDb250ZW50ID0gY3VycmVudFVzZXIubmFtZTsKICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgndXNlclNjb3JlJykudGV4dENvbnRlbnQgPSBjdXJyZW50VXNlci5zY29yZSB8fCAwOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZVNlbmRSZXF1ZXN0KCkgewogICAgICAgIGNvbnN0IHRvTmFtZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzZWFyY2hJbnB1dCcpLnZhbHVlLnRyaW0oKTsKICAgICAgICBpZiAoIXRvTmFtZSkgcmV0dXJuIGFsZXJ0KCfZhtin2YUg2qnYp9ix2KjYsduMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGF3YWl0IHNlbmRHYW1lUmVxdWVzdCh0b05hbWUpOwogICAgICAgICAgICBhbGVydCgn2K/Ysdiu2YjYp9iz2Kog2KfYsdiz2KfZhCDYtNivIScpOwogICAgICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc2VhcmNoSW5wdXQnKS52YWx1ZSA9ICcnOwogICAgICAgIH0gY2F0Y2ggKGUpIHsKICAgICAgICAgICAgYWxlcnQoZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc3RhcnRQb2xsaW5nUmVxdWVzdHMoKSB7CiAgICAgICAgcG9sbFJlcXVlc3RzKChyZXF1ZXN0cykgPT4gewogICAgICAgICAgICBjb25zdCBsaXN0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlcXVlc3RzTGlzdCcpOwogICAgICAgICAgICBjb25zdCByZXF1ZXN0c0FycmF5ID0gT2JqZWN0LnZhbHVlcyhyZXF1ZXN0cyB8fCB7fSk7CiAgICAgICAgICAgIGlmIChyZXF1ZXN0c0FycmF5Lmxlbmd0aCA+IDApIHsKICAgICAgICAgICAgICAgIGxpc3QuaW5uZXJIVE1MID0gcmVxdWVzdHNBcnJheS5tYXAocmVxID0+IGAKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0LWl0ZW0iPgogICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj4ke3JlcS5mcm9tTmFtZX0g2K/Ysdiu2YjYp9iz2Kog2KjYp9iy24wg2K/Yp9iv2Yc8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iYWNjZXB0UmVxdWVzdCgnJHtyZXEuZnJvbX0nKSI+2YLYqNmI2YQ8L2J1dHRvbj4KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgIGApLmpvaW4oJycpOwogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgbGlzdC5pbm5lckhUTUwgPSAnPGRpdiBzdHlsZT0idGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6Izk5OTsiPtiv2LHYrtmI2KfYs9iq24wg2YbbjNiz2Ko8L2Rpdj4nOwogICAgICAgICAgICB9CiAgICAgICAgfSk7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gYWNjZXB0UmVxdWVzdChmcm9tSWQpIHsKICAgICAgICBjb25zdCBsb2JieSA9IGF3YWl0IGNyZWF0ZUxvYmJ5KCk7CiAgICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSBgbG9iYnkuaHRtbD9pZD0ke2xvYmJ5LmlkfWA7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gaGFuZGxlQ3JlYXRlTG9iYnkoKSB7CiAgICAgICAgY29uc3QgbG9iYnkgPSBhd2FpdCBjcmVhdGVMb2JieSgpOwogICAgICAgIHdpbmRvdy5sb2NhdGlvbi5ocmVmID0gYGxvYmJ5Lmh0bWw/aWQ9JHtsb2JieS5pZH1gOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUpvaW5Mb2JieSgpIHsKICAgICAgICBjb25zdCBjb2RlID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvYmJ5Q29kZScpLnZhbHVlLnRyaW0oKS50b1VwcGVyQ2FzZSgpOwogICAgICAgIGlmICghY29kZSkgcmV0dXJuIGFsZXJ0KCfaqdivINmE2KfYqNuMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IGxvYmJ5ID0gYXdhaXQgam9pbkxvYmJ5KGNvZGUpOwogICAgICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9IGBsb2JieS5odG1sP2lkPSR7bG9iYnkuaWR9YDsKICAgICAgICB9IGNhdGNoIChlKSB7CiAgICAgICAgICAgIGFsZXJ0KGUubWVzc2FnZSk7CiAgICAgICAgfQogICAgfQoKICAgIHdpbmRvdy5vbmxvYWQgPSBhc3luYyAoKSA9PiB7CiAgICAgICAgY29uc3QgdXNlcklkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3VzZXJJZCcpOwogICAgICAgIGlmICh1c2VySWQpIHsKICAgICAgICAgICAgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOwogICAgICAgICAgICBpZiAoY3VycmVudFVzZXIpIHsKICAgICAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgICAgICBzdGFydFBvbGxpbmdSZXF1ZXN0cygpOwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfTsKPC9zY3JpcHQ+CjwvYm9keT4KPC9odG1sPg==';return}
+ if(game.type!=='monopoly'){alert('نوع بازی اشتباهه');return}
+ currentGame=game;
+ if(game.status==='finished'&&game.winner) showWinner(game);
+ renderBoard(game);
+ renderPlayers(game);
+ renderLog(game);
+ updateTop(game);
+ const cur=game.players[game.currentTurn];
+ if(cur&&cur.isBot&&game.status==='playing'&&!game.winner&&!window.botRun){
+   setTimeout(()=>runBot(game),1300);
+ }
+}
+
+function updateTop(g){
+ document.getElementById('targetInfo').textContent=`هدف: ${g.moneyTarget}$`;
+ document.getElementById('turnInfo').textContent=`دور: ${g.turnCount||0}/${g.maxTurns||'♾️'}`;
+ const me=g.players[myUid];
+ document.getElementById('posInfo').textContent=me?`جایگاه: ${me.pos} | پول: ${me.money}$`:'';
+}
+
+function renderBoard(g){
+ const boardEl=document.getElementById('board');
+ const board=normalizeBoard(g.board);
+ const players=g.players||{};
+ const posMap=[];
+ for(let c=1;c<=9;c++) posMap.push({r:1,c});
+ for(let r=2;r<=8;r++) posMap.push({r,c:9});
+ for(let c=9;c>=1;c--) posMap.push({r:9,c});
+ for(let r=8;r>=2;r--) posMap.push({r,c:1});
+
+ let html='';
+ board.forEach((tile,idx)=>{
+  const p=posMap[idx]; if(!p) return;
+  const owner=tile.owner?players[tile.owner]:null;
+  const ownerIdx=tile.owner?Object.keys(players).indexOf(tile.owner):-1;
+  const ownerColor=ownerIdx>=0?playerColors[ownerIdx%4]:'';
+  const tokensHere=Object.entries(players).filter(([uid,pl])=>pl.pos===idx&&!pl.bankrupt);
+  let cls=`tile ${tile.type}`; if(tile.owner) cls+=' owned';
+  let inner='';
+  if(tile.type==='country'){
+   inner=`<div class="t-flag">${tile.flag||'🏳️'}</div><div class="t-name">${tile.name}</div><div class="t-price">${tile.price}$</div>${tile.owner?`<div class="t-dot" style="background:${ownerColor}"></div>`:''}`;
+  }else{
+   inner=`<div class="t-icon">${tile.icon||'❓'}</div><div class="t-name">${tile.name}</div><div class="t-price" style="font-size:7px">${tile.desc||''}</div>`;
   }
+  if(tokensHere.length) inner+=`<div class="tokens">${tokensHere.map(([uid])=>{const c=playerColors[Object.keys(players).indexOf(uid)%4];return`<div class="tok" style="background:${c}"></div>`}).join('')}</div>`;
+  html+=`<div class="${cls}" style="grid-row:${p.r};grid-column:${p.c};${owner?`--owner:${ownerColor}`:''}">${inner}</div>`;
+ });
 
-  renderBoard(game);
-  renderPlayers(game);
-  renderLog(game);
-  updateTopBar(game);
-  updateCenterPanel(game);
-  checkModals(game);
-  
-  // Bot turn handling - any client can trigger bot
-  const currentTurnPlayer = game.players[game.currentTurn];
-  if (currentTurnPlayer && currentTurnPlayer.isBot && game.status === 'playing' && !game.winner) {
-    setTimeout(() => runBotTurn(game), 1200 + Math.random()*800);
-  }
+ const curPlayer=g.players[g.currentTurn];
+ const isMyTurn=g.currentTurn===myUid;
+ const me=g.players[myUid];
+ const canRoll=isMyTurn&&g.phase==='roll'&&me&&me.inJail===0&&!me.bankrupt&&!g.winner;
+ const inJail=isMyTurn&&me&&me.inJail>0;
+
+ html+=`<div class="center" style="grid-row:2/9;grid-column:2/9">
+   <div style="font-size:13px;font-weight:700">${g.winner?'🏁 تمام شد':`نوبت: ${curPlayer?curPlayer.name:'—'} ${curPlayer&&curPlayer.isBot?'🤖':''} ${isMyTurn?'👤':''}`}</div>
+   <div class="dice" id="diceDisplay" onclick="${canRoll?'rollDice()':''}">${g.dice||'🎲'}</div>
+   ${me&&me.inJail>0?`<div style="font-size:12px">⛓️ ${me.inJail} دور زندان</div>`:''}
+   <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+     ${canRoll?`<button class="btn btn-roll" onclick="rollDice()">🎲 تاس بنداز</button>`:''}
+     ${inJail?`<button class="btn btn-jpay" onclick="openJailTurn()">⛓️ زندان</button>`:''}
+     ${isMyTurn&&g.phase==='action'&&!g.winner?`<button class="btn btn-end" onclick="endTurn()">✅ پایان نوبت</button>`:''}
+   </div>
+   <div style="font-size:10px;color:#aaa">${g.moneyTarget?`اول به ${g.moneyTarget}$ برسه برنده است`:''} ${g.maxTurns?`| ${g.maxTurns} دست`:'| نامحدود'}</div>
+   ${!isMyTurn&&!g.winner?`<div style="font-size:11px;color:#ffd700;margin-top:6px">منتظر نوبت ${curPlayer?curPlayer.name:''}...</div>`:''}
+ </div>`;
+ boardEl.innerHTML=html;
 }
 
-function updateTopBar(game) {
-  document.getElementById('targetInfo').textContent = `هدف: ${game.moneyTarget}$`;
-  const maxT = game.maxTurns ? `${game.maxTurns}` : '♾️';
-  document.getElementById('turnInfo').textContent = `دور: ${game.turnCount||0}/${maxT}`;
-  document.getElementById('playersCount').textContent = `${Object.keys(game.players).length} بازیکن`;
+function renderPlayers(g){
+ const players=g.players||{};
+ const order=g.turnOrder||Object.keys(players);
+ let html='';
+ order.forEach((uid,idx)=>{
+  const p=players[uid]; if(!p) return;
+  const isMe=uid===myUid, isActive=g.currentTurn===uid, color=playerColors[idx%4];
+  html+=`<div class="player-card ${isActive?'active':''} ${p.bankrupt?'bankrupt':''} ${isMe?'me':''}" style="border-left:4px solid ${color}">
+   <div class="p-head"><div class="p-name">${p.name} ${isMe?'👤':''} ${p.isBot?'🤖':''} ${isActive?'⭐':''}</div><div class="p-money" style="color:${p.money<0?'#ff5252':color}">${p.money}$</div></div>
+   <div class="p-meta"><span class="badge">📍 ${p.pos}</span>${p.inJail>0?`<span class="badge jail">⛓️ ${p.inJail}</span>`:''}${p.bankrupt?`<span class="badge" style="background:#d32f2f">💀 ورشکست</span>`:''}<span class="badge">🏠 ${p.properties?p.properties.length:0}</span></div>
+   <div class="prop-list">${(p.properties||[]).slice(0,5).map(pid=>{const t=normalizeBoard(g.board)[pid];return t?`<span class="prop-chip">${t.flag||''} ${t.name}</span>`:''}).join('')}${(p.properties||[]).length>5?`<span class="prop-chip">+${p.properties.length-5}</span>`:''}</div>
+  </div>`;
+ });
+ document.getElementById('playersList').innerHTML=html||'بازیکنی نیست';
 }
 
-function renderBoard(game) {
-  const boardEl = document.getElementById('board');
-  const board = game.board || [];
-  const players = game.players || {};
-  // Map grid positions for 9x9
-  const posMap = [];
-  // top row 0-8
-  for(let c=1;c<=9;c++) posMap.push({r:1,c});
-  // right col 9-15 (rows 2-8)
-  for(let r=2;r<=8;r++) posMap.push({r,c:9});
-  // bottom row 16-24 (cols 9-1)
-  for(let c=9;c>=1;c--) posMap.push({r:9,c});
-  // left col 25-31 (rows 8-2)
-  for(let r=8;r>=2;r--) posMap.push({r,c:1});
-
-  // Build tiles HTML
-  let html = '';
-  board.forEach((tile, idx) => {
-    const p = posMap[idx];
-    if (!p) return;
-    const owner = tile.owner ? players[tile.owner] : null;
-    const ownerColor = tile.owner ? playerColors[Object.keys(players).indexOf(tile.owner)%4] : '';
-    const tokensHere = Object.entries(players).filter(([uid,pl])=>pl.pos===idx && !pl.bankrupt);
-    
-    let tileClass = `tile ${tile.type}`;
-    if (owner) tileClass += ' owned';
-    
-    let inner = '';
-    if (tile.type === 'country') {
-      inner = `
-        <div class="t-flag">${tile.flag}</div>
-        <div class="t-name">${tile.name}</div>
-        <div class="t-price">${tile.price}$</div>
-        ${owner ? `<div class="t-owner-dot" style="background:${ownerColor}"></div>` : ''}
-      `;
-    } else {
-      inner = `
-        <div class="t-icon">${tile.icon}</div>
-        <div class="t-name">${tile.name}</div>
-        <div class="t-price" style="font-size:7px;">${tile.desc||''}</div>
-      `;
-    }
-    if (tokensHere.length>0) {
-      inner += `<div class="tokens-on-tile">${tokensHere.map(([uid],i)=>{
-        const color = playerColors[Object.keys(players).indexOf(uid)%4];
-        return `<div class="token-dot" style="background:${color}"></div>`;
-      }).join('')}</div>`;
-    }
-    html += `<div class="${tileClass}" style="grid-row:${p.r}; grid-column:${p.c}; ${owner?`--owner-color:${ownerColor}`:''}">${inner}</div>`;
-  });
-
-  // Center panel
-  const currentTurn = game.players[game.currentTurn];
-  const isMyTurn = game.currentTurn===myUid;
-  const phase = game.phase;
-  const diceVal = game.dice || 0;
-  html += `
-    <div class="center-panel" style="grid-row:2 / 9; grid-column:2 / 9;">
-      <div class="current-turn-info">
-        ${game.winner ? '🏁 بازی تمام شد' : `نوبت: ${currentTurn?currentTurn.name:'—'} ${currentTurn && currentTurn.isBot?'🤖':''} ${isMyTurn?'👤':''}`}
-      </div>
-      <div class="dice-area">
-        <div class="dice" id="diceDisplay">${diceVal?diceVal:'🎲'}</div>
-        ${currentTurn && currentTurn.inJail>0 ? `<div style="font-size:12px;">⛓️ ${currentTurn.inJail} دور زندان</div>` : ''}
-      </div>
-      <div style="font-size:11px; color:#ccc;">پول من: ${players[myUid]?players[myUid].money:0}$ | جایگاه: ${players[myUid]?players[myUid].pos:0}</div>
-      <div class="action-buttons">
-        ${!game.winner && isMyTurn && phase==='roll' && !(players[myUid] && players[myUid].inJail>0) ? `<button class="btn btn-roll" onclick="rollDice()" id="rollBtn">🎲 تاس بنداز</button>` : ''}
-        ${!game.winner && isMyTurn && players[myUid] && players[myUid].inJail>0 ? `<button class="btn btn-jail-pay" onclick="openJailTurnModal()">⛓️ وضعیت زندان</button>` : ''}
-        ${!game.winner && isMyTurn && phase==='action' ? `<button class="btn btn-end" onclick="endTurn()">✅ پایان نوبت</button>` : ''}
-        <button class="btn btn-trade" onclick="openTradeModal()">🤝 ترید</button>
-      </div>
-      <div style="font-size:10px; color:#aaa; margin-top:4px;">
-        ${game.moneyTarget ? `اولین نفر به ${game.moneyTarget}$ برنده است` : ''}
-        ${game.maxTurns ? ` | حداکثر ${game.maxTurns} دست` : ' | ♾️ نامحدود'}
-      </div>
-    </div>
-  `;
-
-  boardEl.innerHTML = html;
+function renderLog(g){
+ const logs=g.log||[];
+ document.getElementById('logList').innerHTML=logs.slice(-25).reverse().map(l=>{
+  const d=new Date(l.time); return `<div class="log-item"><span class="tm">${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}</span> ${l.text}</div>`;
+ }).join('')||'<div style="text-align:center;color:#777;font-size:11px">هنوز اتفاقی نیفتاده</div>';
 }
 
-function renderPlayers(game) {
-  const players = game.players || {};
-  const order = game.turnOrder || Object.keys(players);
-  let html='';
-  order.forEach((uid, idx) => {
-    const p = players[uid];
-    if (!p) return;
-    const isMe = uid===myUid;
-    const isActive = game.currentTurn===uid;
-    const color = playerColors[idx%4];
-    const props = p.properties || [];
-    html+=`
-      <div class="player-card ${isActive?'active':''} ${p.bankrupt?'bankrupt':''} ${isMe?'me':''}" style="border-left:4px solid ${color}">
-        <div class="p-header">
-          <div class="p-name">${p.name} ${isMe?'👤':''} ${p.isBot?'🤖':''} ${isActive?'⭐':''}</div>
-          <div class="p-money ${p.money<0?'neg':''}" style="color:${p.money<0?'#ff5252':color}">${p.money}$</div>
-        </div>
-        <div class="p-meta">
-          <span class="badge">📍 خونه ${p.pos}</span>
-          ${p.inJail>0?`<span class="badge jail">⛓️ ${p.inJail} دور</span>`:''}
-          ${p.bankrupt?`<span class="badge bankrupt-badge">💀 ورشکست</span>`:''}
-          <span class="badge">🏠 ${props.length} ملک</span>
-        </div>
-        <div class="properties-list">
-          ${props.slice(0,6).map(pid=>{
-            const tile = game.board[pid];
-            return tile ? `<span class="prop-chip">${tile.flag||''} ${tile.name}</span>` : '';
-          }).join('')}
-          ${props.length>6?`<span class="prop-chip">+${props.length-6}</span>`:''}
-        </div>
-      </div>
-    `;
-  });
-  document.getElementById('playersList').innerHTML = html;
-}
-
-function renderLog(game) {
-  const logs = game.log || [];
-  const html = logs.slice(-20).reverse().map(l=>{
-    const d = new Date(l.time);
-    const time = `${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
-    return `<div class="log-item"><span class="time">${time}</span> ${l.text}</div>`;
-  }).join('');
-  document.getElementById('logList').innerHTML = html || '<div style="text-align:center;color:#777;font-size:11px;">هنوز اتفاقی نیفتاده</div>';
-}
-
-function updateCenterPanel(game) {
-  // handled in renderBoard
-}
-
-function checkModals(game) {
-  if (!game || game.winner) return;
-  const me = game.players[myUid];
-  if (!me || me.bankrupt) return;
-  const isMyTurn = game.currentTurn===myUid;
-  if (!isMyTurn) return;
-
-  // If pending trade for me
-  if (game.pendingTrade && game.pendingTrade.to===myUid) {
-    openTradeModal(true);
-  }
-
-  // Jail turn modal auto open if in jail and phase roll
-  if (me.inJail>0 && game.phase==='roll' && !document.getElementById('jailTurnModal').classList.contains('show')) {
-    // don't auto open, let user click, but we can hint
-  }
-}
-
-// ========== ACTIONS ==========
-async function rollDice() {
-  if (isRolling) return;
-  const game = currentGame;
-  if (!game || game.currentTurn!==myUid) return;
-  if (game.phase!=='roll') return;
-  const me = game.players[myUid];
-  if (me.inJail>0) { openJailTurnModal(); return; }
-
-  isRolling=true;
-  const rollBtn = document.getElementById('rollBtn');
-  if (rollBtn) rollBtn.disabled=true;
-
-  // dice animation
-  const diceDisplay = document.getElementById('diceDisplay');
-  let anim=0;
-  const animInterval = setInterval(()=>{
-    diceDisplay.textContent = Math.floor(Math.random()*6)+1;
-    anim++;
-    if (anim>10) clearInterval(animInterval);
-  }, 80);
-
-  setTimeout(async ()=>{
-    const dice = Math.floor(Math.random()*6)+1;
-    const oldPos = me.pos;
-    const total = oldPos + dice;
-    const newPos = total % 32;
-    const laps = Math.floor(total / 32);
-    let newMoney = me.money + (laps*300);
-    let logMsg = `🎲 ${me.name} تاس ${dice} آورد و به خونه ${newPos} (${game.board[newPos].name}) رفت`;
-    if (laps>0) logMsg += ` و ${laps*300}$ جایزه دور گرفت`;
-
-    // Prepare updates
-    const updates = {};
-    updates[`games/${gameId}/dice`] = dice;
-    updates[`games/${gameId}/players/${myUid}/pos`] = newPos;
-    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-    updates[`games/${gameId}/phase`] = 'action';
-
-    // Push log
-    const newLog = [...(game.log||[]), {text: logMsg, time: Date.now()}];
-    updates[`games/${gameId}/log`] = newLog.slice(-50);
-
-    try {
-      await db.ref().update(updates);
-      // After move, handle landing after short delay to let UI update
-      setTimeout(()=> handleLanding(newPos), 600);
-    } catch(e) {
-      alert('خطا: '+e.message);
-    }
-    isRolling=false;
-    if (rollBtn) rollBtn.disabled=false;
-  }, 900);
-}
-
-async function handleLanding(pos) {
-  const game = await getGame(gameId);
-  if (!game) return;
-  const tile = game.board[pos];
-  const me = game.players[myUid];
-  if (!tile || !me) return;
-
-  if (tile.type==='country') {
-    if (!tile.owner) {
-      // Offer buy
-      pendingBuyTile = pos;
-      document.getElementById('buyTitle').textContent = `${tile.flag} ${tile.name}`;
-      document.getElementById('buyText').innerHTML = `
-        قیمت: <b>${tile.price}$</b><br>
-        اجاره: <b>${tile.rent}$</b><br>
-        پول شما: ${me.money}$<br>
-        ${me.money>=tile.price ? 'میخوای بخری؟' : 'پولت کافی نیست!'}
-      `;
-      const btn = document.getElementById('buyConfirmBtn');
-      btn.disabled = me.money < tile.price;
-      btn.textContent = `💰 خرید (${tile.price}$)`;
-      document.getElementById('buyModal').classList.add('show');
-    } else if (tile.owner!==myUid) {
-      const owner = game.players[tile.owner];
-      if (owner && !owner.bankrupt) {
-        // Calculate rent with bonus for same continent
-        let rent = tile.rent;
-        const sameCont = game.board.filter(t=>t.owner===tile.owner && t.continent===tile.continent).length;
-        if (sameCont>=2) rent = Math.floor(rent*1.5);
-        if (sameCont>=3) rent = Math.floor(rent*2);
-        
-        const newMyMoney = me.money - rent;
-        const newOwnerMoney = owner.money + rent;
-        const log = [...(game.log||[]), {text:`💸 ${me.name} ${rent}$ اجاره به ${owner.name} برای ${tile.name} پرداخت`, time:Date.now()}];
-        
-        const updates = {};
-        updates[`games/${gameId}/players/${myUid}/money`] = newMyMoney;
-        updates[`games/${gameId}/players/${tile.owner}/money`] = newOwnerMoney;
-        updates[`games/${gameId}/log`] = log.slice(-50);
-        
-        // Check bankrupt
-        if (newMyMoney <= -500) {
-          updates[`games/${gameId}/players/${myUid}/bankrupt`] = true;
-          log.push({text:`💀 ${me.name} ورشکست شد!`, time:Date.now()});
-          // Release properties
-          game.board.forEach((t,i)=>{
-            if (t.owner===myUid) updates[`games/${gameId}/board/${i}/owner`] = null;
-          });
-          updates[`games/${gameId}/players/${myUid}/properties`] = [];
-          updates[`games/${gameId}/log`] = log.slice(-50);
-        }
-        await db.ref().update(updates);
-        await checkWinConditions();
-      }
-    }
-  } else if (tile.type==='chance') {
-    // Chance card
-    const cards = game.chanceCards || [];
-    const card = cards[Math.floor(Math.random()*cards.length)];
-    document.getElementById('chanceText').textContent = card.text;
-    document.getElementById('chanceModal').classList.add('show');
-    
-    // Apply effect after modal shown, but also apply immediately
-    setTimeout(async ()=> {
-      await applyChanceCard(card);
-    }, 300);
-  } else if (tile.type==='jail') {
-    // Jail entry choice
-    document.getElementById('jailEntryText').textContent = `به زندان افتادی! انتخاب کن: 200$ جریمه بدی یا 3 دور زندان بری`;
-    document.getElementById('jailEntryModal').classList.add('show');
-  } else if (tile.type==='trade') {
-    openTradeModal();
-  } else if (tile.type==='start') {
-    // Already got lap bonus, give extra 100 for landing
-    const bonus = 100;
-    const newMoney = me.money + bonus;
-    const log = [...(game.log||[]), {text:`🏁 ${me.name} دقیقاً روی شروع ایستاد و ${bonus}$ جایزه گرفت!`, time:Date.now()}];
-    await db.ref().update({
-      [`games/${gameId}/players/${myUid}/money`]: newMoney,
-      [`games/${gameId}/log`]: log.slice(-50)
-    });
-    await checkWinConditions();
-  }
-}
-
-async function applyChanceCard(card) {
-  const game = await getGame(gameId);
-  if (!game) return;
-  const me = game.players[myUid];
-  let newMoney = me.money;
-  let updates = {};
-  let log = [...(game.log||[])];
-  
-  if (card.type==='money') {
-    newMoney += card.amount;
-    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-    log.push({text:`🎲 شانس: ${card.text}`, time:Date.now()});
-  } else if (card.type==='go_start') {
-    newMoney += 300;
-    updates[`games/${gameId}/players/${myUid}/pos`] = 0;
-    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-    log.push({text:`✈️ ${me.name} با کارت شانس به شروع رفت و 300$ گرفت`, time:Date.now()});
-  } else if (card.type==='go_jail') {
-    updates[`games/${gameId}/players/${myUid}/pos`] = 5;
-    updates[`games/${gameId}/players/${myUid}/inJail`] = 3;
-    log.push({text:`⛓️ ${me.name} با کارت شانس به زندان افتاد!`, time:Date.now()});
-  } else if (card.type==='collect_players') {
-    let total=0;
-    for(const uid of Object.keys(game.players)){
-      if (uid===myUid) continue;
-      const p = game.players[uid];
-      if (p.bankrupt) continue;
-      const amount = Math.min(card.amount, Math.max(0, p.money));
-      updates[`games/${gameId}/players/${uid}/money`] = p.money - amount;
-      total+=amount;
-    }
-    newMoney+=total;
-    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-    log.push({text:`🎁 ${me.name} از همه ${total}$ جمع کرد!`, time:Date.now()});
-  } else if (card.type==='pay_players') {
-    let total=0;
-    for(const uid of Object.keys(game.players)){
-      if (uid===myUid) continue;
-      const p = game.players[uid];
-      if (p.bankrupt) continue;
-      updates[`games/${gameId}/players/${uid}/money`] = p.money + card.amount;
-      total+=card.amount;
-    }
-    newMoney-=total;
-    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-    log.push({text:`💔 ${me.name} به همه ${card.amount}$ داد (مجموع ${total}$)`, time:Date.now()});
-  }
-  
-  // Check bankrupt
-  if (newMoney <= -500) {
-    updates[`games/${gameId}/players/${myUid}/bankrupt`] = true;
-    log.push({text:`💀 ${me.name} ورشکست شد!`, time:Date.now()});
-    game.board.forEach((t,i)=>{
-      if (t.owner===myUid) updates[`games/${gameId}/board/${i}/owner`] = null;
-    });
-    updates[`games/${gameId}/players/${myUid}/properties`] = [];
-  }
-  
-  updates[`games/${gameId}/log`] = log.slice(-50);
+async function rollDice(){
+ if(isRolling) return;
+ const g=currentGame; if(!g||g.currentTurn!==myUid||g.phase!=='roll') return;
+ const me=g.players[myUid]; if(!me||me.inJail>0){openJailTurn();return}
+ isRolling=true;
+ const diceEl=document.getElementById('diceDisplay');
+ let a=0; const it=setInterval(()=>{diceEl.textContent=Math.floor(Math.random()*6)+1;a++;if(a>10)clearInterval(it)},70);
+ setTimeout(async()=>{
+  const dice=Math.floor(Math.random()*6)+1;
+  const old=me.pos, total=old+dice, newPos=total%32, laps=Math.floor(total/32);
+  let newMoney=me.money+laps*300;
+  const board=normalizeBoard(g.board);
+  let msg=`🎲 ${me.name} تاس ${dice} آورد و رفت خونه ${newPos} (${board[newPos].name})`;
+  if(laps>0) msg+=` و ${laps*300}$ جایزه گرفت`;
+  const updates={};
+  updates[`games/${gameId}/dice`]=dice;
+  updates[`games/${gameId}/players/${myUid}/pos`]=newPos;
+  updates[`games/${gameId}/players/${myUid}/money`]=newMoney;
+  updates[`games/${gameId}/phase`]='action';
+  updates[`games/${gameId}/log`]=[...(g.log||[]),{text:msg,time:Date.now()}].slice(-50);
   await db.ref().update(updates);
-  await checkWinConditions();
+  isRolling=false;
+  setTimeout(()=>handleLanding(newPos),500);
+ },800);
 }
 
-function closeChanceModal() {
-  document.getElementById('chanceModal').classList.remove('show');
-}
-
-async function confirmBuy() {
-  if (pendingBuyTile===null) return;
-  const game = await getGame(gameId);
-  const tile = game.board[pendingBuyTile];
-  const me = game.players[myUid];
-  if (me.money < tile.price) { alert('پول کافی نیست'); return; }
-  
-  const newMoney = me.money - tile.price;
-  const newProps = [...(me.properties||[]), pendingBuyTile];
-  const log = [...(game.log||[]), {text:`🏠 ${me.name} ${tile.name} رو به قیمت ${tile.price}$ خرید!`, time:Date.now()}];
-  
-  await db.ref().update({
-    [`games/${gameId}/players/${myUid}/money`]: newMoney,
-    [`games/${gameId}/players/${myUid}/properties`]: newProps,
-    [`games/${gameId}/board/${pendingBuyTile}/owner`]: myUid,
-    [`games/${gameId}/log`]: log.slice(-50)
-  });
-  
-  closeBuyModal();
-  await checkWinConditions();
-}
-
-function closeBuyModal() {
-  document.getElementById('buyModal').classList.remove('show');
-  pendingBuyTile=null;
-}
-
-// Jail entry choice
-async function chooseJailEntry(choice) {
-  document.getElementById('jailEntryModal').classList.remove('show');
-  const game = await getGame(gameId);
-  const me = game.players[myUid];
-  let updates = {};
-  let log = [...(game.log||[])];
-  
-  if (choice==='pay') {
-    if (me.money < 200) { alert('پول کافی برای جریمه نداری، باید بری زندان!'); choice='jail'; }
-    else {
-      const newMoney = me.money - 200;
-      updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-      log.push({text:`💰 ${me.name} 200$ جریمه زندان پرداخت و آزاد موند!`, time:Date.now()});
-    }
+async function handleLanding(pos){
+ const g=await getGame(gameId); if(!g) return;
+ const tile=normalizeBoard(g.board)[pos];
+ const me=g.players[myUid];
+ if(!tile||!me) return;
+ if(tile.type==='country'){
+  if(!tile.owner){
+   pendingBuy=pos;
+   document.getElementById('buyTitle').textContent=`${tile.flag} ${tile.name}`;
+   document.getElementById('buyText').innerHTML=`قیمت: <b>${tile.price}$</b><br>اجاره: <b>${tile.rent}$</b><br>پول شما: ${me.money}$<br>${me.money>=tile.price?'میخری؟':'پولت کافی نیست!'}`;
+   const b=document.getElementById('buyConfirmBtn'); b.disabled=me.money<tile.price; b.textContent=`💰 خرید (${tile.price}$)`;
+   document.getElementById('buyModal').classList.add('show');
+  }else if(tile.owner!==myUid){
+   const owner=g.players[tile.owner];
+   if(owner&&!owner.bankrupt){
+    let rent=tile.rent;
+    const same=normalizeBoard(g.board).filter(t=>t.owner===tile.owner&&t.continent===tile.continent).length;
+    if(same>=2) rent=Math.floor(rent*1.5); if(same>=3) rent=Math.floor(rent*2);
+    const newMy=me.money-rent, newOwn=owner.money+rent;
+    let upd={}; upd[`games/${gameId}/players/${myUid}/money`]=newMy; upd[`games/${gameId}/players/${tile.owner}/money`]=newOwn;
+    upd[`games/${gameId}/log`]=[...(g.log||[]),{text:`💸 ${me.name} ${rent}$ اجاره به ${owner.name} برای ${tile.name} داد`,time:Date.now()}].slice(-50);
+    if(newMy<=-500){upd[`games/${gameId}/players/${myUid}/bankrupt`]=true; upd[`games/${gameId}/log`].push({text:`💀 ${me.name} ورشکست شد!`,time:Date.now()}); normalizeBoard(g.board).forEach((t,i)=>{if(t.owner===myUid) upd[`games/${gameId}/board/${i}/owner`]=null}); upd[`games/${gameId}/players/${myUid}/properties`]=[];}
+    await db.ref().update(upd); await checkWin();
+   }
   }
-  if (choice==='jail') {
-    updates[`games/${gameId}/players/${myUid}/pos`] = 5;
-    updates[`games/${gameId}/players/${myUid}/inJail`] = 3;
-    log.push({text:`⛓️ ${me.name} به زندان افتاد (3 دور)!`, time:Date.now()});
+ }else if(tile.type==='chance'){
+  const cards=g.chanceCards||[]; const card=cards[Math.floor(Math.random()*cards.length)];
+  document.getElementById('chanceText').textContent=card.text;
+  document.getElementById('chanceModal').classList.add('show');
+  setTimeout(()=>applyChance(card),400);
+ }else if(tile.type==='jail'){
+  document.getElementById('jailEntryModal').classList.add('show');
+ }else if(tile.type==='trade'){
+  openTrade(false);
+ }else if(tile.type==='start'){
+  const bonus=100; await db.ref().update({[`games/${gameId}/players/${myUid}/money`]:me.money+bonus,[`games/${gameId}/log`]:[...(g.log||[]),{text:`🏁 ${me.name} روی شروع ایستاد و ${bonus}$ گرفت`,time:Date.now()}].slice(-50)}); await checkWin();
+ }
+}
+
+async function applyChance(card){
+ const g=await getGame(gameId); if(!g) return; const me=g.players[myUid]; let newMoney=me.money; let upd={}; let log=[...(g.log||[])];
+ if(card.type==='money'){newMoney+=card.amount; upd[`games/${gameId}/players/${myUid}/money`]=newMoney; log.push({text:`🎲 شانس: ${card.text}`,time:Date.now()});}
+ else if(card.type==='go_start'){newMoney+=300; upd[`games/${gameId}/players/${myUid}/pos`]=0; upd[`games/${gameId}/players/${myUid}/money`]=newMoney; log.push({text:`✈️ ${me.name} به شروع رفت و 300$ گرفت`,time:Date.now()});}
+ else if(card.type==='go_jail'){upd[`games/${gameId}/players/${myUid}/pos`]=5; upd[`games/${gameId}/players/${myUid}/inJail`]=3; log.push({text:`⛓️ ${me.name} به زندان افتاد!`,time:Date.now()});}
+ else if(card.type==='collect_players'){let total=0; for(const uid of Object.keys(g.players)){if(uid===myUid)continue; const p=g.players[uid]; if(p.bankrupt)continue; const amt=Math.min(card.amount,Math.max(0,p.money)); upd[`games/${gameId}/players/${uid}/money`]=p.money-amt; total+=amt;} newMoney+=total; upd[`games/${gameId}/players/${myUid}/money`]=newMoney; log.push({text:`🎁 ${me.name} ${total}$ از بقیه گرفت!`,time:Date.now()});}
+ else if(card.type==='pay_players'){let total=0; for(const uid of Object.keys(g.players)){if(uid===myUid)continue; const p=g.players[uid]; if(p.bankrupt)continue; upd[`games/${gameId}/players/${uid}/money`]=p.money+card.amount; total+=card.amount;} newMoney-=total; upd[`games/${gameId}/players/${myUid}/money`]=newMoney; log.push({text:`💔 ${me.name} ${total}$ به بقیه داد`,time:Date.now()});}
+ if(newMoney<=-500){upd[`games/${gameId}/players/${myUid}/bankrupt`]=true; log.push({text:`💀 ${me.name} ورشکست شد!`,time:Date.now()}); normalizeBoard(g.board).forEach((t,i)=>{if(t.owner===myUid) upd[`games/${gameId}/board/${i}/owner`]=null}); upd[`games/${gameId}/players/${myUid}/properties`]=[];}
+ upd[`games/${gameId}/log`]=log.slice(-50); await db.ref().update(upd); await checkWin();
+}
+function closeChanceModal(){document.getElementById('chanceModal').classList.remove('show')}
+
+async function confirmBuy(){
+ if(pendingBuy===null) return; const g=await getGame(gameId); const tile=normalizeBoard(g.board)[pendingBuy]; const me=g.players[myUid];
+ if(me.money<tile.price) return;
+ const newMoney=me.money-tile.price; const newProps=[...(me.properties||[]),pendingBuy];
+ await db.ref().update({[`games/${gameId}/players/${myUid}/money`]:newMoney,[`games/${gameId}/players/${myUid}/properties`]:newProps,[`games/${gameId}/board/${pendingBuy}/owner`]:myUid,[`games/${gameId}/log`]:[...(g.log||[]),{text:`🏠 ${me.name} ${tile.name} رو خرید (${tile.price}$)`,time:Date.now()}].slice(-50)});
+ closeBuyModal(); await checkWin();
+}
+function closeBuyModal(){document.getElementById('buyModal').classList.remove('show');pendingBuy=null}
+
+async function chooseJailEntry(choice){
+ document.getElementById('jailEntryModal').classList.remove('show');
+ const g=await getGame(gameId); const me=g.players[myUid]; let upd={}, log=[...(g.log||[])];
+ if(choice==='pay'){
+  if(me.money<200){choice='jail'} else {upd[`games/${gameId}/players/${myUid}/money`]=me.money-200; log.push({text:`💰 ${me.name} 200$ جریمه داد و آزاد موند`,time:Date.now()});}
+ }
+ if(choice==='jail'){upd[`games/${gameId}/players/${myUid}/pos`]=5; upd[`games/${gameId}/players/${myUid}/inJail`]=3; log.push({text:`⛓️ ${me.name} زندانی شد (3 دور)`,time:Date.now()});}
+ upd[`games/${gameId}/log`]=log.slice(-50); await db.ref().update(upd);
+}
+function openJailTurn(){const me=currentGame.players[myUid]; if(!me||me.inJail<=0) return; document.getElementById('jailRemain').textContent=me.inJail; document.getElementById('jailTurnModal').classList.add('show')}
+async function chooseJailTurn(choice){
+ document.getElementById('jailTurnModal').classList.remove('show');
+ const g=await getGame(gameId); const me=g.players[myUid]; let upd={}, log=[...(g.log||[])];
+ if(choice==='pay'){
+  if(me.money<200){alert('پول کافی نداری');return}
+  upd[`games/${gameId}/players/${myUid}/money`]=me.money-200; upd[`games/${gameId}/players/${myUid}/inJail`]=0; log.push({text:`🔓 ${me.name} با 200$ آزاد شد`,time:Date.now()});
+  upd[`games/${gameId}/log`]=log.slice(-50); await db.ref().update(upd);
+ }else{
+  const nj=me.inJail-1; upd[`games/${gameId}/players/${myUid}/inJail`]=nj; log.push({text:`⏳ ${me.name} در زندان موند (${nj} دور)`,time:Date.now()}); upd[`games/${gameId}/log`]=log.slice(-50); await db.ref().update(upd); setTimeout(()=>endTurn(),500);
+ }
+}
+
+function openTrade(){
+ const g=currentGame; if(!g) return;
+ const me=g.players[myUid]; const players=g.players;
+ const oppSel=document.getElementById('tradeOpponent');
+ oppSel.innerHTML=Object.entries(players).filter(([uid,p])=>uid!==myUid&&!p.bankrupt).map(([uid,p])=>`<option value="${uid}">${p.name} (${p.money}$)</option>`).join('');
+ const mySel=document.getElementById('tradeMyProp');
+ mySel.innerHTML='<option value="">هیچی</option>'+ (me.properties||[]).map(pid=>{const t=normalizeBoard(g.board)[pid];return t?`<option value="${pid}">${t.flag} ${t.name}</option>`:''}).join('');
+ const updateTheir=()=>{
+  const oppId=oppSel.value; const opp=players[oppId]; if(!opp) return;
+  document.getElementById('tradeTheirProp').innerHTML='<option value="">هیچی</option>'+ (opp.properties||[]).map(pid=>{const t=normalizeBoard(g.board)[pid];return t?`<option value="${pid}">${t.flag} ${t.name}</option>`:''}).join('');
+ };
+ oppSel.onchange=updateTheir; updateTheir();
+ if(g.pendingTrade&&g.pendingTrade.to===myUid){
+  document.getElementById('tradePending').style.display='block';
+  const pt=g.pendingTrade; const from=players[pt.from];
+  document.getElementById('tradePendingText').innerHTML=`📩 <b>${from.name}</b> پیشنهاد داده:<br>میده: ${pt.offerProps.map(pid=>normalizeBoard(g.board)[pid]?.name).join(',')||'هیچی'} ${pt.offerMoney?`+${pt.offerMoney}$`:''}<br>میخواد: ${pt.requestProps.map(pid=>normalizeBoard(g.board)[pid]?.name).join(',')||'هیچی'}<br>🎁 150$ بونوس هر دو!`;
+ }else document.getElementById('tradePending').style.display='none';
+ document.getElementById('tradeModal').classList.add('show');
+}
+function closeTradeModal(){document.getElementById('tradeModal').classList.remove('show')}
+async function proposeTrade(){
+ const oppId=document.getElementById('tradeOpponent').value;
+ const myProp=document.getElementById('tradeMyProp').value;
+ const theirProp=document.getElementById('tradeTheirProp').value;
+ const myMoney=parseInt(document.getElementById('tradeMyMoney').value)||0;
+ if(!oppId){alert('طرف مقابل رو انتخاب کن');return}
+ if(!myProp&&!theirProp&&myMoney===0){alert('چیزی برای معامله انتخاب کن');return}
+ const g=await getGame(gameId); if(g.players[myUid].money<myMoney){alert('پول کافی نداری');return}
+ const trade={from:myUid,to:oppId,offerProps:myProp?[parseInt(myProp)]:[],requestProps:theirProp?[parseInt(theirProp)]:[],offerMoney:myMoney,time:Date.now()};
+ await db.ref(`games/${gameId}/pendingTrade`).set(trade);
+ await db.ref(`games/${gameId}/log`).set([...(g.log||[]),{text:`🤝 ${g.players[myUid].name} به ${g.players[oppId].name} پیشنهاد ترید داد`,time:Date.now()}].slice(-50));
+ alert('پیشنهاد ارسال شد!'); closeTradeModal();
+}
+async function acceptTrade(){
+ const g=await getGame(gameId); const tr=g.pendingTrade; if(!tr||tr.to!==myUid) return;
+ const from=g.players[tr.from], to=g.players[myUid];
+ let upd={}; let fromMoney=from.money-(tr.offerMoney||0)+150; let toMoney=to.money+(tr.offerMoney||0)+150;
+ upd[`games/${gameId}/players/${tr.from}/money`]=fromMoney; upd[`games/${gameId}/players/${myUid}/money`]=toMoney;
+ let fromProps=[...(from.properties||[])], toProps=[...(to.properties||[])];
+ tr.offerProps.forEach(pid=>{fromProps=fromProps.filter(x=>x!==pid); toProps.push(pid); upd[`games/${gameId}/board/${pid}/owner`]=myUid;});
+ tr.requestProps.forEach(pid=>{toProps=toProps.filter(x=>x!==pid); fromProps.push(pid); upd[`games/${gameId}/board/${pid}/owner`]=tr.from;});
+ upd[`games/${gameId}/players/${tr.from}/properties`]=fromProps; upd[`games/${gameId}/players/${myUid}/properties`]=toProps;
+ upd[`games/${gameId}/log`]=[...(g.log||[]),{text:`🤝 معامله ${from.name} و ${to.name} انجام شد! هر دو 150$ گرفتن`,time:Date.now()}].slice(-50);
+ upd[`games/${gameId}/pendingTrade`]=null;
+ await db.ref().update(upd); closeTradeModal(); await checkWin();
+}
+async function declineTrade(){
+ const g=await getGame(gameId); if(!g.pendingTrade) return;
+ await db.ref().update({[`games/${gameId}/pendingTrade`]:null,[`games/${gameId}/log`]:[...(g.log||[]),{text:`❌ ${g.players[myUid].name} ترید رو رد کرد`,time:Date.now()}].slice(-50)});
+ closeTradeModal();
+}
+
+async function endTurn(){
+ const g=await getGame(gameId); if(!g||g.currentTurn!==myUid||g.phase!=='action') return;
+ const order=g.turnOrder||Object.keys(g.players); const curIdx=order.indexOf(myUid); let nextIdx=(curIdx+1)%order.length, attempts=0, next=order[nextIdx];
+ while(attempts<order.length){const p=g.players[next]; if(p&&!p.bankrupt) break; nextIdx=(nextIdx+1)%order.length; next=order[nextIdx]; attempts++;}
+ const newCount=(g.turnCount||0)+1; let upd={}; upd[`games/${gameId}/currentTurn`]=next; upd[`games/${gameId}/phase`]='roll'; upd[`games/${gameId}/turnCount`]=newCount; upd[`games/${gameId}/dice`]=0;
+ if(g.maxTurns&&newCount>=g.maxTurns){
+  let richest=null,max=-Infinity; for(const [uid,p] of Object.entries(g.players)){if(p.bankrupt)continue; if(p.money>max){max=p.money; richest=uid;}}
+  if(richest){upd[`games/${gameId}/winner`]=richest; upd[`games/${gameId}/status`]='finished'; upd[`games/${gameId}/log`]=[...(g.log||[]),{text:`🏁 ${g.maxTurns} دست تموم شد! برنده ${g.players[richest].name}`,time:Date.now()}].slice(-50);}
+ }
+ await db.ref().update(upd); await checkWin();
+}
+async function checkWin(){
+ const g=await getGame(gameId); if(!g||g.winner) return;
+ for(const [uid,p] of Object.entries(g.players)){if(p.bankrupt)continue; if(p.money>=g.moneyTarget){await db.ref().update({[`games/${gameId}/winner`]:uid,[`games/${gameId}/status`]:'finished',[`games/${gameId}/log`]:[...(g.log||[]),{text:`🏆 ${p.name} به ${g.moneyTarget}$ رسید و برد!`,time:Date.now()}].slice(-50)}); return;}}
+ const alive=Object.entries(g.players).filter(([u,p])=>!p.bankrupt); if(alive.length===1){await db.ref().update({[`games/${gameId}/winner`]:alive[0][0],[`games/${gameId}/status`]:'finished',[`games/${gameId}/log`]:[...(g.log||[]),{text:`💀 همه ورشکست شدن! برنده ${g.players[alive[0][0]].name}`,time:Date.now()}].slice(-50)});}
+}
+function showWinner(g){
+ const w=g.players[g.winner]; if(!w) return;
+ document.getElementById('winnerTitle').textContent=`🏆 ${w.name} برنده شد!`;
+ document.getElementById('winnerText').innerHTML=`با ${w.money}$ و ${w.properties?.length||0} ملک<br>هدف: ${g.moneyTarget}$ | دور: ${g.turnCount}/${g.maxTurns||'♾️'}<br><br>قهرمان جهان شدی! 🌍👑`;
+ document.getElementById('winnerModal').classList.add('show');
+}
+async function runBot(g){
+ if(window.botRun) return; window.botRun=true;
+ try{
+  const botUid=g.currentTurn; const bot=g.players[botUid]; if(!bot||!bot.isBot) {window.botRun=false;return}
+  if(bot.inJail>0){
+   if(bot.money>600&&Math.random()>0.4){
+    await db.ref().update({[`games/${gameId}/players/${botUid}/money`]:bot.money-200,[`games/${gameId}/players/${botUid}/inJail`]:0,[`games/${gameId}/log`]:[...(g.log||[]),{text:`🔓 ${bot.name} با 200$ آزاد شد`,time:Date.now()}].slice(-50)});
+   }else{
+    const nj=bot.inJail-1; await db.ref().update({[`games/${gameId}/players/${botUid}/inJail`]:nj,[`games/${gameId}/log`]:[...(g.log||[]),{text:`⏳ ${bot.name} در زندان (${nj} دور)`,time:Date.now()}].slice(-50)});
+    await botEnd();
+   }
+   window.botRun=false; return;
   }
-  updates[`games/${gameId}/log`] = log.slice(-50);
-  await db.ref().update(updates);
-}
-
-// Jail turn
-function openJailTurnModal() {
-  const game = currentGame;
-  const me = game.players[myUid];
-  if (!me || me.inJail<=0) return;
-  document.getElementById('jailRemain').textContent = me.inJail;
-  document.getElementById('jailTurnModal').classList.add('show');
-}
-
-async function chooseJailTurn(choice) {
-  document.getElementById('jailTurnModal').classList.remove('show');
-  const game = await getGame(gameId);
-  const me = game.players[myUid];
-  let updates = {};
-  let log = [...(game.log||[])];
-  
-  if (choice==='pay') {
-    if (me.money < 200) { alert('پول کافی نداری'); return; }
-    const newMoney = me.money - 200;
-    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
-    updates[`games/${gameId}/players/${myUid}/inJail`] = 0;
-    log.push({text:`🔓 ${me.name} با پرداخت 200$ از زندان آزاد شد!`, time:Date.now()});
-    updates[`games/${gameId}/log`] = log.slice(-50);
-    await db.ref().update(updates);
-    // Now can roll
-  } else if (choice==='stay') {
-    const newJail = me.inJail - 1;
-    updates[`games/${gameId}/players/${myUid}/inJail`] = newJail;
-    log.push({text:`⏳ ${me.name} یک دور دیگر در زندان موند (${newJail} دور مونده)`, time:Date.now()});
-    updates[`games/${gameId}/log`] = log.slice(-50);
-    await db.ref().update(updates);
-    // End turn
-    setTimeout(()=> endTurn(), 500);
+  const dice=Math.floor(Math.random()*6)+1; const old=bot.pos, total=old+dice, newPos=total%32, laps=Math.floor(total/32); const newMoney=bot.money+laps*300;
+  await db.ref().update({[`games/${gameId}/dice`]:dice,[`games/${gameId}/players/${botUid}/pos`]:newPos,[`games/${gameId}/players/${botUid}/money`]:newMoney,[`games/${gameId}/log`]:[...(g.log||[]),{text:`🎲 ${bot.name} تاس ${dice} آورد و رفت ${normalizeBoard(g.board)[newPos].name}`,time:Date.now()}].slice(-50)});
+  await new Promise(r=>setTimeout(r,700));
+  const fg=await getGame(gameId); const fb=fg.players[botUid]; const tile=normalizeBoard(fg.board)[newPos];
+  if(tile.type==='country'&&!tile.owner&&fb.money>tile.price+150&&Math.random()>0.2){
+   await db.ref().update({[`games/${gameId}/players/${botUid}/money`]:fb.money-tile.price,[`games/${gameId}/players/${botUid}/properties`]:[...(fb.properties||[]),newPos],[`games/${gameId}/board/${newPos}/owner`]:botUid,[`games/${gameId}/log`]:[...(fg.log||[]),{text:`🏠 ${fb.name} ${tile.name} رو خرید`,time:Date.now()}].slice(-50)});
+  }else if(tile.type==='country'&&tile.owner&&tile.owner!==botUid){
+   const owner=fg.players[tile.owner]; if(owner&&!owner.bankrupt){let rent=tile.rent; const same=normalizeBoard(fg.board).filter(t=>t.owner===tile.owner&&t.continent===tile.continent).length; if(same>=2) rent=Math.floor(rent*1.5); const nbm=fb.money-rent, nom=owner.money+rent; let up={}; up[`games/${gameId}/players/${botUid}/money`]=nbm; up[`games/${gameId}/players/${tile.owner}/money`]=nom; up[`games/${gameId}/log`]=[...(fg.log||[]),{text:`💸 ${fb.name} ${rent}$ اجاره به ${owner.name} داد`,time:Date.now()}].slice(-50); if(nbm<=-500){up[`games/${gameId}/players/${botUid}/bankrupt`]=true; normalizeBoard(fg.board).forEach((t,i)=>{if(t.owner===botUid) up[`games/${gameId}/board/${i}/owner`]=null}); up[`games/${gameId}/players/${botUid}/properties`]=[];} await db.ref().update(up);}
+  }else if(tile.type==='chance'){
+   const cards=fg.chanceCards; const card=cards[Math.floor(Math.random()*cards.length)];
+   if(card.type==='money'){const nm=fb.money+card.amount; let up={}; up[`games/${gameId}/players/${botUid}/money`]=nm; up[`games/${gameId}/log`]=[...(fg.log||[]),{text:`🎁 ${fb.name}: ${card.text}`,time:Date.now()}].slice(-50); if(nm<=-500){up[`games/${gameId}/players/${botUid}/bankrupt`]=true; normalizeBoard(fg.board).forEach((t,i)=>{if(t.owner===botUid) up[`games/${gameId}/board/${i}/owner`]=null}); up[`games/${gameId}/players/${botUid}/properties`]=[];} await db.ref().update(up);}
+   else if(card.type==='go_jail'){await db.ref().update({[`games/${gameId}/players/${botUid}/pos`]:5,[`games/${gameId}/players/${botUid}/inJail`]:3,[`games/${gameId}/log`]:[...(fg.log||[]),{text:`⛓️ ${fb.name} زندانی شد!`,time:Date.now()}].slice(-50)});}
+   else if(card.type==='go_start'){await db.ref().update({[`games/${gameId}/players/${botUid}/pos`]:0,[`games/${gameId}/players/${botUid}/money`]:fb.money+300,[`games/${gameId}/log`]:[...(fg.log||[]),{text:`✈️ ${fb.name} به شروع رفت`,time:Date.now()}].slice(-50)});}
+  }else if(tile.type==='jail'){
+   if(fb.money>400&&Math.random()>0.3){await db.ref().update({[`games/${gameId}/players/${botUid}/money`]:fb.money-200,[`games/${gameId}/log`]:[...(fg.log||[]),{text:`💰 ${fb.name} 200$ جریمه داد`,time:Date.now()}].slice(-50)});}
+   else{await db.ref().update({[`games/${gameId}/players/${botUid}/pos`]:5,[`games/${gameId}/players/${botUid}/inJail`]:3,[`games/${gameId}/log`]:[...(fg.log||[]),{text:`⛓️ ${fb.name} زندانی شد`,time:Date.now()}].slice(-50)});}
   }
+  await checkWin(); await new Promise(r=>setTimeout(r,600)); await botEnd();
+ }catch(e){console.error(e)} window.botRun=false;
 }
-
-// Trade
-function openTradeModal(isIncoming=false) {
-  const game = currentGame;
-  if (!game) return;
-  const me = game.players[myUid];
-  const players = game.players;
-  
-  // Populate opponent select
-  const oppSel = document.getElementById('tradeOpponent');
-  oppSel.innerHTML = Object.entries(players).filter(([uid,p])=>uid!==myUid && !p.bankrupt).map(([uid,p])=>`<option value="${uid}">${p.name} (${p.money}$)</option>`).join('');
-  
-  // My props
-  const myProps = me.properties||[];
-  const mySel = document.getElementById('tradeMyProp');
-  mySel.innerHTML = '<option value="">هیچی</option>' + myProps.map(pid=>{
-    const t = game.board[pid];
-    return `<option value="${pid}">${t.flag} ${t.name} (${t.price}$)</option>`;
-  }).join('');
-  
-  // Their props - update when opponent changes
-  oppSel.onchange = updateTheirProps;
-  function updateTheirProps() {
-    const oppId = oppSel.value;
-    const opp = players[oppId];
-    if (!opp) return;
-    const theirProps = opp.properties||[];
-    const theirSel = document.getElementById('tradeTheirProp');
-    theirSel.innerHTML = '<option value="">هیچی</option>' + theirProps.map(pid=>{
-      const t = game.board[pid];
-      return `<option value="${pid}">${t.flag} ${t.name} (${t.price}$)</option>`;
-    }).join('');
-  }
-  updateTheirProps();
-  
-  // Check if there's pending trade for me
-  if (game.pendingTrade && game.pendingTrade.to===myUid) {
-    const pt = game.pendingTrade;
-    const fromPlayer = players[pt.from];
-    document.getElementById('tradePending').style.display='block';
-    document.getElementById('tradePendingText').innerHTML = `
-      📩 <b>${fromPlayer.name}</b> پیشنهاد معامله داده:<br>
-      میده: ${pt.offerProps.map(pid=>game.board[pid]?.name||'').join(', ')||'هیچی'} ${pt.offerMoney?`+ ${pt.offerMoney}$`:''}<br>
-      میخواد: ${pt.requestProps.map(pid=>game.board[pid]?.name||'').join(', ')||'هیچی'}<br>
-      🎁 هر دو 150$ بونوس میگیرید!
-    `;
-  } else {
-    document.getElementById('tradePending').style.display='none';
-  }
-  
-  document.getElementById('tradeModal').classList.add('show');
+async function botEnd(){
+ const g=await getGame(gameId); if(!g) return; const order=g.turnOrder||Object.keys(g.players); const cur=order.indexOf(g.currentTurn); let ni=(cur+1)%order.length, att=0, nxt=order[ni];
+ while(att<order.length){const p=g.players[nxt]; if(p&&!p.bankrupt) break; ni=(ni+1)%order.length; nxt=order[ni]; att++;}
+ const nc=(g.turnCount||0)+1; let up={}; up[`games/${gameId}/currentTurn`]=nxt; up[`games/${gameId}/phase`]='roll'; up[`games/${gameId}/turnCount`]=nc; up[`games/${gameId}/dice`]=0;
+ if(g.maxTurns&&nc>=g.maxTurns){let rich=null,max=-Infinity; for(const [uid,p] of Object.entries(g.players)){if(p.bankrupt)continue; if(p.money>max){max=p.money; rich=uid;}} if(rich){up[`games/${gameId}/winner`]=rich; up[`games/${gameId}/status`]='finished'; up[`games/${gameId}/log`]=[...(g.log||[]),{text:`🏁 ${g.maxTurns} دست تمام شد! برنده ${g.players[rich].name}`,time:Date.now()}].slice(-50);}}
+ await db.ref().update(up); await checkWin();
 }
-
-function closeTradeModal() {
-  document.getElementById('tradeModal').classList.remove('show');
-}
-
-async function proposeTrade() {
-  const oppId = document.getElementById('tradeOpponent').value;
-  const myProp = document.getElementById('tradeMyProp').value;
-  const theirProp = document.getElementById('tradeTheirProp').value;
-  const myMoney = parseInt(document.getElementById('tradeMyMoney').value)||0;
-  
-  if (!oppId) { alert('بازیکن مقابل رو انتخاب کن'); return; }
-  if (!myProp && !theirProp && myMoney===0) { alert('حداقل یک ملک یا پول برای معامله انتخاب کن'); return; }
-  
-  const game = await getGame(gameId);
-  const me = game.players[myUid];
-  if (me.money < myMoney) { alert('پول کافی نداری'); return; }
-  
-  const trade = {
-    from: myUid,
-    to: oppId,
-    offerProps: myProp ? [parseInt(myProp)] : [],
-    requestProps: theirProp ? [parseInt(theirProp)] : [],
-    offerMoney: myMoney,
-    time: Date.now()
-  };
-  
-  await db.ref(`games/${gameId}/pendingTrade`).set(trade);
-  const log = [...(game.log||[]), {text:`🤝 ${me.name} به ${game.players[oppId].name} پیشنهاد معامله داد`, time:Date.now()}];
-  await db.ref(`games/${gameId}/log`).set(log.slice(-50));
-  
-  alert('پیشنهاد ارسال شد!');
-  closeTradeModal();
-}
-
-async function acceptTrade() {
-  const game = await getGame(gameId);
-  const trade = game.pendingTrade;
-  if (!trade || trade.to!==myUid) return;
-  
-  const from = game.players[trade.from];
-  const to = game.players[myUid];
-  
-  // Check validity
-  for(const pid of trade.offerProps) {
-    if (!from.properties || !from.properties.includes(pid)) { alert('ملک پیشنهاد دهنده دیگر موجود نیست'); await db.ref(`games/${gameId}/pendingTrade`).remove(); return; }
-  }
-  for(const pid of trade.requestProps) {
-    if (!to.properties || !to.properties.includes(pid)) { alert('ملک شما دیگر موجود نیست'); await db.ref(`games/${gameId}/pendingTrade`).remove(); return; }
-  }
-  if (from.money < (trade.offerMoney||0)) { alert('پول طرف مقابل کافی نیست'); await db.ref(`games/${gameId}/pendingTrade`).remove(); return; }
-  
-  // Execute trade
-  let updates = {};
-  // Money
-  let fromMoney = from.money - (trade.offerMoney||0) + 150;
-  let toMoney = to.money + (trade.offerMoney||0) + 150;
-  updates[`games/${gameId}/players/${trade.from}/money`] = fromMoney;
-  updates[`games/${gameId}/players/${myUid}/money`] = toMoney;
-  
-  // Properties
-  let fromProps = [...(from.properties||[])];
-  let toProps = [...(to.properties||[])];
-  
-  trade.offerProps.forEach(pid=>{
-    fromProps = fromProps.filter(x=>x!==pid);
-    toProps.push(pid);
-    updates[`games/${gameId}/board/${pid}/owner`] = myUid;
-  });
-  trade.requestProps.forEach(pid=>{
-    toProps = toProps.filter(x=>x!==pid);
-    fromProps.push(pid);
-    updates[`games/${gameId}/board/${pid}/owner`] = trade.from;
-  });
-  
-  updates[`games/${gameId}/players/${trade.from}/properties`] = fromProps;
-  updates[`games/${gameId}/players/${myUid}/properties`] = toProps;
-  
-  const log = [...(game.log||[]), {text:`🤝 معامله بین ${from.name} و ${to.name} انجام شد! هر دو 150$ بونوس گرفتن 🎉`, time:Date.now()}];
-  updates[`games/${gameId}/log`] = log.slice(-50);
-  updates[`games/${gameId}/pendingTrade`] = null;
-  
-  await db.ref().update(updates);
-  closeTradeModal();
-  await checkWinConditions();
-}
-
-async function declineTrade() {
-  const game = await getGame(gameId);
-  if (!game.pendingTrade) return;
-  const from = game.players[game.pendingTrade.from];
-  const log = [...(game.log||[]), {text:`❌ ${game.players[myUid].name} معامله ${from.name} رو رد کرد`, time:Date.now()}];
-  await db.ref().update({
-    [`games/${gameId}/pendingTrade`]: null,
-    [`games/${gameId}/log`]: log.slice(-50)
-  });
-  closeTradeModal();
-}
-
-async function endTurn() {
-  const game = await getGame(gameId);
-  if (!game || game.currentTurn!==myUid) return;
-  if (game.phase!=='action') return;
-  
-  // Next player
-  const order = game.turnOrder || Object.keys(game.players);
-  const currentIdx = order.indexOf(myUid);
-  let nextIdx = (currentIdx + 1) % order.length;
-  let attempts=0;
-  let nextPlayer = order[nextIdx];
-  while(attempts < order.length) {
-    const p = game.players[nextPlayer];
-    if (p && !p.bankrupt) break;
-    nextIdx = (nextIdx+1)%order.length;
-    nextPlayer = order[nextIdx];
-    attempts++;
-  }
-  
-  const newTurnCount = (game.turnCount||0)+1;
-  
-  let updates = {};
-  updates[`games/${gameId}/currentTurn`] = nextPlayer;
-  updates[`games/${gameId}/phase`] = 'roll';
-  updates[`games/${gameId}/turnCount`] = newTurnCount;
-  updates[`games/${gameId}/dice`] = 0;
-  
-  // Check max turns win
-  if (game.maxTurns && newTurnCount >= game.maxTurns) {
-    // Richest wins
-    let richest = null;
-    let maxMoney = -Infinity;
-    for(const [uid,p] of Object.entries(game.players)) {
-      if (p.bankrupt) continue;
-      if (p.money > maxMoney) { maxMoney=p.money; richest=uid; }
-    }
-    if (richest) {
-      updates[`games/${gameId}/winner`] = richest;
-      updates[`games/${gameId}/status`] = 'finished';
-      const log = [...(game.log||[]), {text:`🏁 ${game.maxTurns} دست تموم شد! برنده ${game.players[richest].name} با ${maxMoney}$`, time:Date.now()}];
-      updates[`games/${gameId}/log`] = log.slice(-50);
-    }
-  }
-  
-  await db.ref().update(updates);
-  await checkWinConditions();
-}
-
-async function checkWinConditions() {
-  const game = await getGame(gameId);
-  if (!game || game.winner) return;
-  
-  // Money target win
-  for(const [uid,p] of Object.entries(game.players)) {
-    if (p.bankrupt) continue;
-    if (p.money >= game.moneyTarget) {
-      await db.ref().update({
-        [`games/${gameId}/winner`]: uid,
-        [`games/${gameId}/status`]: 'finished',
-        [`games/${gameId}/log`]: [...(game.log||[]), {text:`🏆 ${p.name} به ${game.moneyTarget}$ رسید و برنده شد!`, time:Date.now()}].slice(-50)
-      });
-      return;
-    }
-  }
-  
-  // All but one bankrupt
-  const alive = Object.entries(game.players).filter(([uid,p])=>!p.bankrupt);
-  if (alive.length===1) {
-    const winnerUid = alive[0][0];
-    await db.ref().update({
-      [`games/${gameId}/winner`]: winnerUid,
-      [`games/${gameId}/status`]: 'finished',
-      [`games/${gameId}/log`]: [...(game.log||[]), {text:`💀 همه ورشکست شدن! برنده ${game.players[winnerUid].name}`, time:Date.now()}].slice(-50)
-    });
-  }
-}
-
-function showWinner(game) {
-  const winner = game.players[game.winner];
-  if (!winner) return;
-  document.getElementById('winnerTitle').textContent = `🏆 ${winner.name} برنده شد!`;
-  document.getElementById('winnerText').innerHTML = `
-    با ${winner.money}$ پول و ${winner.properties?.length||0} ملک!<br><br>
-    🎯 هدف: ${game.moneyTarget}$<br>
-    🔄 دورها: ${game.turnCount}/${game.maxTurns||'♾️'}<br><br>
-    ${winner.name} قهرمان مونوپولی جهان شد! 🌍👑
-  `;
-  document.getElementById('winnerModal').classList.add('show');
-}
-
-// Bot AI
-async function runBotTurn(game) {
-  if (!game || game.status!=='playing') return;
-  const botUid = game.currentTurn;
-  const bot = game.players[botUid];
-  if (!bot || !bot.isBot) return;
-  // Prevent multiple bot executions
-  if (window.botRunning) return;
-  window.botRunning=true;
-  
-  try {
-    // If in jail
-    if (bot.inJail>0) {
-      if (bot.money>600 && Math.random()>0.4) {
-        // Pay
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/money`]: bot.money-200,
-          [`games/${gameId}/players/${botUid}/inJail`]: 0,
-          [`games/${gameId}/log`]: [...(game.log||[]), {text:`🔓 ${bot.name} با 200$ از زندان آزاد شد`, time:Date.now()}].slice(-50)
-        });
-      } else {
-        const newJail = bot.inJail-1;
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/inJail`]: newJail,
-          [`games/${gameId}/log`]: [...(game.log||[]), {text:`⏳ ${bot.name} در زندان موند (${newJail} دور)`, time:Date.now()}].slice(-50)
-        });
-        // End turn
-        await botEndTurn();
-      }
-      window.botRunning=false;
-      return;
-    }
-    
-    // Roll dice
-    const dice = Math.floor(Math.random()*6)+1;
-    const oldPos = bot.pos;
-    const total = oldPos + dice;
-    const newPos = total % 32;
-    const laps = Math.floor(total/32);
-    let newMoney = bot.money + laps*300;
-    
-    await db.ref().update({
-      [`games/${gameId}/dice`]: dice,
-      [`games/${gameId}/players/${botUid}/pos`]: newPos,
-      [`games/${gameId}/players/${botUid}/money`]: newMoney,
-      [`games/${gameId}/log`]: [...(game.log||[]), {text:`🎲 ${bot.name} تاس ${dice} آورد و به ${game.board[newPos].name} رفت`, time:Date.now()}].slice(-50)
-    });
-    
-    await new Promise(r=>setTimeout(r,800));
-    
-    const tile = game.board[newPos];
-    const freshGame = await getGame(gameId);
-    const freshBot = freshGame.players[botUid];
-    
-    if (tile.type==='country' && !tile.owner) {
-      if (freshBot.money > tile.price + 150 && Math.random()>0.2) {
-        // Buy
-        const newProps = [...(freshBot.properties||[]), newPos];
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/money`]: freshBot.money - tile.price,
-          [`games/${gameId}/players/${botUid}/properties`]: newProps,
-          [`games/${gameId}/board/${newPos}/owner`]: botUid,
-          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`🏠 ${freshBot.name} ${tile.name} رو خرید (${tile.price}$)`, time:Date.now()}].slice(-50)
-        });
-      }
-    } else if (tile.type==='country' && tile.owner && tile.owner!==botUid) {
-      const owner = freshGame.players[tile.owner];
-      if (owner && !owner.bankrupt) {
-        let rent = tile.rent;
-        const sameCont = freshGame.board.filter(t=>t.owner===tile.owner && t.continent===tile.continent).length;
-        if (sameCont>=2) rent = Math.floor(rent*1.5);
-        const newBotMoney = freshBot.money - rent;
-        const newOwnerMoney = owner.money + rent;
-        let updates = {};
-        updates[`games/${gameId}/players/${botUid}/money`] = newBotMoney;
-        updates[`games/${gameId}/players/${tile.owner}/money`] = newOwnerMoney;
-        updates[`games/${gameId}/log`] = [...(freshGame.log||[]), {text:`💸 ${freshBot.name} ${rent}$ به ${owner.name} اجاره داد`, time:Date.now()}].slice(-50);
-        if (newBotMoney <= -500) {
-          updates[`games/${gameId}/players/${botUid}/bankrupt`] = true;
-          updates[`games/${gameId}/log`].push({text:`💀 ${freshBot.name} ورشکست شد!`, time:Date.now()});
-          freshGame.board.forEach((t,i)=>{
-            if (t.owner===botUid) updates[`games/${gameId}/board/${i}/owner`] = null;
-          });
-          updates[`games/${gameId}/players/${botUid}/properties`] = [];
-        }
-        await db.ref().update(updates);
-      }
-    } else if (tile.type==='chance') {
-      const cards = freshGame.chanceCards;
-      const card = cards[Math.floor(Math.random()*cards.length)];
-      // Apply simple money cards for bot
-      if (card.type==='money') {
-        const nm = freshBot.money + card.amount;
-        let upd = {};
-        upd[`games/${gameId}/players/${botUid}/money`] = nm;
-        upd[`games/${gameId}/log`] = [...(freshGame.log||[]), {text:`🎁 ${freshBot.name}: ${card.text}`, time:Date.now()}].slice(-50);
-        if (nm <= -500) {
-          upd[`games/${gameId}/players/${botUid}/bankrupt`] = true;
-          freshGame.board.forEach((t,i)=>{ if (t.owner===botUid) upd[`games/${gameId}/board/${i}/owner`]=null; });
-          upd[`games/${gameId}/players/${botUid}/properties`] = [];
-        }
-        await db.ref().update(upd);
-      } else if (card.type==='go_jail') {
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/pos`]: 5,
-          [`games/${gameId}/players/${botUid}/inJail`]: 3,
-          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`⛓️ ${freshBot.name} به زندان افتاد!`, time:Date.now()}].slice(-50)
-        });
-      } else if (card.type==='go_start') {
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/pos`]: 0,
-          [`games/${gameId}/players/${botUid}/money`]: freshBot.money+300,
-          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`✈️ ${freshBot.name} به شروع رفت`, time:Date.now()}].slice(-50)
-        });
-      }
-    } else if (tile.type==='jail') {
-      if (freshBot.money > 400 && Math.random()>0.3) {
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/money`]: freshBot.money-200,
-          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`💰 ${freshBot.name} 200$ جریمه زندان داد`, time:Date.now()}].slice(-50)
-        });
-      } else {
-        await db.ref().update({
-          [`games/${gameId}/players/${botUid}/pos`]: 5,
-          [`games/${gameId}/players/${botUid}/inJail`]: 3,
-          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`⛓️ ${freshBot.name} زندانی شد (3 دور)`, time:Date.now()}].slice(-50)
-        });
-      }
-    }
-    
-    await checkWinConditions();
-    await new Promise(r=>setTimeout(r, 600));
-    await botEndTurn();
-    
-  } catch(e) { console.error('bot error', e); }
-  window.botRunning=false;
-}
-
-async function botEndTurn() {
-  const game = await getGame(gameId);
-  if (!game) return;
-  const order = game.turnOrder || Object.keys(game.players);
-  const botUid = game.currentTurn;
-  const currentIdx = order.indexOf(botUid);
-  let nextIdx = (currentIdx+1)%order.length;
-  let attempts=0;
-  let nextPlayer = order[nextIdx];
-  while(attempts < order.length) {
-    const p = game.players[nextPlayer];
-    if (p && !p.bankrupt) break;
-    nextIdx = (nextIdx+1)%order.length;
-    nextPlayer = order[nextIdx];
-    attempts++;
-  }
-  const newTurnCount = (game.turnCount||0)+1;
-  let updates = {};
-  updates[`games/${gameId}/currentTurn`] = nextPlayer;
-  updates[`games/${gameId}/phase`] = 'roll';
-  updates[`games/${gameId}/turnCount`] = newTurnCount;
-  updates[`games/${gameId}/dice`] = 0;
-  
-  if (game.maxTurns && newTurnCount >= game.maxTurns) {
-    let richest=null, maxMoney=-Infinity;
-    for(const [uid,p] of Object.entries(game.players)) {
-      if (p.bankrupt) continue;
-      if (p.money>maxMoney) { maxMoney=p.money; richest=uid; }
-    }
-    if (richest) {
-      updates[`games/${gameId}/winner`]=richest;
-      updates[`games/${gameId}/status`]='finished';
-      updates[`games/${gameId}/log`] = [...(game.log||[]), {text:`🏁 ${game.maxTurns} دست تمام شد! برنده ${game.players[richest].name}`, time:Date.now()}].slice(-50);
-    }
-  }
-  await db.ref().update(updates);
-  await checkWinConditions();
-}
-
-// Navigation
-function backToLobby() {
-  if (currentGame && currentGame.lobbyId) {
-    window.location.href = `lobby.html?id=${currentGame.lobbyId}`;
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-
-async function handleLeave() {
-  if (!confirm('از بازی خارج میشی؟')) return;
-  try {
-    await leaveGame(gameId, myUid);
-    if (gameRef) stopPolling(gameRef);
-    backToLobby();
-  } catch(e) { alert(e.message); }
-}
-
-window.addEventListener('beforeunload', ()=>{
-  if (gameRef) stopPolling(gameRef);
-});
+function backToLobby(){if(currentGame&&currentGame.lobbyId) location.href=`lobby.html?id=${currentGame.lobbyId}`; else location.href='data:text/html;base64,PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImZhIiBkaXI9InJ0bCI+CjxoZWFkPgogICAgPG1ldGEgY2hhcnNldD0iVVRGLTgiPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiPgogICAgPHRpdGxlPtmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L3RpdGxlPgogICAgPHN0eWxlPgogICAgICAgIEBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVZhemlybWF0bjp3Z2h0QDQwMDs3MDA7OTAwJmRpc3BsYXk9c3dhcCcpOwogICAgICAgICogeyBtYXJnaW46IDA7IHBhZGRpbmc6IDA7IGJveC1zaXppbmc6IGJvcmRlci1ib3g7IH0KICAgICAgICBib2R5IHsKICAgICAgICAgICAgZm9udC1mYW1pbHk6ICdWYXppcm1hdG4nLCBzYW5zLXNlcmlmOwogICAgICAgICAgICBiYWNrZ3JvdW5kOiBsaW5lYXItZ3JhZGllbnQoMTM1ZGVnLCAjNjY3ZWVhIDAlLCAjNzY0YmEyIDEwMCUpOwogICAgICAgICAgICBtaW4taGVpZ2h0OiAxMDB2aDsKICAgICAgICAgICAgZGlzcGxheTogZmxleDsKICAgICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgICAgICAgICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICAgICAgICAgIHBhZGRpbmc6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5jb250YWluZXIgewogICAgICAgICAgICBiYWNrZ3JvdW5kOiByZ2JhKDI1NSwyNTUsMjU1LDAuOTUpOwogICAgICAgICAgICBwYWRkaW5nOiA0MHB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAyMHB4OwogICAgICAgICAgICBib3gtc2hhZG93OiAwIDIwcHggNjBweCByZ2JhKDAsMCwwLDAuMyk7CiAgICAgICAgICAgIG1heC13aWR0aDogNTAwcHg7CiAgICAgICAgICAgIHdpZHRoOiAxMDAlOwogICAgICAgIH0KICAgICAgICBoMSB7CiAgICAgICAgICAgIHRleHQtYWxpZ246IGNlbnRlcjsKICAgICAgICAgICAgY29sb3I6ICM2NjdlZWE7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMzZweDsKICAgICAgICAgICAgbWFyZ2luLWJvdHRvbTogMzBweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDkwMDsKICAgICAgICB9CiAgICAgICAgaW5wdXQgewogICAgICAgICAgICB3aWR0aDogMTAwJTsKICAgICAgICAgICAgcGFkZGluZzogMTVweDsKICAgICAgICAgICAgYm9yZGVyOiAycHggc29saWQgI2RkZDsKICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogMTJweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNnB4OwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIG1hcmdpbi1ib3R0b206IDE1cHg7CiAgICAgICAgfQogICAgICAgIGlucHV0OmZvY3VzIHsgb3V0bGluZTogbm9uZTsgYm9yZGVyLWNvbG9yOiAjNjY3ZWVhOyB9CiAgICAgICAgYnV0dG9uIHsKICAgICAgICAgICAgd2lkdGg6IDEwMCU7CiAgICAgICAgICAgIHBhZGRpbmc6IDE1cHg7CiAgICAgICAgICAgIGJhY2tncm91bmQ6IGxpbmVhci1ncmFkaWVudCgxMzVkZWcsICM2NjdlZWEgMCUsICM3NjRiYTIgMTAwJSk7CiAgICAgICAgICAgIGNvbG9yOiAjZmZmOwogICAgICAgICAgICBib3JkZXI6IG5vbmU7CiAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDEycHg7CiAgICAgICAgICAgIGZvbnQtc2l6ZTogMThweDsKICAgICAgICAgICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgICAgICAgICAgY3Vyc29yOiBwb2ludGVyOwogICAgICAgICAgICBmb250LWZhbWlseTogJ1ZhemlybWF0bicsIHNhbnMtc2VyaWY7CiAgICAgICAgICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzOwogICAgICAgIH0KICAgICAgICBidXR0b246aG92ZXIgeyB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTJweCk7IH0KICAgICAgICBidXR0b246ZGlzYWJsZWQgeyBvcGFjaXR5OiAwLjU7IGN1cnNvcjogbm90LWFsbG93ZWQ7IH0KICAgICAgICAuc2VjdGlvbiB7IGRpc3BsYXk6IG5vbmU7IH0KICAgICAgICAuc2VjdGlvbi5hY3RpdmUgeyBkaXNwbGF5OiBibG9jazsgfQogICAgICAgIC51c2VyLWluZm8gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZjBmMGYwOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAyMHB4OwogICAgICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0cyB7CiAgICAgICAgICAgIG1hcmdpbi10b3A6IDIwcHg7CiAgICAgICAgfQogICAgICAgIC5yZXF1ZXN0LWl0ZW0gewogICAgICAgICAgICBiYWNrZ3JvdW5kOiAjZmZmOwogICAgICAgICAgICBwYWRkaW5nOiAxNXB4OwogICAgICAgICAgICBib3JkZXItcmFkaXVzOiAxMnB4OwogICAgICAgICAgICBtYXJnaW4tYm90dG9tOiAxMHB4OwogICAgICAgICAgICBkaXNwbGF5OiBmbGV4OwogICAgICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICAgICAgICAgIGJveC1zaGFkb3c6IDAgMnB4IDhweCByZ2JhKDAsMCwwLDAuMSk7CiAgICAgICAgfQogICAgICAgIC5idG4tc21hbGwgewogICAgICAgICAgICBwYWRkaW5nOiA4cHggMTZweDsKICAgICAgICAgICAgZm9udC1zaXplOiAxNHB4OwogICAgICAgICAgICB3aWR0aDogYXV0bzsKICAgICAgICB9CiAgICAgICAgLmxvYmJ5LXNlY3Rpb24gewogICAgICAgICAgICBtYXJnaW4tdG9wOiAyMHB4OwogICAgICAgICAgICBwYWRkaW5nLXRvcDogMjBweDsKICAgICAgICAgICAgYm9yZGVyLXRvcDogMnB4IGRhc2hlZCAjZGRkOwogICAgICAgIH0KICAgICAgICAuY29kZS1pbnB1dCB7CiAgICAgICAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgICAgICAgIGdhcDogMTBweDsKICAgICAgICB9CiAgICAgICAgLmNvZGUtaW5wdXQgaW5wdXQgeyBtYXJnaW46IDA7IH0KICAgICAgICAuY29kZS1pbnB1dCBidXR0b24geyB3aWR0aDogYXV0bzsgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KPGRpdiBjbGFzcz0iY29udGFpbmVyIj4KICAgIDxoMT7wn46uINmF2KzZhdmI2LnZhyDYqNin2LLbjOKAjNmH2Kc8L2gxPgoKICAgIDxkaXYgaWQ9ImxvZ2luU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24gYWN0aXZlIj4KICAgICAgICA8aW5wdXQgdHlwZT0idGV4dCIgaWQ9Im5hbWVJbnB1dCIgcGxhY2Vob2xkZXI9Itin2LPZhdiqINix2Ygg2YjYp9ix2K8g2qnZhiIgbWF4bGVuZ3RoPSIxNSI+CiAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVMb2dpbigpIj7ZiNix2YjYryDYqNmHINio2KfYstuMPC9idXR0b24+CiAgICA8L2Rpdj4KCiAgICA8ZGl2IGlkPSJtYWluU2VjdGlvbiIgY2xhc3M9InNlY3Rpb24iPgogICAgICAgIDxkaXYgY2xhc3M9InVzZXItaW5mbyI+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImZvbnQtc2l6ZTogMjBweDsgZm9udC13ZWlnaHQ6IDcwMDsiIGlkPSJ1c2VyTmFtZSI+PC9kaXY+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9ImNvbG9yOiAjNjY2OyI+2KfZhdiq24zYp9iyINqp2YQ6IDxzcGFuIGlkPSJ1c2VyU2NvcmUiPjA8L3NwYW4+PC9kaXY+CiAgICAgICAgPC9kaXY+CgogICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ic2VhcmNoSW5wdXQiIHBsYWNlaG9sZGVyPSLZhtin2YUg2qnYp9ix2KjYsduMINiv2YjYs9iq2Kog2LHZiCDYqNiy2YYiPgogICAgICAgIDxidXR0b24gb25jbGljaz0iaGFuZGxlU2VuZFJlcXVlc3QoKSI+2KfYsdiz2KfZhCDYr9ix2K7ZiNin2LPYqiDYqNin2LLbjDwvYnV0dG9uPgoKICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0cyI+CiAgICAgICAgICAgIDxoMyBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMTBweDsiPtiv2LHYrtmI2KfYs9iq4oCM2YfYpzo8L2gzPgogICAgICAgICAgICA8ZGl2IGlkPSJyZXF1ZXN0c0xpc3QiPjwvZGl2PgogICAgICAgIDwvZGl2PgoKICAgICAgICA8ZGl2IGNsYXNzPSJsb2JieS1zZWN0aW9uIj4KICAgICAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJoYW5kbGVDcmVhdGVMb2JieSgpIj7Ys9in2K7YqiDZhNin2KjbjCDYrNiv24zYryDwn46vPC9idXR0b24+CiAgICAgICAgICAgIDxkaXYgc3R5bGU9Im1hcmdpbjogMTVweCAwOyB0ZXh0LWFsaWduOiBjZW50ZXI7IGNvbG9yOiAjOTk5OyI+24zYpzwvZGl2PgogICAgICAgICAgICA8ZGl2IGNsYXNzPSJjb2RlLWlucHV0Ij4KICAgICAgICAgICAgICAgIDxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ibG9iYnlDb2RlIiBwbGFjZWhvbGRlcj0i2qnYryDZhNin2KjbjCIgbWF4bGVuZ3RoPSI2Ij4KICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iaGFuZGxlSm9pbkxvYmJ5KCkiPtmI2LHZiNivPC9idXR0b24+CiAgICAgICAgICAgIDwvZGl2PgogICAgICAgIDwvZGl2PgogICAgPC9kaXY+CjwvZGl2PgoKPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWFwcC1jb21wYXQuanMiPjwvc2NyaXB0Pgo8c2NyaXB0IHNyYz0iaHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy85LjIzLjAvZmlyZWJhc2UtZGF0YWJhc2UtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LmdzdGF0aWMuY29tL2ZpcmViYXNlanMvOS4yMy4wL2ZpcmViYXNlLWF1dGgtY29tcGF0LmpzIj48L3NjcmlwdD4KPHNjcmlwdCBzcmM9ImFwaS5qcyI+PC9zY3JpcHQ+CjxzY3JpcHQ+CiAgICBsZXQgY3VycmVudFVzZXIgPSBudWxsOwoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUxvZ2luKCkgewogICAgICAgIGNvbnN0IG5hbWUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbmFtZUlucHV0JykudmFsdWUudHJpbSgpOwogICAgICAgIGlmICghbmFtZSkgcmV0dXJuIGFsZXJ0KCfYp9iz2YUg2LHZiCDZiNin2LHYryDaqdmGIScpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGN1cnJlbnRVc2VyID0gYXdhaXQgbG9naW4obmFtZSk7CiAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgIHN0YXJ0UG9sbGluZ1JlcXVlc3RzKCk7CiAgICAgICAgfSBjYXRjaCAoZSkgewogICAgICAgICAgICBhbGVydCgn2K7Yt9inOiAnICsgZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc2hvd01haW4oKSB7CiAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvZ2luU2VjdGlvbicpLmNsYXNzTGlzdC5yZW1vdmUoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYWluU2VjdGlvbicpLmNsYXNzTGlzdC5hZGQoJ2FjdGl2ZScpOwogICAgICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCd1c2VyTmFtZScpLnRleHRDb250ZW50ID0gY3VycmVudFVzZXIubmFtZTsKICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgndXNlclNjb3JlJykudGV4dENvbnRlbnQgPSBjdXJyZW50VXNlci5zY29yZSB8fCAwOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZVNlbmRSZXF1ZXN0KCkgewogICAgICAgIGNvbnN0IHRvTmFtZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzZWFyY2hJbnB1dCcpLnZhbHVlLnRyaW0oKTsKICAgICAgICBpZiAoIXRvTmFtZSkgcmV0dXJuIGFsZXJ0KCfZhtin2YUg2qnYp9ix2KjYsduMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGF3YWl0IHNlbmRHYW1lUmVxdWVzdCh0b05hbWUpOwogICAgICAgICAgICBhbGVydCgn2K/Ysdiu2YjYp9iz2Kog2KfYsdiz2KfZhCDYtNivIScpOwogICAgICAgICAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc2VhcmNoSW5wdXQnKS52YWx1ZSA9ICcnOwogICAgICAgIH0gY2F0Y2ggKGUpIHsKICAgICAgICAgICAgYWxlcnQoZS5tZXNzYWdlKTsKICAgICAgICB9CiAgICB9CgogICAgZnVuY3Rpb24gc3RhcnRQb2xsaW5nUmVxdWVzdHMoKSB7CiAgICAgICAgcG9sbFJlcXVlc3RzKChyZXF1ZXN0cykgPT4gewogICAgICAgICAgICBjb25zdCBsaXN0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlcXVlc3RzTGlzdCcpOwogICAgICAgICAgICBjb25zdCByZXF1ZXN0c0FycmF5ID0gT2JqZWN0LnZhbHVlcyhyZXF1ZXN0cyB8fCB7fSk7CiAgICAgICAgICAgIGlmIChyZXF1ZXN0c0FycmF5Lmxlbmd0aCA+IDApIHsKICAgICAgICAgICAgICAgIGxpc3QuaW5uZXJIVE1MID0gcmVxdWVzdHNBcnJheS5tYXAocmVxID0+IGAKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzPSJyZXF1ZXN0LWl0ZW0iPgogICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj4ke3JlcS5mcm9tTmFtZX0g2K/Ysdiu2YjYp9iz2Kog2KjYp9iy24wg2K/Yp9iv2Yc8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b24gY2xhc3M9ImJ0bi1zbWFsbCIgb25jbGljaz0iYWNjZXB0UmVxdWVzdCgnJHtyZXEuZnJvbX0nKSI+2YLYqNmI2YQ8L2J1dHRvbj4KICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgIGApLmpvaW4oJycpOwogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAgICAgbGlzdC5pbm5lckhUTUwgPSAnPGRpdiBzdHlsZT0idGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6Izk5OTsiPtiv2LHYrtmI2KfYs9iq24wg2YbbjNiz2Ko8L2Rpdj4nOwogICAgICAgICAgICB9CiAgICAgICAgfSk7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gYWNjZXB0UmVxdWVzdChmcm9tSWQpIHsKICAgICAgICBjb25zdCBsb2JieSA9IGF3YWl0IGNyZWF0ZUxvYmJ5KCk7CiAgICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSBgbG9iYnkuaHRtbD9pZD0ke2xvYmJ5LmlkfWA7CiAgICB9CgogICAgYXN5bmMgZnVuY3Rpb24gaGFuZGxlQ3JlYXRlTG9iYnkoKSB7CiAgICAgICAgY29uc3QgbG9iYnkgPSBhd2FpdCBjcmVhdGVMb2JieSgpOwogICAgICAgIHdpbmRvdy5sb2NhdGlvbi5ocmVmID0gYGxvYmJ5Lmh0bWw/aWQ9JHtsb2JieS5pZH1gOwogICAgfQoKICAgIGFzeW5jIGZ1bmN0aW9uIGhhbmRsZUpvaW5Mb2JieSgpIHsKICAgICAgICBjb25zdCBjb2RlID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2xvYmJ5Q29kZScpLnZhbHVlLnRyaW0oKS50b1VwcGVyQ2FzZSgpOwogICAgICAgIGlmICghY29kZSkgcmV0dXJuIGFsZXJ0KCfaqdivINmE2KfYqNuMINix2Ygg2YjYp9ix2K8g2qnZhicpOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IGxvYmJ5ID0gYXdhaXQgam9pbkxvYmJ5KGNvZGUpOwogICAgICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9IGBsb2JieS5odG1sP2lkPSR7bG9iYnkuaWR9YDsKICAgICAgICB9IGNhdGNoIChlKSB7CiAgICAgICAgICAgIGFsZXJ0KGUubWVzc2FnZSk7CiAgICAgICAgfQogICAgfQoKICAgIHdpbmRvdy5vbmxvYWQgPSBhc3luYyAoKSA9PiB7CiAgICAgICAgY29uc3QgdXNlcklkID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3VzZXJJZCcpOwogICAgICAgIGlmICh1c2VySWQpIHsKICAgICAgICAgICAgY3VycmVudFVzZXIgPSBhd2FpdCBnZXRDdXJyZW50VXNlcigpOwogICAgICAgICAgICBpZiAoY3VycmVudFVzZXIpIHsKICAgICAgICAgICAgICAgIHNob3dNYWluKCk7CiAgICAgICAgICAgICAgICBzdGFydFBvbGxpbmdSZXF1ZXN0cygpOwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfTsKPC9zY3JpcHQ+CjwvYm9keT4KPC9odG1sPg=='}
+async function handleLeave(){if(!confirm('خارج میشی؟'))return; try{await leaveGame(gameId,myUid); if(gameRef) stopPolling(gameRef); backToLobby();}catch(e){alert(e.message)}}
+window.addEventListener('beforeunload',()=>{if(gameRef) stopPolling(gameRef)});
 </script>
 </body>
 </html>
