@@ -36,6 +36,67 @@ function shuffle(array) {
 }
 
 // ==========================================
+// 🌍 برد مونوپولی - کشورهای جهان
+// ==========================================
+function generateMonopolyBoard() {
+    // 32 خونه: 9x9 grid perimeter = 32
+    // type: start, country, chance, jail, trade
+    return [
+        { id:0, type:'start', name:'شروع', icon:'🏁', desc:'1000$ شروع + 300$ هر دور', price:0, rent:0, color:'#00c853', continent:'start', owner:null },
+        { id:1, type:'country', name:'ژاپن', flag:'🇯🇵', icon:'🗼', price:300, rent:60, color:'#ff5252', continent:'asia', owner:null },
+        { id:2, type:'chance', name:'شانس', icon:'🎁', desc:'جایزه/مجازات رندوم', price:0, rent:0, color:'#ab47bc', continent:'chance', owner:null },
+        { id:3, type:'country', name:'آلمان', flag:'🇩🇪', icon:'🏰', price:280, rent:55, color:'#448aff', continent:'europe', owner:null },
+        { id:4, type:'country', name:'انگلیس', flag:'🇬🇧', icon:'👑', price:320, rent:65, color:'#448aff', continent:'europe', owner:null },
+        { id:5, type:'jail', name:'زندان', icon:'⛓️', desc:'3 دور حبس یا 200$ جریمه', price:0, rent:0, color:'#616161', continent:'jail', owner:null },
+        { id:6, type:'country', name:'فرانسه', flag:'🇫🇷', icon:'🗼', price:300, rent:60, color:'#448aff', continent:'europe', owner:null },
+        { id:7, type:'country', name:'ایتالیا', flag:'🇮🇹', icon:'🍝', price:260, rent:50, color:'#448aff', continent:'europe', owner:null },
+        { id:8, type:'trade', name:'ترید', icon:'🤝', desc:'معامله + 150$ بونوس', price:0, rent:0, color:'#ff9800', continent:'trade', owner:null },
+        { id:9, type:'country', name:'آمریکا', flag:'🇺🇸', icon:'🗽', price:400, rent:80, color:'#ff5252', continent:'america', owner:null },
+        { id:10, type:'country', name:'اسپانیا', flag:'🇪🇸', icon:'💃', price:220, rent:45, color:'#448aff', continent:'europe', owner:null },
+        { id:11, type:'chance', name:'شانس', icon:'🎁', desc:'جایزه/مجازات رندوم', price:0, rent:0, color:'#ab47bc', continent:'chance', owner:null },
+        { id:12, type:'country', name:'کانادا', flag:'🇨🇦', icon:'🍁', price:350, rent:70, color:'#ff5252', continent:'america', owner:null },
+        { id:13, type:'country', name:'برزیل', flag:'🇧🇷', icon:'⚽', price:200, rent:40, color:'#ff5252', continent:'america', owner:null },
+        { id:14, type:'country', name:'استرالیا', flag:'🇦🇺', icon:'🦘', price:340, rent:68, color:'#66bb6a', continent:'oceania', owner:null },
+        { id:15, type:'country', name:'روسیه', flag:'🇷🇺', icon:'🏛️', price:330, rent:66, color:'#448aff', continent:'europe', owner:null },
+        { id:16, type:'country', name:'مصر', flag:'🇪🇬', icon:'🏜️', price:180, rent:35, color:'#ffca28', continent:'africa', owner:null },
+        { id:17, type:'country', name:'ترکیه', flag:'🇹🇷', icon:'🕌', price:200, rent:40, color:'#448aff', continent:'asia', owner:null },
+        { id:18, type:'country', name:'کره جنوبی', flag:'🇰🇷', icon:'🎮', price:290, rent:58, color:'#ff5252', continent:'asia', owner:null },
+        { id:19, type:'chance', name:'شانس', icon:'🎁', desc:'جایزه/مجازات رندوم', price:0, rent:0, color:'#ab47bc', continent:'chance', owner:null },
+        { id:20, type:'country', name:'هند', flag:'🇮🇳', icon:'🕌', price:240, rent:48, color:'#ff5252', continent:'asia', owner:null },
+        { id:21, type:'country', name:'مکزیک', flag:'🇲🇽', icon:'🌮', price:210, rent:42, color:'#ff5252', continent:'america', owner:null },
+        { id:22, type:'country', name:'سوئد', flag:'🇸🇪', icon:'❄️', price:270, rent:54, color:'#448aff', continent:'europe', owner:null },
+        { id:23, type:'country', name:'هلند', flag:'🇳🇱', icon:'🌷', price:250, rent:50, color:'#448aff', continent:'europe', owner:null },
+        { id:24, type:'country', name:'آرژانتین', flag:'🇦🇷', icon:'⚽', price:190, rent:38, color:'#ff5252', continent:'america', owner:null },
+        { id:25, type:'country', name:'امارات', flag:'🇦🇪', icon:'🏙️', price:310, rent:62, color:'#ff5252', continent:'asia', owner:null },
+        { id:26, type:'chance', name:'شانس', icon:'🎲', desc:'جایزه/مجازات رندوم', price:0, rent:0, color:'#ab47bc', continent:'chance', owner:null },
+        { id:27, type:'country', name:'چین', flag:'🇨🇳', icon:'🐼', price:380, rent:76, color:'#ff5252', continent:'asia', owner:null },
+        { id:28, type:'country', name:'آفریقای جنوبی', flag:'🇿🇦', icon:'🦁', price:170, rent:34, color:'#ffca28', continent:'africa', owner:null },
+        { id:29, type:'country', name:'سوئیس', flag:'🇨🇭', icon:'🏔️', price:360, rent:72, color:'#448aff', continent:'europe', owner:null },
+        { id:30, type:'country', name:'نروژ', flag:'🇳🇴', icon:'🎣', price:300, rent:60, color:'#448aff', continent:'europe', owner:null },
+        { id:31, type:'country', name:'نیوزلند', flag:'🇳🇿', icon:'🥝', price:230, rent:46, color:'#66bb6a', continent:'oceania', owner:null },
+    ];
+}
+
+function getMonopolyChanceCards() {
+    return [
+        { text:'🎉 برنده لاتاری شدی! +300 دلار', type:'money', amount:300 },
+        { text:'💸 مالیات سنگین! -200 دلار', type:'money', amount:-200 },
+        { text:'🏦 بانک بهت جایزه داد +250 دلار', type:'money', amount:250 },
+        { text:'🚨 جریمه رانندگی! -150 دلار', type:'money', amount:-150 },
+        { text:'✈️ سفر رایگان! برو به START و 300$ بگیر', type:'go_start', amount:0 },
+        { text:'⛓️ پلیس گرفتت! برو زندان 3 دور', type:'go_jail', amount:0 },
+        { text:'🎁 روز تولدته! از هر بازیکن 80$ بگیر', type:'collect_players', amount:80 },
+        { text:'💔 دزد اومده! به هر بازیکن 50$ بده', type:'pay_players', amount:50 },
+        { text:'🏠 اجاره خونه گرفتی +150 دلار', type:'money', amount:150 },
+        { text:'🔧 خونه نیاز به تعمیر داره -120 دلار', type:'money', amount:-120 },
+        { text:'🍀 شانس بزرگ! +400 دلار', type:'money', amount:400 },
+        { text:'😱 ضرر بزرگ! -250 دلار', type:'money', amount:-250 },
+        { text:'🌟 سرمایه گذاری سود کرد +350 دلار', type:'money', amount:350 },
+        { text:'⚡ قبض برق سنگین -180 دلار', type:'money', amount:-180 },
+    ];
+}
+
+// ==========================================
 // 👤 مدیریت کاربران
 // ==========================================
 async function login(name) {
@@ -123,6 +184,10 @@ async function createLobby() {
         },
         chat: [],
         gameType: null,
+        monopolySettings: {
+            moneyTarget: 5000,
+            maxTurns: 50
+        },
         gameId: null,
         status: 'waiting',
         createdAt: firebase.database.ServerValue.TIMESTAMP
@@ -160,6 +225,10 @@ async function setGameType(lobbyId, gameType) {
     await db.ref('lobbies/' + lobbyId + '/gameType').set(gameType);
 }
 
+async function setMonopolySettings(lobbyId, settings) {
+    await db.ref('lobbies/' + lobbyId + '/monopolySettings').set(settings);
+}
+
 // ==========================================
 // 💬 چت
 // ==========================================
@@ -190,8 +259,8 @@ async function startGame(lobbyId) {
     if (readyPlayers.length < 2 && gameType === 'esm-famil') {
         throw new Error('برای اسم فامیل حداقل ۲ نفر باید آماده باشند');
     }
-    if (readyPlayers.length < 1 && (gameType === 'hokm' || gameType === 'manche')) {
-        throw new Error('برای این بازی حداقل ۱ نفر باید آماده باشد');
+    if (readyPlayers.length < 1 && (gameType === 'hokm' || gameType === 'manche' || gameType === 'monopoly')) {
+        throw new Error('حداقل ۱ نفر باید آماده باشد');
     }
     const gameId = generateId();
     const gameData = {
@@ -234,7 +303,6 @@ async function startGame(lobbyId) {
         gameData.currentTurn = null;
         gameData.lastWinner = null;
     } else if (gameType === 'manche') {
-        // اضافه کردن بات‌ها تا ۴ نفر
         const botNames = ['بات قرمز', 'بات آبی', 'بات سبز', 'بات زرد'];
         let botCount = 0;
         while (Object.keys(gameData.players).length < 4) {
@@ -249,7 +317,6 @@ async function startGame(lobbyId) {
             };
             botCount++;
         }
-        // رنگ‌ها و انتخاب رنگ
         const colorMap = {};
         const playerIds = Object.keys(gameData.players);
         playerIds.forEach(uid => {
@@ -267,6 +334,55 @@ async function startGame(lobbyId) {
             gameData.players[uid].tokens = [0, 0, 0, 0];
             gameData.players[uid].homeCount = 0;
         }
+    } else if (gameType === 'monopoly') {
+        // تنظیمات مونوپولی
+        const settings = lobby.monopolySettings || { moneyTarget: 5000, maxTurns: 50 };
+        const moneyTarget = settings.moneyTarget || 5000;
+        const maxTurns = settings.maxTurns === 'unlimited' ? null : (settings.maxTurns || 50);
+        
+        // بات ها برای مونوپولی - حداقل 2 نفر
+        const botNames = ['بات میلیاردر 🤖', 'بات تاجر 💼', 'بات شانس 🍀'];
+        let botCount = 0;
+        while (Object.keys(gameData.players).length < 2) {
+            const botId = 'bot_' + generateId();
+            gameData.players[botId] = {
+                name: botNames[botCount % botNames.length],
+                isBot: true,
+                money: 1000,
+                pos: 0,
+                inJail: 0,
+                properties: [],
+                bankrupt: false,
+                totalScore: 0
+            };
+            botCount++;
+        }
+        // بازیکنان اصلی
+        for (const uid of readyPlayers) {
+            gameData.players[uid] = {
+                name: lobby.players[uid].name,
+                isBot: false,
+                money: 1000,
+                pos: 0,
+                inJail: 0,
+                properties: [],
+                bankrupt: false,
+                totalScore: 0,
+                finished: false
+            };
+        }
+        gameData.board = generateMonopolyBoard();
+        gameData.moneyTarget = moneyTarget;
+        gameData.maxTurns = maxTurns;
+        gameData.turnCount = 0;
+        gameData.currentTurn = readyPlayers[0];
+        gameData.turnOrder = Object.keys(gameData.players);
+        gameData.dice = 0;
+        gameData.phase = 'roll';
+        gameData.winner = null;
+        gameData.log = [{ text: `🎮 بازی مونوپولی شروع شد! هدف: ${moneyTarget}$`, time: Date.now() }];
+        gameData.pendingTrade = null;
+        gameData.chanceCards = getMonopolyChanceCards();
     }
     await db.ref('games/' + gameId).set(gameData);
     await db.ref('lobbies/' + lobbyId + '/gameId').set(gameId);
@@ -282,22 +398,15 @@ async function startGame(lobbyId) {
 // ==========================================
 function generateManchePath() {
     const path = [];
-    // ضلع بالایی (از چپ به راست)
     for (let c = 1; c <= 6; c++) path.push({ r: 6, c: c });
-    // سمت راست (از بالا به پایین)
     for (let r = 5; r >= 1; r--) path.push({ r: r, c: 6 });
     for (let r = 7; r <= 13; r++) path.push({ r: r, c: 6 });
-    // ضلع پایینی (از راست به چپ)
     for (let c = 7; c <= 13; c++) path.push({ r: 13, c: c });
-    // سمت چپ (از پایین به بالا)
     for (let r = 12; r >= 8; r--) path.push({ r: r, c: 13 });
     for (let r = 6; r >= 0; r--) path.push({ r: r, c: 13 });
-    // ضلع بالایی (ادامه)
     for (let c = 12; c >= 8; c--) path.push({ r: 0, c: c });
-    // سمت چپ (ادامه)
     for (let r = 1; r <= 5; r++) path.push({ r: r, c: 7 });
     for (let r = 7; r <= 12; r++) path.push({ r: r, c: 7 });
-    // ضلع پایینی (ادامه - بازگشت به خانه شروع)
     for (let c = 6; c >= 1; c--) path.push({ r: 6, c: c });
     return path;
 }
@@ -476,8 +585,6 @@ async function playHokmCard(gameId, uid, card) {
 // ==========================================
 // 🎲 توابع مخصوص بازی منچ (Manche) - نسخه استاندارد کامل
 // ==========================================
-
-// انتخاب رنگ توسط بازیکن
 async function selectMancheColor(gameId, uid, colorIndex) {
     const game = await getGame(gameId);
     if (!game || game.status !== 'color_select') throw new Error('زمان انتخاب رنگ تمام شده');
@@ -495,7 +602,6 @@ async function selectMancheColor(gameId, uid, colorIndex) {
     }
 }
 
-// نهایی‌سازی انتخاب رنگ‌ها
 async function finalizeMancheColors(gameId) {
     const game = await getGame(gameId);
     if (!game || game.status !== 'color_select') return;
@@ -522,7 +628,6 @@ async function finalizeMancheColors(gameId) {
     await db.ref('games/' + gameId + '/phase').set('roll');
 }
 
-// تاس انداختن
 async function rollDice(gameId, uid) {
     const game = await getGame(gameId);
     if (!game) throw new Error('بازی پیدا نشد');
@@ -535,7 +640,6 @@ async function rollDice(gameId, uid) {
     return dice;
 }
 
-// حرکت مهره (نسخه استاندارد کامل)
 async function moveMancheToken(gameId, uid, tokenIndex) {
     const game = await getGame(gameId);
     if (!game) throw new Error('بازی پیدا نشد');
@@ -546,17 +650,14 @@ async function moveMancheToken(gameId, uid, tokenIndex) {
     const player = game.players[uid];
     const dice = game.dice;
     const colorIdx = game.colorMap[uid].colorIndex;
-    const colorNames = ['red', 'green', 'yellow', 'blue'];
-    const colorName = colorNames[colorIdx];
     const boardPath = game.boardPath;
-    const pathLength = boardPath.length; // 52
+    const pathLength = boardPath.length;
 
     let tokenPos = player.tokens[tokenIndex];
     const isSix = (dice === 6);
 
-    // --- حالت 1: مهره در خانه است (0) و عدد 6 آمد ---
     if (tokenPos === 0 && isSix) {
-        const startPos = colorIdx * 13 + 1; // 1, 14, 27, 40
+        const startPos = colorIdx * 13 + 1;
         player.tokens[tokenIndex] = startPos;
         await db.ref('games/' + gameId + '/players/' + uid + '/tokens').set(player.tokens);
         await db.ref('games/' + gameId + '/phase').set('roll');
@@ -564,15 +665,11 @@ async function moveMancheToken(gameId, uid, tokenIndex) {
         return;
     }
 
-    // --- حالت 2: مهره در مسیر اصلی یا ستون رنگی است ---
     if (tokenPos > 0 && tokenPos <= 57) {
         let newPos = tokenPos + dice;
-
-        // --- بخش 2-1: حرکت در مسیر اصلی (1 تا 52) ---
         if (tokenPos <= pathLength) {
-            // اگر از مسیر اصلی خارج شد، وارد ستون رنگی می‌شود
             if (newPos > pathLength) {
-                let colPos = newPos - pathLength; // 1 تا 6
+                let colPos = newPos - pathLength;
                 if (colPos > 6) {
                     throw new Error('عدد تاس برای ورود به خانه دقیق نیست');
                 }
@@ -592,20 +689,14 @@ async function moveMancheToken(gameId, uid, tokenIndex) {
                 await nextTurn(gameId, uid, isSix);
                 return;
             }
-
-            // --- حرکت عادی در مسیر اصلی ---
-            // بررسی خانه امن (مضرب 7)
             const isSafe = (newPos % 7 === 0);
             if (!isSafe) {
-                // ضربه زدن به حریف
                 for (const [otherUid, otherPlayer] of Object.entries(game.players)) {
                     if (otherUid === uid) continue;
-                    const otherTokens = otherPlayer.tokens;
-                    for (let i = 0; i < otherTokens.length; i++) {
-                        if (otherTokens[i] === newPos && otherTokens[i] > 0 && otherTokens[i] <= pathLength) {
+                    for (let i = 0; i < otherPlayer.tokens.length; i++) {
+                        if (otherPlayer.tokens[i] === newPos) {
                             otherPlayer.tokens[i] = 0;
                             await db.ref('games/' + gameId + '/players/' + otherUid + '/tokens').set(otherPlayer.tokens);
-                            break;
                         }
                     }
                 }
@@ -616,10 +707,8 @@ async function moveMancheToken(gameId, uid, tokenIndex) {
             await nextTurn(gameId, uid, isSix);
             return;
         }
-
-        // --- بخش 2-2: حرکت در ستون رنگی (53 تا 57) ---
         else if (tokenPos > pathLength && tokenPos < 58) {
-            let colPos = tokenPos - pathLength; // 1 تا 5
+            let colPos = tokenPos - pathLength;
             let newColPos = colPos + dice;
             if (newColPos > 6) {
                 throw new Error('عدد تاس برای ورود به خانه دقیق نیست');
@@ -644,24 +733,19 @@ async function moveMancheToken(gameId, uid, tokenIndex) {
     throw new Error('مهره قابل حرکت نیست');
 }
 
-// چرخش نوبت
 async function nextTurn(gameId, currentUid, isSix) {
     const game = await getGame(gameId);
     if (!game) return;
     if (game.status !== 'playing') return;
-
     const turnOrder = game.turnOrder;
     if (!turnOrder || turnOrder.length === 0) return;
-
     const currentIdx = turnOrder.indexOf(currentUid);
     let nextIdx = (currentIdx + 1) % turnOrder.length;
-
     if (isSix) {
         await db.ref('games/' + gameId + '/currentTurn').set(currentUid);
         await db.ref('games/' + gameId + '/phase').set('roll');
         return;
     }
-
     let attempts = 0;
     while (attempts < turnOrder.length) {
         const nextPlayer = turnOrder[nextIdx];
@@ -676,17 +760,14 @@ async function nextTurn(gameId, currentUid, isSix) {
     await db.ref('games/' + gameId + '/status').set('finished');
 }
 
-// اجرای نوبت بات
 async function runBotTurn(gameId, botUid) {
     const game = await getGame(gameId);
     if (!game || game.status !== 'playing') return;
     if (game.currentTurn !== botUid) return;
     if (game.phase !== 'roll') return;
-
     const dice = Math.floor(Math.random() * 6) + 1;
     await db.ref('games/' + gameId + '/dice').set(dice);
     await db.ref('games/' + gameId + '/phase').set('move');
-
     const player = game.players[botUid];
     let moved = false;
     for (let i = 0; i < player.tokens.length; i++) {
@@ -728,18 +809,21 @@ async function leaveGame(gameId, uid) {
             if (playerIds.length > 0) {
                 await db.ref('games/' + gameId + '/currentTurn').set(playerIds[0]);
             }
-        } else if (updatedGame.type === 'manche' && updatedGame.currentTurn === uid) {
+        } else if ((updatedGame.type === 'manche' || updatedGame.type === 'monopoly') && updatedGame.currentTurn === uid) {
             const turnOrder = updatedGame.turnOrder || Object.keys(updatedGame.players);
             const currentIdx = turnOrder.indexOf(uid);
             let nextIdx = (currentIdx + 1) % turnOrder.length;
             let nextPlayer = turnOrder[nextIdx];
             let attempts = 0;
-            while ((updatedGame.players[nextPlayer]?.finished || false) && attempts < turnOrder.length) {
+            while ((updatedGame.players[nextPlayer]?.finished || updatedGame.players[nextPlayer]?.bankrupt) && attempts < turnOrder.length) {
                 nextIdx = (nextIdx + 1) % turnOrder.length;
                 nextPlayer = turnOrder[nextIdx];
                 attempts++;
             }
             await db.ref('games/' + gameId + '/currentTurn').set(nextPlayer);
+            if(updatedGame.type === 'monopoly') {
+                await db.ref('games/' + gameId + '/phase').set('roll');
+            }
         }
     }
 }
