@@ -76,7 +76,7 @@
             background: #f8f8f8;
             border-radius: 12px;
             padding: 15px;
-            height: 250px;
+            height: 200px;
             overflow-y: auto;
             margin-bottom: 15px;
         }
@@ -123,24 +123,83 @@
         .actions button { flex: 1; min-width: 120px; }
         .btn-leave { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
         .game-type-select {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin: 15px 0;
-            justify-content: center;
-            flex-wrap: wrap;
         }
         .game-type-select button {
             background: #e0e0e0;
             color: #333;
+            padding: 14px;
+            font-size: 15px;
         }
         .game-type-select button.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
         }
         .info-text {
             text-align: center;
             color: #666;
             margin: 10px 0;
+        }
+        /* Monopoly settings */
+        .monopoly-settings {
+            display: none;
+            background: linear-gradient(135deg, #fff9c4 0%, #ffecb3 100%);
+            border: 2px dashed #ff9800;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 15px 0;
+            animation: slideDown 0.3s ease;
+        }
+        .monopoly-settings.show { display: block; }
+        @keyframes slideDown {
+            from { opacity:0; transform: translateY(-10px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+        .monopoly-settings h3 {
+            text-align: center;
+            color: #e65100;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        .setting-group {
+            margin-bottom: 14px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .setting-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .setting-options button {
+            flex: 1;
+            min-width: 70px;
+            padding: 8px 12px;
+            font-size: 13px;
+            background: #fff;
+            color: #333;
+            border: 2px solid #ffcc80;
+        }
+        .setting-options button.active {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: #fff;
+            border-color: #ef6c00;
+        }
+        .setting-desc {
+            font-size: 11px;
+            color: #795548;
+            margin-top: 4px;
+            text-align: center;
         }
     </style>
 </head>
@@ -156,6 +215,37 @@
         <button id="gameTypeEsm" class="active" onclick="selectGameType('esm-famil')">📝 اسم فامیل</button>
         <button id="gameTypeHokm" onclick="selectGameType('hokm')">🃏 حکم</button>
         <button id="gameTypeManche" onclick="selectGameType('manche')">🎲 منچ</button>
+        <button id="gameTypeMonopoly" onclick="selectGameType('monopoly')">🌍 مونوپولی کشورها</button>
+    </div>
+
+    <div id="monopolySettings" class="monopoly-settings">
+        <h3>🌍 تنظیمات مونوپولی باحال</h3>
+        <div class="setting-group">
+            <label>💰 هدف پول (کی به این پول برسه برنده است):</label>
+            <div class="setting-options">
+                <button id="money3000" onclick="setMoneyTarget(3000)">3000$</button>
+                <button id="money5000" class="active" onclick="setMoneyTarget(5000)">5000$</button>
+                <button id="money8000" onclick="setMoneyTarget(8000)">8000$</button>
+            </div>
+            <div class="setting-desc">هر نفر با 1000$ شروع می‌کنه، هر دور 300$ جایزه</div>
+        </div>
+        <div class="setting-group">
+            <label>🔄 تعداد دست (محدودیت دور):</label>
+            <div class="setting-options">
+                <button id="turn30" onclick="setMaxTurns(30)">30 دست</button>
+                <button id="turn50" class="active" onclick="setMaxTurns(50)">50 دست</button>
+                <button id="turn100" onclick="setMaxTurns(100)">100 دست</button>
+                <button id="turnUnlimited" onclick="setMaxTurns('unlimited')">♾️ نامحدود</button>
+            </div>
+            <div class="setting-desc">نامحدود = فقط با رسیدن به هدف پولی تموم میشه | ورشکستگی: زیر 500-$</div>
+        </div>
+        <div style="background:#fff3e0; padding:10px; border-radius:10px; font-size:12px; color:#5d4037; line-height:1.6;">
+            <strong>🏛️ قوانین باحال:</strong><br>
+            ⛓️ زندان: 3 دور حبس، میتونی 200$ بدی آزاد شی<br>
+            🎁 شانس: جایزه یا مجازات رندوم<br>
+            🤝 ترید: هر معامله 150$ بونوس برای هر دو نفر<br>
+            🏁 شروع: هر بار رد شدن 300$
+        </div>
     </div>
 
     <div id="playersContainer" class="players"></div>
@@ -182,9 +272,10 @@
     let lobbyId = new URLSearchParams(window.location.search).get('id');
     let currentLobby = null;
     let currentUser = null;
-    let isReady = false;
     let lobbyRef = null;
     let selectedGameType = 'esm-famil';
+    let isReady = false;
+    let monopolyConfig = { moneyTarget: 5000, maxTurns: 50 };
 
     window.onload = async () => {
         currentUser = await getCurrentUser();
@@ -192,28 +283,47 @@
             window.location.href = 'index.html';
             return;
         }
+        if (!lobbyId) {
+            alert('شناسه لابی پیدا نشد!');
+            window.location.href = 'index.html';
+            return;
+        }
         lobbyRef = pollLobby(lobbyId, updateLobby);
-        setTimeout(async () => {
-            const lobby = await getLobby(lobbyId);
-            if (!lobby) {
-                alert('لابی پیدا نشد!');
-                window.location.href = 'index.html';
-            }
-        }, 1000);
+        const lobby = await getLobby(lobbyId);
+        if (lobby) updateLobby(lobby);
+        else {
+            alert('لابی پیدا نشد!');
+            window.location.href = 'index.html';
+        }
     };
 
     async function updateLobby(lobby) {
         if (!lobby) {
-            alert('لابی بسته شده است!');
+            alert('لابی حذف شد!');
             window.location.href = 'index.html';
             return;
         }
         currentLobby = lobby;
         document.getElementById('lobbyCode').textContent = lobby.code;
+        selectedGameType = lobby.gameType || 'esm-famil';
+        document.getElementById('gameTypeEsm').classList.toggle('active', selectedGameType === 'esm-famil');
+        document.getElementById('gameTypeHokm').classList.toggle('active', selectedGameType === 'hokm');
+        document.getElementById('gameTypeManche').classList.toggle('active', selectedGameType === 'manche');
+        document.getElementById('gameTypeMonopoly').classList.toggle('active', selectedGameType === 'monopoly');
+        
+        // Show monopoly settings
+        const monopolyDiv = document.getElementById('monopolySettings');
+        if (selectedGameType === 'monopoly') {
+            monopolyDiv.classList.add('show');
+            const settings = lobby.monopolySettings || monopolyConfig;
+            monopolyConfig = settings;
+            updateMonopolyUI();
+        } else {
+            monopolyDiv.classList.remove('show');
+        }
 
         const players = lobby.players || {};
-        const playersHtml = Object.keys(players).map(uid => {
-            const p = players[uid];
+        const playersHtml = Object.entries(players).map(([uid, p]) => {
             const isMe = uid === currentUser.id;
             const readyClass = p.ready ? 'ready' : '';
             const inGameClass = p.inGame ? 'in-game' : '';
@@ -256,6 +366,8 @@
                         window.location.href = `game-hokm.html?id=${lobby.gameId}`;
                     } else if (game.type === 'manche') {
                         window.location.href = `game-manche.html?id=${lobby.gameId}`;
+                    } else if (game.type === 'monopoly') {
+                        window.location.href = `game-monopoly.html?id=${lobby.gameId}`;
                     }
                     return;
                 } else {
@@ -276,9 +388,35 @@
         const readyCount = Object.values(players).filter(p => p.ready).length;
         const gameType = lobby.gameType || selectedGameType;
         let minPlayers = 2;
-        if (gameType === 'hokm' || gameType === 'manche') minPlayers = 1;
+        if (gameType === 'hokm' || gameType === 'manche' || gameType === 'monopoly') minPlayers = 1;
         const canStart = readyCount >= minPlayers && lobby.status === 'waiting' && lobby.gameType !== null;
         document.getElementById('startBtn').disabled = !canStart;
+    }
+
+    function updateMonopolyUI() {
+        document.querySelectorAll('[id^="money"]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('[id^="turn"]').forEach(b => b.classList.remove('active'));
+        const moneyBtn = document.getElementById(`money${monopolyConfig.moneyTarget}`);
+        if (moneyBtn) moneyBtn.classList.add('active');
+        const turnId = monopolyConfig.maxTurns === 'unlimited' ? 'turnUnlimited' : `turn${monopolyConfig.maxTurns}`;
+        const turnBtn = document.getElementById(turnId);
+        if (turnBtn) turnBtn.classList.add('active');
+    }
+
+    async function setMoneyTarget(target) {
+        monopolyConfig.moneyTarget = target;
+        updateMonopolyUI();
+        try {
+            await setMonopolySettings(lobbyId, monopolyConfig);
+        } catch(e) { console.error(e); }
+    }
+
+    async function setMaxTurns(turns) {
+        monopolyConfig.maxTurns = turns;
+        updateMonopolyUI();
+        try {
+            await setMonopolySettings(lobbyId, monopolyConfig);
+        } catch(e) { console.error(e); }
     }
 
     async function selectGameType(type) {
@@ -286,8 +424,15 @@
         document.getElementById('gameTypeEsm').classList.toggle('active', type === 'esm-famil');
         document.getElementById('gameTypeHokm').classList.toggle('active', type === 'hokm');
         document.getElementById('gameTypeManche').classList.toggle('active', type === 'manche');
+        document.getElementById('gameTypeMonopoly').classList.toggle('active', type === 'monopoly');
+        const monopolyDiv = document.getElementById('monopolySettings');
+        if (type === 'monopoly') monopolyDiv.classList.add('show');
+        else monopolyDiv.classList.remove('show');
         try {
             await setGameType(lobbyId, type);
+            if (type === 'monopoly') {
+                await setMonopolySettings(lobbyId, monopolyConfig);
+            }
             const lobby = await getLobby(lobbyId);
             if (lobby) updateLobby(lobby);
         } catch (e) {
@@ -331,6 +476,8 @@
                 window.location.href = `game-hokm.html?id=${game.id}`;
             } else if (game.type === 'manche') {
                 window.location.href = `game-manche.html?id=${game.id}`;
+            } else if (game.type === 'monopoly') {
+                window.location.href = `game-monopoly.html?id=${game.id}`;
             }
         } catch (e) {
             alert('خطا: ' + e.message);
