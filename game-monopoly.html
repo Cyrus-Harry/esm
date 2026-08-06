@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مونوپولی جهان 🌍</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Vazirmatn', sans-serif;
+  background: radial-gradient(ellipse at top, #0f0c29, #302b63, #24243e);
+  min-height:100vh;
+  color:#fff;
+  overflow-x:hidden;
+}
+.top-bar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 16px; background:rgba(0,0,0,0.4); backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,0.1); flex-wrap:wrap; gap:8px;
+}
+.top-bar h1 { font-size:20px; font-weight:900; color:#ffd700; }
+.top-info { display:flex; gap:12px; font-size:13px; flex-wrap:wrap; }
+.top-info span { background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:20px; }
+.main-layout {
+  display:grid; grid-template-columns: 280px 1fr 260px; gap:12px;
+  padding:12px; max-width:1600px; margin:0 auto;
+}
+@media(max-width:1100px){ .main-layout{ grid-template-columns:1fr; } .side-panel{ order:2; } .board-wrapper{ order:1; } .log-panel{ order:3; } }
+
+.side-panel, .log-panel {
+  background:rgba(255,255,255,0.06); backdrop-filter:blur(12px);
+  border-radius:18px; padding:14px; border:1px solid rgba(255,255,255,0.1);
+  height: fit-content; max-height:85vh; overflow-y:auto;
+}
+.side-panel h3, .log-panel h3 { font-size:16px; margin-bottom:10px; color:#ffd700; text-align:center; }
+.player-card {
+  background:rgba(255,255,255,0.08); border-radius:14px; padding:12px; margin-bottom:10px;
+  border:2px solid transparent; transition:all 0.3s; position:relative; overflow:hidden;
+}
+.player-card.active { border-color:#ffd700; background:rgba(255,215,0,0.15); box-shadow:0 0 20px rgba(255,215,0,0.3); transform:scale(1.02); }
+.player-card.bankrupt { opacity:0.5; filter:grayscale(0.8); }
+.player-card.me { border-color:#00e5ff; }
+.player-card .p-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.player-card .p-name { font-weight:700; font-size:14px; }
+.player-card .p-money { font-weight:900; font-size:18px; }
+.player-card .p-money.neg { color:#ff5252; }
+.player-card .p-meta { font-size:11px; color:#ccc; display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+.badge { padding:2px 8px; border-radius:10px; font-size:10px; background:rgba(255,255,255,0.15); }
+.badge.jail { background:#616161; }
+.badge.bankrupt-badge { background:#d32f2f; }
+.properties-list { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+.prop-chip { font-size:10px; padding:3px 6px; border-radius:8px; background:rgba(255,255,255,0.12); display:flex; align-items:center; gap:3px; }
+
+.board-wrapper {
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+}
+.board {
+  width: min(92vw, 680px); height: min(92vw, 680px);
+  display:grid; grid-template-columns:repeat(9, 1fr); grid-template-rows:repeat(9, 1fr);
+  gap:3px; background:rgba(0,0,0,0.3); padding:6px; border-radius:20px;
+  border:2px solid rgba(255,215,0,0.3); box-shadow:0 0 40px rgba(0,0,0,0.6);
+  position:relative;
+}
+.tile {
+  background:#fff; border-radius:8px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:3px; text-align:center;
+  position:relative; font-size:9px; color:#222; overflow:hidden;
+  transition:all 0.2s; border:2px solid transparent;
+}
+.tile.country { background:linear-gradient(135deg, #ffffff, #f5f5f5); }
+.tile.start { background:linear-gradient(135deg, #00c853, #009624); color:#fff; }
+.tile.jail { background:linear-gradient(135deg, #616161, #424242); color:#fff; }
+.tile.chance { background:linear-gradient(135deg, #ab47bc, #7b1fa2); color:#fff; animation: pulse 2s infinite; }
+.tile.trade { background:linear-gradient(135deg, #ff9800, #ef6c00); color:#fff; }
+.tile.owned { border-color: var(--owner-color); box-shadow: inset 0 0 0 3px var(--owner-color); }
+.tile .t-icon { font-size:16px; line-height:1; }
+.tile .t-name { font-weight:700; font-size:9px; line-height:1.1; margin-top:2px; }
+.tile .t-price { font-size:8px; opacity:0.8; }
+.tile .t-flag { font-size:14px; }
+.tile .t-owner-dot { position:absolute; top:2px; right:2px; width:10px; height:10px; border-radius:50%; border:1px solid #fff; }
+.tokens-on-tile { position:absolute; bottom:1px; left:50%; transform:translateX(-50%); display:flex; gap:1px; }
+.token-dot { width:10px; height:10px; border-radius:50%; border:1px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.5); }
+
+@keyframes pulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.03);} }
+
+.center-panel {
+  grid-column:2 / 9; grid-row:2 / 9;
+  background: radial-gradient(ellipse at center, rgba(48,43,99,0.9), rgba(15,12,41,0.95));
+  border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:12px; border:2px solid rgba(255,215,0,0.2); text-align:center; gap:8px;
+}
+.dice-area { display:flex; gap:12px; align-items:center; justify-content:center; }
+.dice { width:56px; height:56px; background:#fff; color:#222; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
+.current-turn-info { font-size:14px; font-weight:700; }
+.action-buttons { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:6px; }
+.btn {
+  padding:10px 18px; border:none; border-radius:12px; font-family:'Vazirmatn'; font-weight:700; font-size:13px;
+  cursor:pointer; transition:all 0.2s; color:#fff;
+}
+.btn:hover { transform:translateY(-2px); box-shadow:0 6px 15px rgba(0,0,0,0.3); }
+.btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.btn-roll { background:linear-gradient(135deg, #ffd700, #ff9800); color:#000; font-size:16px; padding:12px 28px; }
+.btn-buy { background:linear-gradient(135deg, #00c853, #009624); }
+.btn-pay { background:linear-gradient(135deg, #ff5252, #c62828); }
+.btn-end { background:linear-gradient(135deg, #448aff, #2962ff); }
+.btn-jail-pay { background:linear-gradient(135deg, #ffd740, #ffab00); color:#000; }
+.btn-jail-stay { background:linear-gradient(135deg, #78909c, #455a64); }
+.btn-trade { background:linear-gradient(135deg, #ff9800, #ef6c00); }
+.btn-back { background:rgba(255,255,255,0.15); }
+
+.log-item { font-size:11px; padding:6px 8px; background:rgba(255,255,255,0.06); border-radius:8px; margin-bottom:6px; line-height:1.4; }
+.log-item .time { opacity:0.5; font-size:9px; }
+
+/* Modals */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center;
+  z-index:1000; padding:16px;
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background:linear-gradient(135deg, #1e1e2f, #2d2d44); border-radius:20px; padding:22px; max-width:420px; width:100%;
+  border:1px solid rgba(255,215,0,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.8); text-align:center;
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn { from{ transform:scale(0.8); opacity:0; } to{ transform:scale(1); opacity:1; } }
+.modal h2 { font-size:20px; margin-bottom:10px; color:#ffd700; }
+.modal p { font-size:14px; line-height:1.6; margin-bottom:14px; color:#ddd; }
+.modal .modal-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.trade-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; text-align:right; }
+.trade-grid select, .trade-grid input { width:100%; padding:8px; border-radius:8px; border:1px solid #555; background:#222; color:#fff; font-family:'Vazirmatn'; font-size:12px; }
+
+.winner-modal { background:linear-gradient(135deg, #ffd700, #ff9800); color:#000; }
+.winner-modal h2 { color:#000; font-size:28px; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>🌍 مونوپولی جهان</h1>
+  <div class="top-info">
+    <span id="targetInfo">هدف: 5000$</span>
+    <span id="turnInfo">دور: 0/50</span>
+    <span id="playersCount">2 بازیکن</span>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button class="btn btn-back" onclick="backToLobby()">🔙 لابی</button>
+    <button class="btn btn-back" style="background:#c62828;" onclick="handleLeave()">🚪 خروج</button>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="side-panel" id="playersPanel">
+    <h3>👥 بازیکنان</h3>
+    <div id="playersList"></div>
+  </div>
+
+  <div class="board-wrapper">
+    <div class="board" id="board"></div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; font-size:11px; color:#ccc;">
+      <span>🏁 شروع: 1000$ + 300$ هر دور</span>
+      <span>⛓️ زندان: 3 دور یا 200$</span>
+      <span>🎁 شانس: رندوم</span>
+      <span>🤝 ترید: 150$ بونوس</span>
+      <span>💀 ورشکستگی: -500$</span>
+    </div>
+  </div>
+
+  <div class="log-panel">
+    <h3>📜 اتفاقات بازی</h3>
+    <div id="logList"></div>
+  </div>
+</div>
+
+<!-- Jail Entry Modal -->
+<div id="jailEntryModal" class="modal-overlay">
+  <div class="modal">
+    <h2>⛓️ افتادی تو زندان!</h2>
+    <p id="jailEntryText">به خونه زندان افتادی. باید انتخاب کنی:</p>
+    <div class="modal-actions">
+      <button class="btn btn-jail-pay" onclick="chooseJailEntry('pay')">💰 پرداخت 200$ و آزادی</button>
+      <button class="btn btn-jail-stay" onclick="chooseJailEntry('jail')">⛓️ برو زندان (3 دور)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Jail Turn Modal -->
+<div id="jailTurnModal" class="modal-overlay">
+  <div class="modal">
+    <h2>🔒 تو زندانی!</h2>
+    <p id="jailTurnText">شما در زندان هستید. <span id="jailRemain">3</span> دور دیگر باقی مانده.</p>
+    <div class="modal-actions">
+      <button class="btn btn-jail-pay" onclick="chooseJailTurn('pay')">💰 پرداخت 200$ و خروج</button>
+      <button class="btn btn-jail-stay" onclick="chooseJailTurn('stay')">⏳ تحمل زندان (این دور استراحت)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Buy Modal -->
+<div id="buyModal" class="modal-overlay">
+  <div class="modal">
+    <h2 id="buyTitle">🏳️ خرید کشور</h2>
+    <p id="buyText"></p>
+    <div class="modal-actions">
+      <button class="btn btn-buy" id="buyConfirmBtn" onclick="confirmBuy()">💰 خرید</button>
+      <button class="btn btn-back" onclick="closeBuyModal()">❌ انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chance Modal -->
+<div id="chanceModal" class="modal-overlay">
+  <div class="modal" style="background:linear-gradient(135deg, #ab47bc, #7b1fa2);">
+    <h2>🎁 کارت شانس!</h2>
+    <p id="chanceText" style="font-size:18px; font-weight:700;"></p>
+    <div class="modal-actions">
+      <button class="btn" style="background:#fff; color:#7b1fa2;" onclick="closeChanceModal()">باشه! 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trade Modal -->
+<div id="tradeModal" class="modal-overlay">
+  <div class="modal" style="max-width:500px;">
+    <h2>🤝 معامله باحال (150$ بونوس هر دو نفر)</h2>
+    <p style="font-size:12px;">یک بازیکن و ملک برای معامله انتخاب کن. هر معامله موفق 150$ به هر دو نفر میده!</p>
+    <div class="trade-grid">
+      <div>
+        <label>بازیکن مقابل:</label>
+        <select id="tradeOpponent"></select>
+      </div>
+      <div>
+        <label>ملک من:</label>
+        <select id="tradeMyProp"><option value="">هیچی</option></select>
+      </div>
+      <div>
+        <label>ملک او:</label>
+        <select id="tradeTheirProp"><option value="">هیچی</option></select>
+      </div>
+      <div>
+        <label>پول اضافی من به او:</label>
+        <input type="number" id="tradeMyMoney" value="0" min="0" step="10">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-trade" onclick="proposeTrade()">📤 پیشنهاد معامله</button>
+      <button class="btn btn-back" onclick="closeTradeModal()">❌ بستن</button>
+    </div>
+    <div id="tradePending" style="display:none; margin-top:12px; background:rgba(255,255,255,0.1); padding:10px; border-radius:10px;">
+      <p id="tradePendingText" style="font-size:12px;"></p>
+      <div class="modal-actions" style="margin-top:8px;">
+        <button class="btn btn-buy" onclick="acceptTrade()">✅ قبول</button>
+        <button class="btn btn-pay" onclick="declineTrade()">❌ رد</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Winner Modal -->
+<div id="winnerModal" class="modal-overlay">
+  <div class="modal winner-modal">
+    <h2 id="winnerTitle">🏆 برنده شدی!</h2>
+    <p id="winnerText"></p>
+    <div class="modal-actions">
+      <button class="btn" style="background:#000; color:#ffd700;" onclick="backToLobby()">🔙 بازگشت به لابی</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="api.js"></script>
+<script>
+let gameId = new URLSearchParams(window.location.search).get('id');
+let currentUser = null;
+let myUid = null;
+let gameRef = null;
+let currentGame = null;
+let pendingBuyTile = null;
+let isRolling = false;
+
+// Colors for players
+const playerColors = ['#ff5252', '#448aff', '#66bb6a', '#ffca28'];
+const playerColorNames = { 0: '#ff5252', 1: '#448aff', 2: '#66bb6a', 3: '#ffca28' };
+
+window.onload = async () => {
+  currentUser = await getCurrentUser();
+  if (!currentUser) { window.location.href='index.html'; return; }
+  myUid = currentUser.id;
+  if (!gameId) { alert('شناسه بازی نیست'); window.location.href='index.html'; return; }
+  gameRef = pollGame(gameId, onGameUpdate);
+  const g = await getGame(gameId);
+  if (g) onGameUpdate(g);
+};
+
+function onGameUpdate(game) {
+  if (!game) { alert('بازی حذف شد'); window.location.href='index.html'; return; }
+  if (game.type !== 'monopoly') { alert('نوع بازی اشتباهه'); return; }
+  currentGame = game;
+  
+  if (game.status === 'finished' && game.winner) {
+    showWinner(game);
+  }
+
+  renderBoard(game);
+  renderPlayers(game);
+  renderLog(game);
+  updateTopBar(game);
+  updateCenterPanel(game);
+  checkModals(game);
+  
+  // Bot turn handling - any client can trigger bot
+  const currentTurnPlayer = game.players[game.currentTurn];
+  if (currentTurnPlayer && currentTurnPlayer.isBot && game.status === 'playing' && !game.winner) {
+    setTimeout(() => runBotTurn(game), 1200 + Math.random()*800);
+  }
+}
+
+function updateTopBar(game) {
+  document.getElementById('targetInfo').textContent = `هدف: ${game.moneyTarget}$`;
+  const maxT = game.maxTurns ? `${game.maxTurns}` : '♾️';
+  document.getElementById('turnInfo').textContent = `دور: ${game.turnCount||0}/${maxT}`;
+  document.getElementById('playersCount').textContent = `${Object.keys(game.players).length} بازیکن`;
+}
+
+function renderBoard(game) {
+  const boardEl = document.getElementById('board');
+  const board = game.board || [];
+  const players = game.players || {};
+  // Map grid positions for 9x9
+  const posMap = [];
+  // top row 0-8
+  for(let c=1;c<=9;c++) posMap.push({r:1,c});
+  // right col 9-15 (rows 2-8)
+  for(let r=2;r<=8;r++) posMap.push({r,c:9});
+  // bottom row 16-24 (cols 9-1)
+  for(let c=9;c>=1;c--) posMap.push({r:9,c});
+  // left col 25-31 (rows 8-2)
+  for(let r=8;r>=2;r--) posMap.push({r,c:1});
+
+  // Build tiles HTML
+  let html = '';
+  board.forEach((tile, idx) => {
+    const p = posMap[idx];
+    if (!p) return;
+    const owner = tile.owner ? players[tile.owner] : null;
+    const ownerColor = tile.owner ? playerColors[Object.keys(players).indexOf(tile.owner)%4] : '';
+    const tokensHere = Object.entries(players).filter(([uid,pl])=>pl.pos===idx && !pl.bankrupt);
+    
+    let tileClass = `tile ${tile.type}`;
+    if (owner) tileClass += ' owned';
+    
+    let inner = '';
+    if (tile.type === 'country') {
+      inner = `
+        <div class="t-flag">${tile.flag}</div>
+        <div class="t-name">${tile.name}</div>
+        <div class="t-price">${tile.price}$</div>
+        ${owner ? `<div class="t-owner-dot" style="background:${ownerColor}"></div>` : ''}
+      `;
+    } else {
+      inner = `
+        <div class="t-icon">${tile.icon}</div>
+        <div class="t-name">${tile.name}</div>
+        <div class="t-price" style="font-size:7px;">${tile.desc||''}</div>
+      `;
+    }
+    if (tokensHere.length>0) {
+      inner += `<div class="tokens-on-tile">${tokensHere.map(([uid],i)=>{
+        const color = playerColors[Object.keys(players).indexOf(uid)%4];
+        return `<div class="token-dot" style="background:${color}"></div>`;
+      }).join('')}</div>`;
+    }
+    html += `<div class="${tileClass}" style="grid-row:${p.r}; grid-column:${p.c}; ${owner?`--owner-color:${ownerColor}`:''}">${inner}</div>`;
+  });
+
+  // Center panel
+  const currentTurn = game.players[game.currentTurn];
+  const isMyTurn = game.currentTurn===myUid;
+  const phase = game.phase;
+  const diceVal = game.dice || 0;
+  html += `
+    <div class="center-panel" style="grid-row:2 / 9; grid-column:2 / 9;">
+      <div class="current-turn-info">
+        ${game.winner ? '🏁 بازی تمام شد' : `نوبت: ${currentTurn?currentTurn.name:'—'} ${currentTurn && currentTurn.isBot?'🤖':''} ${isMyTurn?'👤':''}`}
+      </div>
+      <div class="dice-area">
+        <div class="dice" id="diceDisplay">${diceVal?diceVal:'🎲'}</div>
+        ${currentTurn && currentTurn.inJail>0 ? `<div style="font-size:12px;">⛓️ ${currentTurn.inJail} دور زندان</div>` : ''}
+      </div>
+      <div style="font-size:11px; color:#ccc;">پول من: ${players[myUid]?players[myUid].money:0}$ | جایگاه: ${players[myUid]?players[myUid].pos:0}</div>
+      <div class="action-buttons">
+        ${!game.winner && isMyTurn && phase==='roll' && !(players[myUid] && players[myUid].inJail>0) ? `<button class="btn btn-roll" onclick="rollDice()" id="rollBtn">🎲 تاس بنداز</button>` : ''}
+        ${!game.winner && isMyTurn && players[myUid] && players[myUid].inJail>0 ? `<button class="btn btn-jail-pay" onclick="openJailTurnModal()">⛓️ وضعیت زندان</button>` : ''}
+        ${!game.winner && isMyTurn && phase==='action' ? `<button class="btn btn-end" onclick="endTurn()">✅ پایان نوبت</button>` : ''}
+        <button class="btn btn-trade" onclick="openTradeModal()">🤝 ترید</button>
+      </div>
+      <div style="font-size:10px; color:#aaa; margin-top:4px;">
+        ${game.moneyTarget ? `اولین نفر به ${game.moneyTarget}$ برنده است` : ''}
+        ${game.maxTurns ? ` | حداکثر ${game.maxTurns} دست` : ' | ♾️ نامحدود'}
+      </div>
+    </div>
+  `;
+
+  boardEl.innerHTML = html;
+}
+
+function renderPlayers(game) {
+  const players = game.players || {};
+  const order = game.turnOrder || Object.keys(players);
+  let html='';
+  order.forEach((uid, idx) => {
+    const p = players[uid];
+    if (!p) return;
+    const isMe = uid===myUid;
+    const isActive = game.currentTurn===uid;
+    const color = playerColors[idx%4];
+    const props = p.properties || [];
+    html+=`
+      <div class="player-card ${isActive?'active':''} ${p.bankrupt?'bankrupt':''} ${isMe?'me':''}" style="border-left:4px solid ${color}">
+        <div class="p-header">
+          <div class="p-name">${p.name} ${isMe?'👤':''} ${p.isBot?'🤖':''} ${isActive?'⭐':''}</div>
+          <div class="p-money ${p.money<0?'neg':''}" style="color:${p.money<0?'#ff5252':color}">${p.money}$</div>
+        </div>
+        <div class="p-meta">
+          <span class="badge">📍 خونه ${p.pos}</span>
+          ${p.inJail>0?`<span class="badge jail">⛓️ ${p.inJail} دور</span>`:''}
+          ${p.bankrupt?`<span class="badge bankrupt-badge">💀 ورشکست</span>`:''}
+          <span class="badge">🏠 ${props.length} ملک</span>
+        </div>
+        <div class="properties-list">
+          ${props.slice(0,6).map(pid=>{
+            const tile = game.board[pid];
+            return tile ? `<span class="prop-chip">${tile.flag||''} ${tile.name}</span>` : '';
+          }).join('')}
+          ${props.length>6?`<span class="prop-chip">+${props.length-6}</span>`:''}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('playersList').innerHTML = html;
+}
+
+function renderLog(game) {
+  const logs = game.log || [];
+  const html = logs.slice(-20).reverse().map(l=>{
+    const d = new Date(l.time);
+    const time = `${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+    return `<div class="log-item"><span class="time">${time}</span> ${l.text}</div>`;
+  }).join('');
+  document.getElementById('logList').innerHTML = html || '<div style="text-align:center;color:#777;font-size:11px;">هنوز اتفاقی نیفتاده</div>';
+}
+
+function updateCenterPanel(game) {
+  // handled in renderBoard
+}
+
+function checkModals(game) {
+  if (!game || game.winner) return;
+  const me = game.players[myUid];
+  if (!me || me.bankrupt) return;
+  const isMyTurn = game.currentTurn===myUid;
+  if (!isMyTurn) return;
+
+  // If pending trade for me
+  if (game.pendingTrade && game.pendingTrade.to===myUid) {
+    openTradeModal(true);
+  }
+
+  // Jail turn modal auto open if in jail and phase roll
+  if (me.inJail>0 && game.phase==='roll' && !document.getElementById('jailTurnModal').classList.contains('show')) {
+    // don't auto open, let user click, but we can hint
+  }
+}
+
+// ========== ACTIONS ==========
+async function rollDice() {
+  if (isRolling) return;
+  const game = currentGame;
+  if (!game || game.currentTurn!==myUid) return;
+  if (game.phase!=='roll') return;
+  const me = game.players[myUid];
+  if (me.inJail>0) { openJailTurnModal(); return; }
+
+  isRolling=true;
+  const rollBtn = document.getElementById('rollBtn');
+  if (rollBtn) rollBtn.disabled=true;
+
+  // dice animation
+  const diceDisplay = document.getElementById('diceDisplay');
+  let anim=0;
+  const animInterval = setInterval(()=>{
+    diceDisplay.textContent = Math.floor(Math.random()*6)+1;
+    anim++;
+    if (anim>10) clearInterval(animInterval);
+  }, 80);
+
+  setTimeout(async ()=>{
+    const dice = Math.floor(Math.random()*6)+1;
+    const oldPos = me.pos;
+    const total = oldPos + dice;
+    const newPos = total % 32;
+    const laps = Math.floor(total / 32);
+    let newMoney = me.money + (laps*300);
+    let logMsg = `🎲 ${me.name} تاس ${dice} آورد و به خونه ${newPos} (${game.board[newPos].name}) رفت`;
+    if (laps>0) logMsg += ` و ${laps*300}$ جایزه دور گرفت`;
+
+    // Prepare updates
+    const updates = {};
+    updates[`games/${gameId}/dice`] = dice;
+    updates[`games/${gameId}/players/${myUid}/pos`] = newPos;
+    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+    updates[`games/${gameId}/phase`] = 'action';
+
+    // Push log
+    const newLog = [...(game.log||[]), {text: logMsg, time: Date.now()}];
+    updates[`games/${gameId}/log`] = newLog.slice(-50);
+
+    try {
+      await db.ref().update(updates);
+      // After move, handle landing after short delay to let UI update
+      setTimeout(()=> handleLanding(newPos), 600);
+    } catch(e) {
+      alert('خطا: '+e.message);
+    }
+    isRolling=false;
+    if (rollBtn) rollBtn.disabled=false;
+  }, 900);
+}
+
+async function handleLanding(pos) {
+  const game = await getGame(gameId);
+  if (!game) return;
+  const tile = game.board[pos];
+  const me = game.players[myUid];
+  if (!tile || !me) return;
+
+  if (tile.type==='country') {
+    if (!tile.owner) {
+      // Offer buy
+      pendingBuyTile = pos;
+      document.getElementById('buyTitle').textContent = `${tile.flag} ${tile.name}`;
+      document.getElementById('buyText').innerHTML = `
+        قیمت: <b>${tile.price}$</b><br>
+        اجاره: <b>${tile.rent}$</b><br>
+        پول شما: ${me.money}$<br>
+        ${me.money>=tile.price ? 'میخوای بخری؟' : 'پولت کافی نیست!'}
+      `;
+      const btn = document.getElementById('buyConfirmBtn');
+      btn.disabled = me.money < tile.price;
+      btn.textContent = `💰 خرید (${tile.price}$)`;
+      document.getElementById('buyModal').classList.add('show');
+    } else if (tile.owner!==myUid) {
+      const owner = game.players[tile.owner];
+      if (owner && !owner.bankrupt) {
+        // Calculate rent with bonus for same continent
+        let rent = tile.rent;
+        const sameCont = game.board.filter(t=>t.owner===tile.owner && t.continent===tile.continent).length;
+        if (sameCont>=2) rent = Math.floor(rent*1.5);
+        if (sameCont>=3) rent = Math.floor(rent*2);
+        
+        const newMyMoney = me.money - rent;
+        const newOwnerMoney = owner.money + rent;
+        const log = [...(game.log||[]), {text:`💸 ${me.name} ${rent}$ اجاره به ${owner.name} برای ${tile.name} پرداخت`, time:Date.now()}];
+        
+        const updates = {};
+        updates[`games/${gameId}/players/${myUid}/money`] = newMyMoney;
+        updates[`games/${gameId}/players/${tile.owner}/money`] = newOwnerMoney;
+        updates[`games/${gameId}/log`] = log.slice(-50);
+        
+        // Check bankrupt
+        if (newMyMoney <= -500) {
+          updates[`games/${gameId}/players/${myUid}/bankrupt`] = true;
+          log.push({text:`💀 ${me.name} ورشکست شد!`, time:Date.now()});
+          // Release properties
+          game.board.forEach((t,i)=>{
+            if (t.owner===myUid) updates[`games/${gameId}/board/${i}/owner`] = null;
+          });
+          updates[`games/${gameId}/players/${myUid}/properties`] = [];
+          updates[`games/${gameId}/log`] = log.slice(-50);
+        }
+        await db.ref().update(updates);
+        await checkWinConditions();
+      }
+    }
+  } else if (tile.type==='chance') {
+    // Chance card
+    const cards = game.chanceCards || [];
+    const card = cards[Math.floor(Math.random()*cards.length)];
+    document.getElementById('chanceText').textContent = card.text;
+    document.getElementById('chanceModal').classList.add('show');
+    
+    // Apply effect after modal shown, but also apply immediately
+    setTimeout(async ()=> {
+      await applyChanceCard(card);
+    }, 300);
+  } else if (tile.type==='jail') {
+    // Jail entry choice
+    document.getElementById('jailEntryText').textContent = `به زندان افتادی! انتخاب کن: 200$ جریمه بدی یا 3 دور زندان بری`;
+    document.getElementById('jailEntryModal').classList.add('show');
+  } else if (tile.type==='trade') {
+    openTradeModal();
+  } else if (tile.type==='start') {
+    // Already got lap bonus, give extra 100 for landing
+    const bonus = 100;
+    const newMoney = me.money + bonus;
+    const log = [...(game.log||[]), {text:`🏁 ${me.name} دقیقاً روی شروع ایستاد و ${bonus}$ جایزه گرفت!`, time:Date.now()}];
+    await db.ref().update({
+      [`games/${gameId}/players/${myUid}/money`]: newMoney,
+      [`games/${gameId}/log`]: log.slice(-50)
+    });
+    await checkWinConditions();
+  }
+}
+
+async function applyChanceCard(card) {
+  const game = await getGame(gameId);
+  if (!game) return;
+  const me = game.players[myUid];
+  let newMoney = me.money;
+  let updates = {};
+  let log = [...(game.log||[])];
+  
+  if (card.type==='money') {
+    newMoney += card.amount;
+    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+    log.push({text:`🎲 شانس: ${card.text}`, time:Date.now()});
+  } else if (card.type==='go_start') {
+    newMoney += 300;
+    updates[`games/${gameId}/players/${myUid}/pos`] = 0;
+    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+    log.push({text:`✈️ ${me.name} با کارت شانس به شروع رفت و 300$ گرفت`, time:Date.now()});
+  } else if (card.type==='go_jail') {
+    updates[`games/${gameId}/players/${myUid}/pos`] = 5;
+    updates[`games/${gameId}/players/${myUid}/inJail`] = 3;
+    log.push({text:`⛓️ ${me.name} با کارت شانس به زندان افتاد!`, time:Date.now()});
+  } else if (card.type==='collect_players') {
+    let total=0;
+    for(const uid of Object.keys(game.players)){
+      if (uid===myUid) continue;
+      const p = game.players[uid];
+      if (p.bankrupt) continue;
+      const amount = Math.min(card.amount, Math.max(0, p.money));
+      updates[`games/${gameId}/players/${uid}/money`] = p.money - amount;
+      total+=amount;
+    }
+    newMoney+=total;
+    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+    log.push({text:`🎁 ${me.name} از همه ${total}$ جمع کرد!`, time:Date.now()});
+  } else if (card.type==='pay_players') {
+    let total=0;
+    for(const uid of Object.keys(game.players)){
+      if (uid===myUid) continue;
+      const p = game.players[uid];
+      if (p.bankrupt) continue;
+      updates[`games/${gameId}/players/${uid}/money`] = p.money + card.amount;
+      total+=card.amount;
+    }
+    newMoney-=total;
+    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+    log.push({text:`💔 ${me.name} به همه ${card.amount}$ داد (مجموع ${total}$)`, time:Date.now()});
+  }
+  
+  // Check bankrupt
+  if (newMoney <= -500) {
+    updates[`games/${gameId}/players/${myUid}/bankrupt`] = true;
+    log.push({text:`💀 ${me.name} ورشکست شد!`, time:Date.now()});
+    game.board.forEach((t,i)=>{
+      if (t.owner===myUid) updates[`games/${gameId}/board/${i}/owner`] = null;
+    });
+    updates[`games/${gameId}/players/${myUid}/properties`] = [];
+  }
+  
+  updates[`games/${gameId}/log`] = log.slice(-50);
+  await db.ref().update(updates);
+  await checkWinConditions();
+}
+
+function closeChanceModal() {
+  document.getElementById('chanceModal').classList.remove('show');
+}
+
+async function confirmBuy() {
+  if (pendingBuyTile===null) return;
+  const game = await getGame(gameId);
+  const tile = game.board[pendingBuyTile];
+  const me = game.players[myUid];
+  if (me.money < tile.price) { alert('پول کافی نیست'); return; }
+  
+  const newMoney = me.money - tile.price;
+  const newProps = [...(me.properties||[]), pendingBuyTile];
+  const log = [...(game.log||[]), {text:`🏠 ${me.name} ${tile.name} رو به قیمت ${tile.price}$ خرید!`, time:Date.now()}];
+  
+  await db.ref().update({
+    [`games/${gameId}/players/${myUid}/money`]: newMoney,
+    [`games/${gameId}/players/${myUid}/properties`]: newProps,
+    [`games/${gameId}/board/${pendingBuyTile}/owner`]: myUid,
+    [`games/${gameId}/log`]: log.slice(-50)
+  });
+  
+  closeBuyModal();
+  await checkWinConditions();
+}
+
+function closeBuyModal() {
+  document.getElementById('buyModal').classList.remove('show');
+  pendingBuyTile=null;
+}
+
+// Jail entry choice
+async function chooseJailEntry(choice) {
+  document.getElementById('jailEntryModal').classList.remove('show');
+  const game = await getGame(gameId);
+  const me = game.players[myUid];
+  let updates = {};
+  let log = [...(game.log||[])];
+  
+  if (choice==='pay') {
+    if (me.money < 200) { alert('پول کافی برای جریمه نداری، باید بری زندان!'); choice='jail'; }
+    else {
+      const newMoney = me.money - 200;
+      updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+      log.push({text:`💰 ${me.name} 200$ جریمه زندان پرداخت و آزاد موند!`, time:Date.now()});
+    }
+  }
+  if (choice==='jail') {
+    updates[`games/${gameId}/players/${myUid}/pos`] = 5;
+    updates[`games/${gameId}/players/${myUid}/inJail`] = 3;
+    log.push({text:`⛓️ ${me.name} به زندان افتاد (3 دور)!`, time:Date.now()});
+  }
+  updates[`games/${gameId}/log`] = log.slice(-50);
+  await db.ref().update(updates);
+}
+
+// Jail turn
+function openJailTurnModal() {
+  const game = currentGame;
+  const me = game.players[myUid];
+  if (!me || me.inJail<=0) return;
+  document.getElementById('jailRemain').textContent = me.inJail;
+  document.getElementById('jailTurnModal').classList.add('show');
+}
+
+async function chooseJailTurn(choice) {
+  document.getElementById('jailTurnModal').classList.remove('show');
+  const game = await getGame(gameId);
+  const me = game.players[myUid];
+  let updates = {};
+  let log = [...(game.log||[])];
+  
+  if (choice==='pay') {
+    if (me.money < 200) { alert('پول کافی نداری'); return; }
+    const newMoney = me.money - 200;
+    updates[`games/${gameId}/players/${myUid}/money`] = newMoney;
+    updates[`games/${gameId}/players/${myUid}/inJail`] = 0;
+    log.push({text:`🔓 ${me.name} با پرداخت 200$ از زندان آزاد شد!`, time:Date.now()});
+    updates[`games/${gameId}/log`] = log.slice(-50);
+    await db.ref().update(updates);
+    // Now can roll
+  } else if (choice==='stay') {
+    const newJail = me.inJail - 1;
+    updates[`games/${gameId}/players/${myUid}/inJail`] = newJail;
+    log.push({text:`⏳ ${me.name} یک دور دیگر در زندان موند (${newJail} دور مونده)`, time:Date.now()});
+    updates[`games/${gameId}/log`] = log.slice(-50);
+    await db.ref().update(updates);
+    // End turn
+    setTimeout(()=> endTurn(), 500);
+  }
+}
+
+// Trade
+function openTradeModal(isIncoming=false) {
+  const game = currentGame;
+  if (!game) return;
+  const me = game.players[myUid];
+  const players = game.players;
+  
+  // Populate opponent select
+  const oppSel = document.getElementById('tradeOpponent');
+  oppSel.innerHTML = Object.entries(players).filter(([uid,p])=>uid!==myUid && !p.bankrupt).map(([uid,p])=>`<option value="${uid}">${p.name} (${p.money}$)</option>`).join('');
+  
+  // My props
+  const myProps = me.properties||[];
+  const mySel = document.getElementById('tradeMyProp');
+  mySel.innerHTML = '<option value="">هیچی</option>' + myProps.map(pid=>{
+    const t = game.board[pid];
+    return `<option value="${pid}">${t.flag} ${t.name} (${t.price}$)</option>`;
+  }).join('');
+  
+  // Their props - update when opponent changes
+  oppSel.onchange = updateTheirProps;
+  function updateTheirProps() {
+    const oppId = oppSel.value;
+    const opp = players[oppId];
+    if (!opp) return;
+    const theirProps = opp.properties||[];
+    const theirSel = document.getElementById('tradeTheirProp');
+    theirSel.innerHTML = '<option value="">هیچی</option>' + theirProps.map(pid=>{
+      const t = game.board[pid];
+      return `<option value="${pid}">${t.flag} ${t.name} (${t.price}$)</option>`;
+    }).join('');
+  }
+  updateTheirProps();
+  
+  // Check if there's pending trade for me
+  if (game.pendingTrade && game.pendingTrade.to===myUid) {
+    const pt = game.pendingTrade;
+    const fromPlayer = players[pt.from];
+    document.getElementById('tradePending').style.display='block';
+    document.getElementById('tradePendingText').innerHTML = `
+      📩 <b>${fromPlayer.name}</b> پیشنهاد معامله داده:<br>
+      میده: ${pt.offerProps.map(pid=>game.board[pid]?.name||'').join(', ')||'هیچی'} ${pt.offerMoney?`+ ${pt.offerMoney}$`:''}<br>
+      میخواد: ${pt.requestProps.map(pid=>game.board[pid]?.name||'').join(', ')||'هیچی'}<br>
+      🎁 هر دو 150$ بونوس میگیرید!
+    `;
+  } else {
+    document.getElementById('tradePending').style.display='none';
+  }
+  
+  document.getElementById('tradeModal').classList.add('show');
+}
+
+function closeTradeModal() {
+  document.getElementById('tradeModal').classList.remove('show');
+}
+
+async function proposeTrade() {
+  const oppId = document.getElementById('tradeOpponent').value;
+  const myProp = document.getElementById('tradeMyProp').value;
+  const theirProp = document.getElementById('tradeTheirProp').value;
+  const myMoney = parseInt(document.getElementById('tradeMyMoney').value)||0;
+  
+  if (!oppId) { alert('بازیکن مقابل رو انتخاب کن'); return; }
+  if (!myProp && !theirProp && myMoney===0) { alert('حداقل یک ملک یا پول برای معامله انتخاب کن'); return; }
+  
+  const game = await getGame(gameId);
+  const me = game.players[myUid];
+  if (me.money < myMoney) { alert('پول کافی نداری'); return; }
+  
+  const trade = {
+    from: myUid,
+    to: oppId,
+    offerProps: myProp ? [parseInt(myProp)] : [],
+    requestProps: theirProp ? [parseInt(theirProp)] : [],
+    offerMoney: myMoney,
+    time: Date.now()
+  };
+  
+  await db.ref(`games/${gameId}/pendingTrade`).set(trade);
+  const log = [...(game.log||[]), {text:`🤝 ${me.name} به ${game.players[oppId].name} پیشنهاد معامله داد`, time:Date.now()}];
+  await db.ref(`games/${gameId}/log`).set(log.slice(-50));
+  
+  alert('پیشنهاد ارسال شد!');
+  closeTradeModal();
+}
+
+async function acceptTrade() {
+  const game = await getGame(gameId);
+  const trade = game.pendingTrade;
+  if (!trade || trade.to!==myUid) return;
+  
+  const from = game.players[trade.from];
+  const to = game.players[myUid];
+  
+  // Check validity
+  for(const pid of trade.offerProps) {
+    if (!from.properties || !from.properties.includes(pid)) { alert('ملک پیشنهاد دهنده دیگر موجود نیست'); await db.ref(`games/${gameId}/pendingTrade`).remove(); return; }
+  }
+  for(const pid of trade.requestProps) {
+    if (!to.properties || !to.properties.includes(pid)) { alert('ملک شما دیگر موجود نیست'); await db.ref(`games/${gameId}/pendingTrade`).remove(); return; }
+  }
+  if (from.money < (trade.offerMoney||0)) { alert('پول طرف مقابل کافی نیست'); await db.ref(`games/${gameId}/pendingTrade`).remove(); return; }
+  
+  // Execute trade
+  let updates = {};
+  // Money
+  let fromMoney = from.money - (trade.offerMoney||0) + 150;
+  let toMoney = to.money + (trade.offerMoney||0) + 150;
+  updates[`games/${gameId}/players/${trade.from}/money`] = fromMoney;
+  updates[`games/${gameId}/players/${myUid}/money`] = toMoney;
+  
+  // Properties
+  let fromProps = [...(from.properties||[])];
+  let toProps = [...(to.properties||[])];
+  
+  trade.offerProps.forEach(pid=>{
+    fromProps = fromProps.filter(x=>x!==pid);
+    toProps.push(pid);
+    updates[`games/${gameId}/board/${pid}/owner`] = myUid;
+  });
+  trade.requestProps.forEach(pid=>{
+    toProps = toProps.filter(x=>x!==pid);
+    fromProps.push(pid);
+    updates[`games/${gameId}/board/${pid}/owner`] = trade.from;
+  });
+  
+  updates[`games/${gameId}/players/${trade.from}/properties`] = fromProps;
+  updates[`games/${gameId}/players/${myUid}/properties`] = toProps;
+  
+  const log = [...(game.log||[]), {text:`🤝 معامله بین ${from.name} و ${to.name} انجام شد! هر دو 150$ بونوس گرفتن 🎉`, time:Date.now()}];
+  updates[`games/${gameId}/log`] = log.slice(-50);
+  updates[`games/${gameId}/pendingTrade`] = null;
+  
+  await db.ref().update(updates);
+  closeTradeModal();
+  await checkWinConditions();
+}
+
+async function declineTrade() {
+  const game = await getGame(gameId);
+  if (!game.pendingTrade) return;
+  const from = game.players[game.pendingTrade.from];
+  const log = [...(game.log||[]), {text:`❌ ${game.players[myUid].name} معامله ${from.name} رو رد کرد`, time:Date.now()}];
+  await db.ref().update({
+    [`games/${gameId}/pendingTrade`]: null,
+    [`games/${gameId}/log`]: log.slice(-50)
+  });
+  closeTradeModal();
+}
+
+async function endTurn() {
+  const game = await getGame(gameId);
+  if (!game || game.currentTurn!==myUid) return;
+  if (game.phase!=='action') return;
+  
+  // Next player
+  const order = game.turnOrder || Object.keys(game.players);
+  const currentIdx = order.indexOf(myUid);
+  let nextIdx = (currentIdx + 1) % order.length;
+  let attempts=0;
+  let nextPlayer = order[nextIdx];
+  while(attempts < order.length) {
+    const p = game.players[nextPlayer];
+    if (p && !p.bankrupt) break;
+    nextIdx = (nextIdx+1)%order.length;
+    nextPlayer = order[nextIdx];
+    attempts++;
+  }
+  
+  const newTurnCount = (game.turnCount||0)+1;
+  
+  let updates = {};
+  updates[`games/${gameId}/currentTurn`] = nextPlayer;
+  updates[`games/${gameId}/phase`] = 'roll';
+  updates[`games/${gameId}/turnCount`] = newTurnCount;
+  updates[`games/${gameId}/dice`] = 0;
+  
+  // Check max turns win
+  if (game.maxTurns && newTurnCount >= game.maxTurns) {
+    // Richest wins
+    let richest = null;
+    let maxMoney = -Infinity;
+    for(const [uid,p] of Object.entries(game.players)) {
+      if (p.bankrupt) continue;
+      if (p.money > maxMoney) { maxMoney=p.money; richest=uid; }
+    }
+    if (richest) {
+      updates[`games/${gameId}/winner`] = richest;
+      updates[`games/${gameId}/status`] = 'finished';
+      const log = [...(game.log||[]), {text:`🏁 ${game.maxTurns} دست تموم شد! برنده ${game.players[richest].name} با ${maxMoney}$`, time:Date.now()}];
+      updates[`games/${gameId}/log`] = log.slice(-50);
+    }
+  }
+  
+  await db.ref().update(updates);
+  await checkWinConditions();
+}
+
+async function checkWinConditions() {
+  const game = await getGame(gameId);
+  if (!game || game.winner) return;
+  
+  // Money target win
+  for(const [uid,p] of Object.entries(game.players)) {
+    if (p.bankrupt) continue;
+    if (p.money >= game.moneyTarget) {
+      await db.ref().update({
+        [`games/${gameId}/winner`]: uid,
+        [`games/${gameId}/status`]: 'finished',
+        [`games/${gameId}/log`]: [...(game.log||[]), {text:`🏆 ${p.name} به ${game.moneyTarget}$ رسید و برنده شد!`, time:Date.now()}].slice(-50)
+      });
+      return;
+    }
+  }
+  
+  // All but one bankrupt
+  const alive = Object.entries(game.players).filter(([uid,p])=>!p.bankrupt);
+  if (alive.length===1) {
+    const winnerUid = alive[0][0];
+    await db.ref().update({
+      [`games/${gameId}/winner`]: winnerUid,
+      [`games/${gameId}/status`]: 'finished',
+      [`games/${gameId}/log`]: [...(game.log||[]), {text:`💀 همه ورشکست شدن! برنده ${game.players[winnerUid].name}`, time:Date.now()}].slice(-50)
+    });
+  }
+}
+
+function showWinner(game) {
+  const winner = game.players[game.winner];
+  if (!winner) return;
+  document.getElementById('winnerTitle').textContent = `🏆 ${winner.name} برنده شد!`;
+  document.getElementById('winnerText').innerHTML = `
+    با ${winner.money}$ پول و ${winner.properties?.length||0} ملک!<br><br>
+    🎯 هدف: ${game.moneyTarget}$<br>
+    🔄 دورها: ${game.turnCount}/${game.maxTurns||'♾️'}<br><br>
+    ${winner.name} قهرمان مونوپولی جهان شد! 🌍👑
+  `;
+  document.getElementById('winnerModal').classList.add('show');
+}
+
+// Bot AI
+async function runBotTurn(game) {
+  if (!game || game.status!=='playing') return;
+  const botUid = game.currentTurn;
+  const bot = game.players[botUid];
+  if (!bot || !bot.isBot) return;
+  // Prevent multiple bot executions
+  if (window.botRunning) return;
+  window.botRunning=true;
+  
+  try {
+    // If in jail
+    if (bot.inJail>0) {
+      if (bot.money>600 && Math.random()>0.4) {
+        // Pay
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/money`]: bot.money-200,
+          [`games/${gameId}/players/${botUid}/inJail`]: 0,
+          [`games/${gameId}/log`]: [...(game.log||[]), {text:`🔓 ${bot.name} با 200$ از زندان آزاد شد`, time:Date.now()}].slice(-50)
+        });
+      } else {
+        const newJail = bot.inJail-1;
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/inJail`]: newJail,
+          [`games/${gameId}/log`]: [...(game.log||[]), {text:`⏳ ${bot.name} در زندان موند (${newJail} دور)`, time:Date.now()}].slice(-50)
+        });
+        // End turn
+        await botEndTurn();
+      }
+      window.botRunning=false;
+      return;
+    }
+    
+    // Roll dice
+    const dice = Math.floor(Math.random()*6)+1;
+    const oldPos = bot.pos;
+    const total = oldPos + dice;
+    const newPos = total % 32;
+    const laps = Math.floor(total/32);
+    let newMoney = bot.money + laps*300;
+    
+    await db.ref().update({
+      [`games/${gameId}/dice`]: dice,
+      [`games/${gameId}/players/${botUid}/pos`]: newPos,
+      [`games/${gameId}/players/${botUid}/money`]: newMoney,
+      [`games/${gameId}/log`]: [...(game.log||[]), {text:`🎲 ${bot.name} تاس ${dice} آورد و به ${game.board[newPos].name} رفت`, time:Date.now()}].slice(-50)
+    });
+    
+    await new Promise(r=>setTimeout(r,800));
+    
+    const tile = game.board[newPos];
+    const freshGame = await getGame(gameId);
+    const freshBot = freshGame.players[botUid];
+    
+    if (tile.type==='country' && !tile.owner) {
+      if (freshBot.money > tile.price + 150 && Math.random()>0.2) {
+        // Buy
+        const newProps = [...(freshBot.properties||[]), newPos];
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/money`]: freshBot.money - tile.price,
+          [`games/${gameId}/players/${botUid}/properties`]: newProps,
+          [`games/${gameId}/board/${newPos}/owner`]: botUid,
+          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`🏠 ${freshBot.name} ${tile.name} رو خرید (${tile.price}$)`, time:Date.now()}].slice(-50)
+        });
+      }
+    } else if (tile.type==='country' && tile.owner && tile.owner!==botUid) {
+      const owner = freshGame.players[tile.owner];
+      if (owner && !owner.bankrupt) {
+        let rent = tile.rent;
+        const sameCont = freshGame.board.filter(t=>t.owner===tile.owner && t.continent===tile.continent).length;
+        if (sameCont>=2) rent = Math.floor(rent*1.5);
+        const newBotMoney = freshBot.money - rent;
+        const newOwnerMoney = owner.money + rent;
+        let updates = {};
+        updates[`games/${gameId}/players/${botUid}/money`] = newBotMoney;
+        updates[`games/${gameId}/players/${tile.owner}/money`] = newOwnerMoney;
+        updates[`games/${gameId}/log`] = [...(freshGame.log||[]), {text:`💸 ${freshBot.name} ${rent}$ به ${owner.name} اجاره داد`, time:Date.now()}].slice(-50);
+        if (newBotMoney <= -500) {
+          updates[`games/${gameId}/players/${botUid}/bankrupt`] = true;
+          updates[`games/${gameId}/log`].push({text:`💀 ${freshBot.name} ورشکست شد!`, time:Date.now()});
+          freshGame.board.forEach((t,i)=>{
+            if (t.owner===botUid) updates[`games/${gameId}/board/${i}/owner`] = null;
+          });
+          updates[`games/${gameId}/players/${botUid}/properties`] = [];
+        }
+        await db.ref().update(updates);
+      }
+    } else if (tile.type==='chance') {
+      const cards = freshGame.chanceCards;
+      const card = cards[Math.floor(Math.random()*cards.length)];
+      // Apply simple money cards for bot
+      if (card.type==='money') {
+        const nm = freshBot.money + card.amount;
+        let upd = {};
+        upd[`games/${gameId}/players/${botUid}/money`] = nm;
+        upd[`games/${gameId}/log`] = [...(freshGame.log||[]), {text:`🎁 ${freshBot.name}: ${card.text}`, time:Date.now()}].slice(-50);
+        if (nm <= -500) {
+          upd[`games/${gameId}/players/${botUid}/bankrupt`] = true;
+          freshGame.board.forEach((t,i)=>{ if (t.owner===botUid) upd[`games/${gameId}/board/${i}/owner`]=null; });
+          upd[`games/${gameId}/players/${botUid}/properties`] = [];
+        }
+        await db.ref().update(upd);
+      } else if (card.type==='go_jail') {
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/pos`]: 5,
+          [`games/${gameId}/players/${botUid}/inJail`]: 3,
+          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`⛓️ ${freshBot.name} به زندان افتاد!`, time:Date.now()}].slice(-50)
+        });
+      } else if (card.type==='go_start') {
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/pos`]: 0,
+          [`games/${gameId}/players/${botUid}/money`]: freshBot.money+300,
+          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`✈️ ${freshBot.name} به شروع رفت`, time:Date.now()}].slice(-50)
+        });
+      }
+    } else if (tile.type==='jail') {
+      if (freshBot.money > 400 && Math.random()>0.3) {
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/money`]: freshBot.money-200,
+          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`💰 ${freshBot.name} 200$ جریمه زندان داد`, time:Date.now()}].slice(-50)
+        });
+      } else {
+        await db.ref().update({
+          [`games/${gameId}/players/${botUid}/pos`]: 5,
+          [`games/${gameId}/players/${botUid}/inJail`]: 3,
+          [`games/${gameId}/log`]: [...(freshGame.log||[]), {text:`⛓️ ${freshBot.name} زندانی شد (3 دور)`, time:Date.now()}].slice(-50)
+        });
+      }
+    }
+    
+    await checkWinConditions();
+    await new Promise(r=>setTimeout(r, 600));
+    await botEndTurn();
+    
+  } catch(e) { console.error('bot error', e); }
+  window.botRunning=false;
+}
+
+async function botEndTurn() {
+  const game = await getGame(gameId);
+  if (!game) return;
+  const order = game.turnOrder || Object.keys(game.players);
+  const botUid = game.currentTurn;
+  const currentIdx = order.indexOf(botUid);
+  let nextIdx = (currentIdx+1)%order.length;
+  let attempts=0;
+  let nextPlayer = order[nextIdx];
+  while(attempts < order.length) {
+    const p = game.players[nextPlayer];
+    if (p && !p.bankrupt) break;
+    nextIdx = (nextIdx+1)%order.length;
+    nextPlayer = order[nextIdx];
+    attempts++;
+  }
+  const newTurnCount = (game.turnCount||0)+1;
+  let updates = {};
+  updates[`games/${gameId}/currentTurn`] = nextPlayer;
+  updates[`games/${gameId}/phase`] = 'roll';
+  updates[`games/${gameId}/turnCount`] = newTurnCount;
+  updates[`games/${gameId}/dice`] = 0;
+  
+  if (game.maxTurns && newTurnCount >= game.maxTurns) {
+    let richest=null, maxMoney=-Infinity;
+    for(const [uid,p] of Object.entries(game.players)) {
+      if (p.bankrupt) continue;
+      if (p.money>maxMoney) { maxMoney=p.money; richest=uid; }
+    }
+    if (richest) {
+      updates[`games/${gameId}/winner`]=richest;
+      updates[`games/${gameId}/status`]='finished';
+      updates[`games/${gameId}/log`] = [...(game.log||[]), {text:`🏁 ${game.maxTurns} دست تمام شد! برنده ${game.players[richest].name}`, time:Date.now()}].slice(-50);
+    }
+  }
+  await db.ref().update(updates);
+  await checkWinConditions();
+}
+
+// Navigation
+function backToLobby() {
+  if (currentGame && currentGame.lobbyId) {
+    window.location.href = `lobby.html?id=${currentGame.lobbyId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+async function handleLeave() {
+  if (!confirm('از بازی خارج میشی؟')) return;
+  try {
+    await leaveGame(gameId, myUid);
+    if (gameRef) stopPolling(gameRef);
+    backToLobby();
+  } catch(e) { alert(e.message); }
+}
+
+window.addEventListener('beforeunload', ()=>{
+  if (gameRef) stopPolling(gameRef);
+});
+</script>
+</body>
+</html>
